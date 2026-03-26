@@ -79,7 +79,9 @@ def run_agent(
                     "type": "adaptive",
                     "budget_tokens": budget_tokens,
                 }
-            response = client.messages.create(**api_kwargs)
+            # Use streaming to avoid timeout on long thinking requests
+            response = client.messages.create(**api_kwargs, stream=True)
+            response = response.get_final_message()
 
             # Append the assistant's response to the conversation
             messages.append({"role": "assistant", "content": response.content})
