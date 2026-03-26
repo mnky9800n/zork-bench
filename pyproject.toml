@@ -1,0 +1,15 @@
+[project]
+name = "zork-harness"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "pexpect>=4.9",
+    "anthropic>=0.40",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+zork-harness = "zork_harness.agent:main"
