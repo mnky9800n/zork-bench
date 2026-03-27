@@ -27,6 +27,10 @@ class MapViewer:
         self._room_history: list[str] = [starting_room]
         self._lock = threading.Lock()
         self._dirty = True
+        self._input_tokens = 0
+        self._output_tokens = 0
+        self._cache_read = 0
+        self._cache_create = 0
         self._root: tk.Tk | None = None
         self._map_canvas: tk.Canvas | None = None
         self._map_photo: ImageTk.PhotoImage | None = None
@@ -47,6 +51,16 @@ class MapViewer:
         self._vp_y2 = 1
         self._canvas_w = 1
         self._canvas_h = 1
+
+    def set_tokens(self, input_tokens: int, output_tokens: int,
+                   cache_read: int = 0, cache_create: int = 0) -> None:
+        """Called from the agent thread to update token counts."""
+        with self._lock:
+            self._input_tokens = input_tokens
+            self._output_tokens = output_tokens
+            self._cache_read = cache_read
+            self._cache_create = cache_create
+            self._dirty = True
 
     def set_room(self, room_name: str) -> None:
         """Called from the agent thread to update the current room."""
@@ -88,6 +102,16 @@ class MapViewer:
             (PRESCALE_WIDTH, prescale_h), Image.LANCZOS
         )
         original.close()
+
+        # ── Token counter bar at top ──
+        self._token_var = tk.StringVar(value="Tokens: 0 input | 0 output | 0 total")
+        token_bar = tk.Label(
+            self._root, textvariable=self._token_var,
+            bg="#111111", fg="#00DDFF",
+            font=("Menlo", 14, "bold"),
+            anchor=tk.CENTER, pady=6,
+        )
+        token_bar.pack(side=tk.TOP, fill=tk.X)
 
         # ── 50/50 split pane ──
         pane = tk.PanedWindow(
@@ -210,13 +234,15 @@ class MapViewer:
             pending = list(self._pending_logs)
             self._pending_logs.clear()
 
+        # Append logs first (cheap), so text appears before the map re-renders
+        if pending:
+            self._append_logs(pending)
+            dirty = True  # force map update to stay in sync with logs
+
         if dirty:
             self._render_map()
             with self._lock:
                 self._dirty = False
-
-        if pending:
-            self._append_logs(pending)
 
         if self._root:
             self._root.after(POLL_INTERVAL_MS, self._poll)
@@ -336,6 +362,15 @@ class MapViewer:
                         text="\U0001F916",
                         font=("Apple Color Emoji", 56),
                     ))
+
+        # Update token counter
+        with self._lock:
+            inp_tok = self._input_tokens
+            out_tok = self._output_tokens
+        total_tok = inp_tok + out_tok
+        self._token_var.set(
+            f"Tokens: {inp_tok:,} input  |  {out_tok:,} output  |  {total_tok:,} total"
+        )
 
         # Status bar
         unique = len(set(history))

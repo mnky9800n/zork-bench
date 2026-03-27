@@ -11,7 +11,7 @@ Standard LLM benchmarks measure component skills in isolation. Text adventures m
 An LLM plays Zork through a game session running in Docker (dfrotz + Infocom game files). The harness manages the game I/O, provides tools the LLM can use (self-built map, inventory tracking, notes), and logs everything for analysis.
 
 ```
-LLM (Claude API)
+LLM (any backend: Fireworks, Anthropic, OpenAI)
   |
   |-- tool calls: record_room, find_path, update_inventory, add_note
   |-- game command: "go north", "take lamp", etc.
@@ -22,8 +22,6 @@ Harness (zork_harness)
   v
 Docker container (dfrotz + game files)
 ```
-
-The LLM builds its own map as it explores. It has no pre-loaded knowledge of the game world. It discovers rooms, records exits, tracks inventory, and takes notes -- all through tool use.
 
 ## Setup
 
@@ -36,40 +34,62 @@ docker build -t zork-harness-game .
 # Install dependencies
 uv sync
 
-# Set your API key
-export ANTHROPIC_API_KEY=your-key-here
+# Set your API key (at least one)
+export FIREWORKS_API_KEY=your-key-here
+export ANTHROPIC_API_KEY=your-key-here   # optional
+export OPENAI_API_KEY=your-key-here      # optional
 ```
 
 ## Usage
 
 ```bash
-# Basic run
-uv run zork-harness --game zork1 --model claude-sonnet-4-6
+# Fireworks (default backend)
+uv run zork-harness --game zork1 --frontend
 
-# With extended thinking
-uv run zork-harness --game zork1 --model claude-opus-4-6 --thinking
+# Fireworks with a specific model
+uv run zork-harness --model accounts/fireworks/models/llama-v3p3-70b-instruct --frontend
 
-# With fixed thinking budget
-uv run zork-harness --game zork1 --model claude-opus-4-6 --budget-tokens 32000
+# Anthropic with extended thinking
+uv run zork-harness --backend anthropic --model claude-opus-4-6 --thinking --frontend
 
-# With the live viewer (map + game log GUI)
-uv run zork-harness --game zork1 --model claude-sonnet-4-6 --frontend
+# OpenAI
+uv run zork-harness --backend openai --model gpt-4o --frontend
+
+# No map tools, pure reasoning
+uv run zork-harness --map-mode none --frontend
+
+# Full pre-loaded map
+uv run zork-harness --map-mode full --frontend
 
 # Limit turns
-uv run zork-harness --game zork1 --max-turns 50 --frontend
+uv run zork-harness --max-turns 50 --frontend
 ```
 
 ### Options
 
 | Flag | Description |
 |------|-------------|
+| `--backend` | API backend: `fireworks` (default), `anthropic`, `openai`. |
 | `--game` | Which game to play (default: `zork1`). Supports 40 Infocom titles. |
-| `--model` | Anthropic model ID (default: `claude-sonnet-4-6`). |
+| `--model` | Model ID. Defaults: `llama4-maverick-instruct-basic` (Fireworks), `claude-sonnet-4-6` (Anthropic), `gpt-4o` (OpenAI). |
+| `--map-mode` | Map knowledge level: `none`, `explore` (default), `full`. See below. |
 | `--max-turns` | Maximum turns before stopping (default: 200). |
-| `--thinking` | Enable adaptive extended thinking. |
-| `--budget-tokens N` | Enable fixed-budget thinking with N tokens. |
+| `--thinking` | Enable adaptive extended thinking (Anthropic only). |
+| `--budget-tokens N` | Fixed thinking budget in tokens (Anthropic only). Implies `--thinking`. |
 | `--frontend` | Open the live viewer window (split-pane map + game log). |
 | `--session-dir` | Directory for session logs (default: `sessions/`). |
+
+## Map knowledge modes
+
+The `--map-mode` flag controls how much spatial knowledge the LLM starts with. This is a key experimental variable: the gap between modes reveals how much of the model's performance comes from spatial reasoning vs. following pre-computed routes.
+
+| Mode | Description | Tools available | Use case |
+|------|-------------|----------------|----------|
+| `none` | No map tools at all. The LLM must rely entirely on its own memory and reasoning to navigate. | `update_inventory`, `add_note` | Hardest mode. Tests pure reasoning and spatial memory. |
+| `explore` (default) | The LLM builds its own map as it plays. It starts with no knowledge and records rooms, exits, and items as it discovers them. | All 6 tools | Tests exploration strategy + ability to build and use a mental model. |
+| `full` | The LLM starts with a complete pre-loaded map of all known rooms, exits, and items. It can query and pathfind from turn 1. | All 6 tools | Easiest mode. Establishes an upper bound on performance. Tests puzzle solving in isolation from navigation. |
+
+The performance gap between these modes is itself a metric. A model with strong spatial reasoning should show a smaller gap between `none` and `explore`. A model that can't effectively use tools will show a small gap between `explore` and `full`.
 
 ## Live viewer
 
@@ -80,7 +100,9 @@ The `--frontend` flag opens a split-pane GUI:
 
 ## LLM tools
 
-The LLM builds its own map from scratch as it explores. No pre-loaded map is provided.
+Tools are available depending on the `--map-mode` setting. In `explore` and `full` modes, the LLM gets all six tools. In `none` mode, only inventory and notes are available.
+
+**Map tools** (available in `explore` and `full` modes):
 
 | Tool | Purpose |
 |------|---------|
@@ -88,8 +110,15 @@ The LLM builds its own map from scratch as it explores. No pre-loaded map is pro
 | `look_up_room(room_name)` | Retrieve recorded data for a room. |
 | `list_known_rooms()` | List all rooms recorded so far. |
 | `find_path(from_room, to_room)` | BFS pathfinding over the self-built map. |
+
+**Always available:**
+
+| Tool | Purpose |
+|------|---------|
 | `update_inventory(action, item)` | Track items picked up or dropped. |
 | `add_note(note)` | Free-form scratchpad for puzzle clues, observations, etc. |
+
+Tool schemas are stored in a backend-neutral format and automatically converted to the correct API format (Anthropic or OpenAI/Fireworks) at runtime.
 
 ## Metrics
 
@@ -163,11 +192,11 @@ zork-bench/
   papers/                       # Reference papers
   sessions/                     # Session logs (gitignored)
   src/zork_harness/
-    agent.py                    # LLM agent loop (Anthropic SDK + tool use)
+    agent.py                    # LLM agent loop (multi-backend: Fireworks, Anthropic, OpenAI)
     session.py                  # Game I/O via pexpect to Docker
-    tools.py                    # Self-built map, inventory, notes
-    map_data.py                 # Static Zork I map (reference, not used by LLM)
+    tools.py                    # Backend-neutral tool definitions + self-built map, inventory, notes
+    map_data.py                 # Static Zork I map (used by --map-mode full)
     map_coords.py               # Room pixel coordinates for the map viewer
-    map_viewer.py               # Live tkinter viewer (map + game log)
+    map_viewer.py               # Live tkinter viewer (map + game log + token counter)
     logger.py                   # JSONL + text session logging
 ```

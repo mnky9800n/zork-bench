@@ -1,15 +1,19 @@
-"""LLM agent loop: plays Zork by driving a ZorkSession through the Anthropic API."""
+"""LLM agent loop: plays Zork by driving a ZorkSession through an LLM API."""
 
 import argparse
+import json
+import os
 import re
 import sys
 import threading
 
-import anthropic
-
 from zork_harness.logger import SessionLogger
 from zork_harness.session import GAMES, ZorkSession
-from zork_harness.tools import ToolRegistry
+from zork_harness.tools import ToolRegistry, get_anthropic_schemas, get_openai_schemas
+
+# ---------------------------------------------------------------------------
+# System prompt fragments
+# ---------------------------------------------------------------------------
 
 _BASE_PROMPT = """\
 You are playing Zork, a classic text adventure game. Your goal is to explore the world, \
@@ -84,78 +88,202 @@ def _build_system_prompt(map_mode: str) -> str:
     parts.append(_EXAMPLE_PROMPT)
     return "\n".join(parts)
 
+
 _COMMAND_RE = re.compile(r"^>\s*(.+)$", re.MULTILINE)
 
 
 def _extract_command(text: str) -> str | None:
-    """Extract the last "> command" line from the model's text response."""
     matches = _COMMAND_RE.findall(text)
     if not matches:
         return None
     return matches[-1].strip()
 
 
-def _extract_thinking(response) -> str | None:
-    """Extract thinking text from response content blocks."""
-    for block in response.content:
-        if block.type == "thinking" and hasattr(block, "thinking"):
-            return block.thinking
-    return None
-
-
 _NON_ROOM_PATTERNS = [
-    "score",
-    "move",
-    "rank",
-    "total",
-    "opening",
-    "you ",
-    "there ",
-    "it ",
-    "the ",
-    "a ",
-    "your ",
-    "taken",
-    "dropped",
-    "done",
-    "ok",
-    "i don't",
-    "what",
-    "which",
-    "that",
-    "nothing",
-    "with",
-    "using",
+    "score", "move", "rank", "total", "opening",
+    "you ", "there ", "it ", "the ", "a ", "your ",
+    "taken", "dropped", "done", "ok",
+    "i don't", "what", "which", "that", "nothing", "with", "using",
 ]
 
 
 def _detect_room(game_output: str) -> str | None:
-    """Try to extract the room name from game output.
-
-    Frotz prints the room name as the first non-blank line when entering a room.
-    Room names are short, title-case, and don't end with punctuation.
-    """
     for line in game_output.split("\n"):
         line = line.strip()
         if not line:
             continue
-        # Room names are short, don't end with sentence punctuation
         if len(line) > 50:
             break
-        if line.endswith((".","!","?",":")):
+        if line.endswith((".", "!", "?", ":")):
             break
         if line.startswith(("[", "(", ">")):
             break
-        # Filter out common non-room output
         lower = line.lower()
         if any(lower.startswith(p) for p in _NON_ROOM_PATTERNS):
             break
-        # Room names have at least one capital letter and no leading lowercase
         if line[0].islower():
             break
         return line
     return None
 
+
+# ---------------------------------------------------------------------------
+# Anthropic backend
+# ---------------------------------------------------------------------------
+
+def _run_anthropic(client, model, system_prompt, tool_schemas, messages,
+                   thinking, budget_tokens):
+    """One API round-trip using the Anthropic SDK. Returns (response, text, tool_calls, thinking_text, usage)."""
+    import anthropic as _anthropic
+
+    api_kwargs = dict(
+        model=model,
+        max_tokens=budget_tokens + 4096 if budget_tokens else 1024,
+        system=system_prompt,
+        tools=tool_schemas,
+        messages=messages,
+    )
+    if thinking:
+        if budget_tokens:
+            api_kwargs["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
+        else:
+            api_kwargs["thinking"] = {"type": "adaptive"}
+        api_kwargs["max_tokens"] = max(api_kwargs["max_tokens"], 8192)
+
+    with client.messages.stream(**api_kwargs) as stream:
+        response = stream.get_final_message()
+
+    # Extract usage
+    usage = {"input": 0, "output": 0}
+    if response.usage:
+        usage["input"] = response.usage.input_tokens
+        usage["output"] = response.usage.output_tokens
+
+    # Extract thinking
+    thinking_text = None
+    for block in response.content:
+        if block.type == "thinking" and hasattr(block, "thinking"):
+            thinking_text = block.thinking
+            break
+
+    # Append assistant message
+    messages.append({"role": "assistant", "content": response.content})
+
+    # Handle tool use
+    if response.stop_reason == "tool_use":
+        tool_calls = []
+        tool_results = []
+        for block in response.content:
+            if block.type != "tool_use":
+                continue
+            tool_calls.append({"id": block.id, "name": block.name, "input": block.input})
+            tool_results.append({
+                "type": "tool_result",
+                "tool_use_id": block.id,
+                "content": None,  # filled by caller
+            })
+        return {"type": "tool_use", "tool_calls": tool_calls, "tool_results_template": tool_results,
+                "thinking": thinking_text, "usage": usage}
+
+    # Extract text
+    text = "".join(block.text for block in response.content if hasattr(block, "text"))
+    return {"type": "text", "text": text, "thinking": thinking_text, "usage": usage}
+
+
+def _append_anthropic_tool_results(messages, tool_results):
+    """Append tool results in Anthropic format."""
+    messages.append({"role": "user", "content": tool_results})
+
+
+# ---------------------------------------------------------------------------
+# OpenAI/Fireworks backend
+# ---------------------------------------------------------------------------
+
+def _parse_json_tool_call(text: str) -> dict | None:
+    """Try to parse a tool call from raw JSON in the model's text output.
+
+    Some models (especially smaller ones) dump tool calls as JSON text
+    instead of using the structured tool calling API.
+    """
+    text = text.strip()
+    # Try to find JSON object in the text
+    for start in range(len(text)):
+        if text[start] == "{":
+            for end in range(len(text), start, -1):
+                if text[end - 1] == "}":
+                    try:
+                        data = json.loads(text[start:end])
+                        # Check if it looks like a tool call
+                        name = data.get("name") or data.get("function")
+                        params = data.get("parameters") or data.get("arguments") or data.get("input")
+                        if name and isinstance(params, dict):
+                            return {"name": name, "input": params}
+                    except json.JSONDecodeError:
+                        continue
+    return None
+
+
+def _run_openai(client, model, system_prompt, tool_schemas, messages, **_kwargs):
+    """One API round-trip using the OpenAI SDK. Returns same format as _run_anthropic."""
+    # Build messages with system prompt prepended
+    api_messages = [{"role": "system", "content": system_prompt}] + messages
+
+    response = client.chat.completions.create(
+        model=model,
+        messages=api_messages,
+        tools=tool_schemas if tool_schemas else None,
+        max_tokens=2048,
+    )
+
+    choice = response.choices[0]
+    message = choice.message
+
+    # Usage
+    usage = {"input": 0, "output": 0}
+    if response.usage:
+        usage["input"] = response.usage.prompt_tokens
+        usage["output"] = response.usage.completion_tokens
+
+    # Append assistant message to conversation
+    messages.append(message.model_dump(exclude_none=True))
+
+    # Handle proper tool calls
+    if message.tool_calls:
+        tool_calls = []
+        for tc in message.tool_calls:
+            try:
+                args = json.loads(tc.function.arguments)
+            except (json.JSONDecodeError, TypeError):
+                args = {}
+            tool_calls.append({"id": tc.id, "name": tc.function.name, "input": args})
+        return {"type": "tool_use", "tool_calls": tool_calls,
+                "thinking": None, "usage": usage}
+
+    text = message.content or ""
+
+    # Fallback: some models dump tool calls as JSON in the text
+    parsed_tc = _parse_json_tool_call(text)
+    if parsed_tc:
+        fake_id = f"fallback_{id(text)}"
+        return {"type": "tool_use",
+                "tool_calls": [{"id": fake_id, "name": parsed_tc["name"], "input": parsed_tc["input"]}],
+                "thinking": None, "usage": usage}
+
+    return {"type": "text", "text": text, "thinking": None, "usage": usage}
+
+
+def _append_openai_tool_results(messages, tool_call_id, name, result):
+    """Append a single tool result in OpenAI format."""
+    messages.append({
+        "role": "tool",
+        "tool_call_id": tool_call_id,
+        "content": result,
+    })
+
+
+# ---------------------------------------------------------------------------
+# Main agent loop
+# ---------------------------------------------------------------------------
 
 def run_agent(
     game: str,
@@ -166,15 +294,35 @@ def run_agent(
     budget_tokens: int = 0,
     viewer=None,
     map_mode: str = "explore",
+    backend: str = "fireworks",
 ) -> None:
-    client = anthropic.Anthropic()
     registry = ToolRegistry(map_mode=map_mode)
     system_prompt = _build_system_prompt(map_mode)
-    tool_schemas = registry.get_schemas()
     logger = SessionLogger(session_dir, game=game, model=model)
 
+    # Set up client and schemas based on backend
+    if backend == "anthropic":
+        import anthropic
+        client = anthropic.Anthropic()
+        tool_schemas = get_anthropic_schemas(map_mode)
+    else:
+        from openai import OpenAI
+        if backend == "fireworks":
+            client = OpenAI(
+                api_key=os.environ.get("FIREWORKS_API_KEY"),
+                base_url="https://api.fireworks.ai/inference/v1",
+            )
+        elif backend == "openai":
+            client = OpenAI()
+        else:
+            raise ValueError(f"Unknown backend: {backend}")
+        tool_schemas = get_openai_schemas(map_mode)
+
+    is_anthropic = backend == "anthropic"
+
     print(f"Starting game: {game}")
-    print(f"Model: {model} (thinking: {'adaptive' if thinking else 'off'}, map: {map_mode})")
+    print(f"Backend: {backend} | Model: {model}")
+    print(f"Thinking: {'on' if thinking else 'off'} | Map: {map_mode}")
     print(f"Session log: {logger.txt_path}")
 
     session = ZorkSession(game)
@@ -182,15 +330,16 @@ def run_agent(
     print(opening_text)
     print()
 
-    # Detect starting room from opening text
     opening_room = _detect_room(opening_text)
     if viewer and opening_room:
         viewer.set_room(opening_room)
 
-    # The conversation history sent to the API each turn
     messages: list[dict] = [
         {"role": "user", "content": opening_text},
     ]
+
+    total_input_tokens = 0
+    total_output_tokens = 0
 
     for turn in range(1, max_turns + 1):
         tool_calls_this_turn: list[dict] = []
@@ -198,60 +347,60 @@ def run_agent(
 
         # Inner loop: handle tool use until we get a plain text response
         while True:
-            api_kwargs = dict(
-                model=model,
-                max_tokens=budget_tokens + 4096 if budget_tokens else 1024,
-                system=system_prompt,
-                tools=tool_schemas,
-                messages=messages,
-            )
-            if thinking:
-                if budget_tokens:
-                    api_kwargs["thinking"] = {
-                        "type": "enabled",
-                        "budget_tokens": budget_tokens,
-                    }
-                else:
-                    api_kwargs["thinking"] = {"type": "adaptive"}
-                # Adaptive/enabled thinking needs higher max_tokens
-                api_kwargs["max_tokens"] = max(api_kwargs["max_tokens"], 8192)
+            if is_anthropic:
+                result = _run_anthropic(
+                    client, model, system_prompt, tool_schemas, messages,
+                    thinking, budget_tokens,
+                )
+            else:
+                result = _run_openai(
+                    client, model, system_prompt, tool_schemas, messages,
+                )
 
-            # Use streaming to avoid timeout on long thinking requests
-            with client.messages.stream(**api_kwargs) as stream:
-                response = stream.get_final_message()
+            # Track tokens
+            total_input_tokens += result["usage"]["input"]
+            total_output_tokens += result["usage"]["output"]
+            if viewer:
+                viewer.set_tokens(total_input_tokens, total_output_tokens)
 
-            # Capture thinking from this response
-            turn_thinking = _extract_thinking(response)
-            if turn_thinking:
-                thinking_text = turn_thinking
+            if result.get("thinking"):
+                thinking_text = result["thinking"]
 
-            # Append the assistant's response to the conversation
-            messages.append({"role": "assistant", "content": response.content})
-
-            if response.stop_reason == "tool_use":
-                tool_results = []
-                for block in response.content:
-                    if block.type != "tool_use":
-                        continue
-                    result = registry.execute(block.name, block.input)
-                    tc = {"name": block.name, "input": block.input, "result": result}
-                    tool_calls_this_turn.append(tc)
-                    # Print tool use to terminal immediately
-                    print(f"[{turn}] tool: {block.name}({block.input}) => {result[:200]}")
-                    tool_results.append(
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": result,
-                        }
+            if result["type"] == "tool_use":
+                for tc in result["tool_calls"]:
+                    tool_result = registry.execute(tc["name"], tc["input"])
+                    tool_calls_this_turn.append(
+                        {"name": tc["name"], "input": tc["input"], "result": tool_result}
                     )
-                messages.append({"role": "user", "content": tool_results})
-                continue  # let the model respond to the tool results
+                    print(f"[{turn}] tool: {tc['name']}({tc['input']}) => {tool_result[:200]}")
 
-            # stop_reason == "end_turn": extract the command from text blocks
-            text = "".join(
-                block.text for block in response.content if hasattr(block, "text")
-            )
+                    # Append tool result in the right format
+                    if is_anthropic:
+                        pass  # handled below
+                    elif tc["id"].startswith("fallback_"):
+                        # Model dumped JSON as text, send result as user message
+                        messages.append({
+                            "role": "user",
+                            "content": f"Tool result for {tc['name']}: {tool_result}\n\nNow issue a game command. Your final line must be the command prefixed with \"> \".",
+                        })
+                    else:
+                        _append_openai_tool_results(messages, tc["id"], tc["name"], tool_result)
+
+                # For Anthropic, send all tool results at once
+                if is_anthropic:
+                    tool_results = []
+                    for tc, tc_log in zip(result["tool_calls"], tool_calls_this_turn):
+                        tool_results.append({
+                            "type": "tool_result",
+                            "tool_use_id": tc["id"],
+                            "content": tc_log["result"],
+                        })
+                    _append_anthropic_tool_results(messages, tool_results)
+
+                continue
+
+            # Got text response
+            text = result["text"]
             break
 
         command = _extract_command(text)
@@ -264,7 +413,7 @@ def run_agent(
         game_output = session.send_command(command)
         room = _detect_room(game_output)
 
-        # Update live map viewer
+        # Update viewer
         if viewer:
             if room:
                 viewer.set_room(room)
@@ -288,15 +437,13 @@ def run_agent(
             room=room,
         )
 
-        # Print turn output
+        # Terminal output
         if thinking_text:
-            # Show a truncated version of thinking in terminal
             preview = thinking_text[:200]
             if len(thinking_text) > 200:
                 preview += f"... ({len(thinking_text)} chars)"
             print(f"[{turn}] thinking: {preview}")
         if text.strip() != f"> {command}":
-            # Show reasoning if there's more than just the command
             reasoning_lines = [l for l in text.strip().split("\n") if not l.startswith(">")]
             if reasoning_lines:
                 print(f"[{turn}] reasoning: {' '.join(reasoning_lines)[:200]}")
@@ -306,7 +453,6 @@ def run_agent(
         print(game_output)
         print()
 
-        # Feed the game response back as the next user message
         messages.append({"role": "user", "content": game_output})
 
     session.close()
@@ -324,9 +470,15 @@ def main() -> None:
         help="Which game to play (default: zork1)",
     )
     parser.add_argument(
+        "--backend",
+        choices=["anthropic", "fireworks", "openai"],
+        default="fireworks",
+        help="API backend (default: fireworks)",
+    )
+    parser.add_argument(
         "--model",
-        default="claude-sonnet-4-6",
-        help="Anthropic model ID (default: claude-sonnet-4-6)",
+        default=None,
+        help="Model ID. Defaults depend on backend.",
     )
     parser.add_argument(
         "--max-turns",
@@ -342,13 +494,13 @@ def main() -> None:
     parser.add_argument(
         "--thinking",
         action="store_true",
-        help="Enable adaptive thinking (no budget needed).",
+        help="Enable extended thinking (Anthropic only).",
     )
     parser.add_argument(
         "--budget-tokens",
         type=int,
         default=0,
-        help="Thinking budget tokens. Implies --thinking with type=enabled. 0 uses adaptive (default: 0).",
+        help="Thinking budget tokens (Anthropic only). Implies --thinking.",
     )
     parser.add_argument(
         "--frontend",
@@ -359,17 +511,24 @@ def main() -> None:
         "--map-mode",
         choices=["none", "explore", "full"],
         default="explore",
-        help="Map mode: none (no map tools), explore (LLM builds its own map), full (pre-loaded complete map). Default: explore.",
+        help="Map mode: none, explore (default), full.",
     )
     args = parser.parse_args()
 
-    # --budget-tokens implies thinking
+    # Default models per backend
+    if args.model is None:
+        defaults = {
+            "fireworks": "accounts/fireworks/models/llama4-maverick-instruct-basic",
+            "anthropic": "claude-sonnet-4-6",
+            "openai": "gpt-4o",
+        }
+        args.model = defaults[args.backend]
+
     use_thinking = args.thinking or args.budget_tokens > 0
 
     viewer = None
     if args.frontend:
         from zork_harness.map_viewer import MapViewer
-
         viewer = MapViewer()
 
     def _run():
@@ -383,6 +542,7 @@ def main() -> None:
                 budget_tokens=args.budget_tokens,
                 viewer=viewer,
                 map_mode=args.map_mode,
+                backend=args.backend,
             )
         except KeyboardInterrupt:
             pass
@@ -391,7 +551,6 @@ def main() -> None:
                 viewer.close()
 
     if viewer:
-        # tkinter must run on the main thread; agent runs in background
         agent_thread = threading.Thread(target=_run, daemon=True)
         agent_thread.start()
         try:

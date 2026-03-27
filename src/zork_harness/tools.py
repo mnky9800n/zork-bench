@@ -7,12 +7,16 @@ Provides six tools:
   find_path        - BFS path between two known rooms on the agent's self-built map
   update_inventory - maintain a running inventory list
   add_note         - append a free-form note for the agent's own use
+
+Tool schemas are stored in a backend-neutral format and converted to
+Anthropic or OpenAI format via helper functions.
 """
 
 from collections import deque
 
-# Anthropic tool schema format
-TOOL_SCHEMAS: list[dict] = [
+# Backend-neutral tool definitions.
+# Each entry: {name, description, parameters: {type, properties, required}}
+_TOOL_DEFS: list[dict] = [
     {
         "name": "record_room",
         "description": (
@@ -20,7 +24,7 @@ TOOL_SCHEMAS: list[dict] = [
             "and any notable items. If the room was recorded before, the new exits and items "
             "are merged with the existing data so no information is lost."
         ),
-        "input_schema": {
+        "parameters": {
             "type": "object",
             "properties": {
                 "room_name": {
@@ -52,7 +56,7 @@ TOOL_SCHEMAS: list[dict] = [
             "Look up a room you have previously recorded. "
             "Returns the room's exits and items, or a message if the room is not yet recorded."
         ),
-        "input_schema": {
+        "parameters": {
             "type": "object",
             "properties": {
                 "room_name": {
@@ -69,7 +73,7 @@ TOOL_SCHEMAS: list[dict] = [
             "List every room you have recorded so far, along with its known exits. "
             "Useful for reviewing your map before planning a route."
         ),
-        "input_schema": {
+        "parameters": {
             "type": "object",
             "properties": {},
             "required": [],
@@ -82,7 +86,7 @@ TOOL_SCHEMAS: list[dict] = [
             "Returns the sequence of (direction, destination) steps to follow, "
             "or a message if no path is known."
         ),
-        "input_schema": {
+        "parameters": {
             "type": "object",
             "properties": {
                 "from_room": {
@@ -103,7 +107,7 @@ TOOL_SCHEMAS: list[dict] = [
             "Add or remove an item from your tracked inventory. "
             "Returns the full current inventory after the update."
         ),
-        "input_schema": {
+        "parameters": {
             "type": "object",
             "properties": {
                 "action": {
@@ -125,7 +129,7 @@ TOOL_SCHEMAS: list[dict] = [
             "Append a note to your scratchpad. Useful for recording puzzle observations, "
             "room features, or anything you want to remember later."
         ),
-        "input_schema": {
+        "parameters": {
             "type": "object",
             "properties": {
                 "note": {
@@ -139,15 +143,41 @@ TOOL_SCHEMAS: list[dict] = [
 ]
 
 
+def get_anthropic_schemas(map_mode: str = "explore") -> list[dict]:
+    """Convert tool defs to Anthropic format."""
+    map_tools = {"record_room", "look_up_room", "list_known_rooms", "find_path"}
+    schemas = []
+    for tool in _TOOL_DEFS:
+        if map_mode == "none" and tool["name"] in map_tools:
+            continue
+        schemas.append({
+            "name": tool["name"],
+            "description": tool["description"],
+            "input_schema": tool["parameters"],
+        })
+    return schemas
+
+
+def get_openai_schemas(map_mode: str = "explore") -> list[dict]:
+    """Convert tool defs to OpenAI/Fireworks format."""
+    map_tools = {"record_room", "look_up_room", "list_known_rooms", "find_path"}
+    schemas = []
+    for tool in _TOOL_DEFS:
+        if map_mode == "none" and tool["name"] in map_tools:
+            continue
+        schemas.append({
+            "type": "function",
+            "function": {
+                "name": tool["name"],
+                "description": tool["description"],
+                "parameters": tool["parameters"],
+            },
+        })
+    return schemas
+
+
 class ToolRegistry:
-    """Holds mutable agent state and dispatches tool calls.
-
-    The agent's map is stored in self.rooms as:
-        { room_name: {"exits": {direction: room_name, ...}, "items": [str, ...]} }
-
-    Exits are treated as directed edges. A room only knows about exits the
-    agent has explicitly recorded; unknown exits are absent from the dict.
-    """
+    """Holds mutable agent state and dispatches tool calls."""
 
     def __init__(self, map_mode: str = "explore") -> None:
         self.map_mode = map_mode
@@ -159,7 +189,6 @@ class ToolRegistry:
             self._preload_full_map()
 
     def _preload_full_map(self) -> None:
-        """Load the complete static Zork 1 map into rooms."""
         from zork_harness.map_data import ZORK1_MAP
         for name, data in ZORK1_MAP.items():
             self.rooms[name] = {
@@ -171,26 +200,14 @@ class ToolRegistry:
     # Map tools
     # ------------------------------------------------------------------
 
-    def record_room(
-        self,
-        room_name: str,
-        exits: dict[str, str],
-        items: list[str],
-    ) -> dict:
-        """Upsert a room into the map, merging exits and items."""
+    def record_room(self, room_name: str, exits: dict[str, str], items: list[str]) -> dict:
         if room_name not in self.rooms:
             self.rooms[room_name] = {"exits": {}, "items": []}
-
         existing = self.rooms[room_name]
-
-        # Merge exits: new values overwrite existing values for the same direction.
         existing["exits"].update(exits)
-
-        # Merge items: append any items not already recorded.
         for item in items:
             if item not in existing["items"]:
                 existing["items"].append(item)
-
         return {"recorded": room_name, "exits": existing["exits"], "items": existing["items"]}
 
     def look_up_room(self, room_name: str) -> dict | str:
@@ -209,20 +226,15 @@ class ToolRegistry:
         return {"known_rooms": summary, "count": len(self.rooms)}
 
     def find_path(self, from_room: str, to_room: str) -> dict | str:
-        """BFS over the recorded exit graph from from_room to to_room."""
         if from_room not in self.rooms:
             return f"Starting room not recorded yet: '{from_room}'"
         if to_room not in self.rooms:
             return f"Destination room not recorded yet: '{to_room}'"
         if from_room == to_room:
             return {"path": [], "steps": 0}
-
-        # BFS: each queue entry is (current_room, path_so_far)
-        # path_so_far is a list of (direction, destination) tuples
         queue: deque[tuple[str, list[tuple[str, str]]]] = deque()
         queue.append((from_room, []))
         visited: set[str] = {from_room}
-
         while queue:
             current, path = queue.popleft()
             room_data = self.rooms.get(current)
@@ -238,7 +250,6 @@ class ToolRegistry:
                 if destination not in visited and destination in self.rooms:
                     visited.add(destination)
                     queue.append((destination, path + [(direction, destination)]))
-
         return f"No known path from '{from_room}' to '{to_room}' using recorded exits."
 
     # ------------------------------------------------------------------
@@ -262,7 +273,6 @@ class ToolRegistry:
     # ------------------------------------------------------------------
 
     def execute(self, tool_name: str, tool_input: dict) -> str:
-        """Dispatch a tool call and return the result as a string."""
         if tool_name == "record_room":
             result = self.record_room(**tool_input)
         elif tool_name == "look_up_room":
@@ -278,17 +288,3 @@ class ToolRegistry:
         else:
             result = {"error": f"Unknown tool: {tool_name}"}
         return str(result)
-
-    def get_schemas(self) -> list[dict]:
-        """Return tool schemas appropriate for the current map mode."""
-        # Map tools that only make sense when the LLM can build/query a map
-        map_tool_names = {"record_room", "look_up_room", "list_known_rooms", "find_path"}
-
-        if self.map_mode == "none":
-            # No map tools at all, just inventory and notes
-            return [s for s in TOOL_SCHEMAS if s["name"] not in map_tool_names]
-        else:
-            # Both "explore" and "full" get all tools.
-            # In "full" mode the map is pre-loaded but the LLM can still
-            # record_room to update/correct it as it plays.
-            return list(TOOL_SCHEMAS)
