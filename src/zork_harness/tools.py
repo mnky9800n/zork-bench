@@ -184,6 +184,8 @@ class ToolRegistry:
         self.rooms: dict[str, dict] = {}
         self.inventory: list[str] = []
         self.notes: list[str] = []
+        # Track rooms the model claims to have visited via record_room
+        self.recorded_rooms: set[str] = set()
 
         if map_mode == "full":
             self._preload_full_map()
@@ -201,6 +203,7 @@ class ToolRegistry:
     # ------------------------------------------------------------------
 
     def record_room(self, room_name: str, exits: dict[str, str], items: list[str]) -> dict:
+        self.recorded_rooms.add(room_name)
         if room_name not in self.rooms:
             self.rooms[room_name] = {"exits": {}, "items": []}
         existing = self.rooms[room_name]

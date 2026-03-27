@@ -79,8 +79,18 @@ class SessionLogger:
         self._txt.write(output + "\n\n")
         self._txt.flush()
 
-    def finalize(self) -> None:
-        """Write session summary and close files."""
+    def finalize(self, recorded_rooms: set[str] | None = None) -> None:
+        """Write session summary and close files.
+
+        Args:
+            recorded_rooms: rooms the model claimed via record_room tool.
+                Compared against actually visited rooms to compute phantom rooms.
+        """
+        # Compute phantom rooms
+        phantom_rooms: set[str] = set()
+        if recorded_rooms:
+            phantom_rooms = recorded_rooms - self._unique_rooms
+
         # Write summary to transcript
         self._txt.write("=" * 60 + "\n")
         self._txt.write("SESSION SUMMARY\n")
@@ -92,6 +102,12 @@ class SessionLogger:
             for room in sorted(self._unique_rooms):
                 visits = [r["turn"] for r in self._rooms_visited if r["room"] == room]
                 self._txt.write(f"  - {room} (turns: {', '.join(str(t) for t in visits)})\n")
+        if recorded_rooms:
+            self._txt.write(f"Rooms recorded by model: {len(recorded_rooms)}\n")
+        if phantom_rooms:
+            self._txt.write(f"Phantom rooms (recorded but never visited): {len(phantom_rooms)}\n")
+            for room in sorted(phantom_rooms):
+                self._txt.write(f"  - {room}\n")
         self._txt.write("\nRoom visit sequence:\n")
         for entry in self._rooms_visited:
             self._txt.write(f"  T{entry['turn']:03d}: {entry['room']}\n")
@@ -105,6 +121,9 @@ class SessionLogger:
             "total_turns": self._last_turn,
             "unique_rooms": len(self._unique_rooms),
             "rooms_list": sorted(self._unique_rooms),
+            "rooms_recorded_by_model": len(recorded_rooms) if recorded_rooms else 0,
+            "phantom_rooms": sorted(phantom_rooms),
+            "phantom_room_count": len(phantom_rooms),
             "room_sequence": self._rooms_visited,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }

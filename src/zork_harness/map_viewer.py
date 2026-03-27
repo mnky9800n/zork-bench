@@ -25,6 +25,7 @@ class MapViewer:
     def __init__(self, starting_room: str = "West of House") -> None:
         self._current_room: str | None = starting_room
         self._room_history: list[str] = [starting_room]
+        self._turn_count = 0
         self._lock = threading.Lock()
         self._dirty = True
         self._input_tokens = 0
@@ -72,11 +73,18 @@ class MapViewer:
                 self._pan_center = None
                 self._dirty = True
 
+    def log_event(self, event_type: str, **data) -> None:
+        """Stream a single event to the viewer log as it happens."""
+        with self._lock:
+            self._pending_logs.append({"_event": event_type, **data})
+
     def log(self, turn: int, command: str, output: str,
             thinking: str | None = None, reasoning: str | None = None,
             room: str | None = None, tool_calls: list[dict] | None = None) -> None:
-        """Called from the agent thread to append to the game log."""
+        """Called from the agent thread to append the turn summary to the game log."""
         with self._lock:
+            self._turn_count = turn
+            self._dirty = True
             self._pending_logs.append({
                 "turn": turn,
                 "command": command,
@@ -373,11 +381,13 @@ class MapViewer:
         )
 
         # Status bar
+        with self._lock:
+            turns = self._turn_count
         unique = len(set(history))
         status = f"Room: {room or '???'}"
         if room and not get_room_coords(room):
             status += " (not on map)"
-        status += f"  |  Explored: {unique}  |  Turns: {len(history)}"
+        status += f"  |  Rooms: {unique}  |  Turn: {turns}"
         if self._pan_center:
             status += "  |  [drag to pan, double-click to snap back]"
         self._status_var.set(status)
@@ -533,15 +543,45 @@ class MapViewer:
         self._log_widget.configure(state=tk.NORMAL)
 
         for entry in entries:
-            turn = entry["turn"]
+            # Handle streamed events (tool calls, thinking, etc.)
+            event = entry.get("_event")
+            if event == "turn_start":
+                self._log_widget.insert(tk.END, f"--- Turn {entry.get('turn', '?')} ---\n", "turn")
+                if entry.get("room"):
+                    self._log_widget.insert(tk.END, f"  Location: {entry['room']}\n", "room")
+                continue
+            elif event == "thinking":
+                self._log_widget.insert(tk.END, "Thinking:\n", "thinking_header")
+                self._log_widget.insert(tk.END, entry.get("text", "") + "\n\n", "thinking")
+                continue
+            elif event == "tool_call":
+                name = entry.get("name", "?")
+                inp = entry.get("input", {})
+                res = entry.get("result", "")
+                display_name = name.replace("_", " ").title()
+                self._log_widget.insert(tk.END, f"{display_name}:\n", "tool_header")
+                self._log_widget.insert(
+                    tk.END, self._format_tool_input(name, inp) + "\n", "tool_call",
+                )
+                self._log_widget.insert(
+                    tk.END, self._format_tool_result(name, str(res)) + "\n\n", "tool_result",
+                )
+                continue
+            elif event == "command":
+                self._log_widget.insert(tk.END, f"  > {entry.get('command', '?')}\n\n", "command")
+                game_text = self._format_game_output(entry.get("output", ""))
+                self._log_widget.insert(tk.END, game_text + "\n\n\n", "output")
+                continue
+            elif event is not None:
+                continue
+
+            # Legacy: full turn entry (for backwards compat)
+            turn = entry.get("turn", "?")
             self._log_widget.insert(tk.END, f"--- Turn {turn} ---\n", "turn")
 
             if entry.get("room"):
                 self._log_widget.insert(tk.END, f"  Location: {entry['room']}\n", "room")
 
-            # Show thinking (extended thinking API) if available,
-            # otherwise fall back to the visible reasoning text.
-            # They serve the same purpose so we only show one.
             if entry.get("thinking"):
                 self._log_widget.insert(tk.END, "Thinking:\n", "thinking_header")
                 self._log_widget.insert(tk.END, entry["thinking"] + "\n\n", "thinking")
@@ -556,20 +596,13 @@ class MapViewer:
                     name = tc.get("name", "?")
                     inp = tc.get("input", {})
                     res = tc.get("result", "")
-                    # Tool name as header
                     display_name = name.replace("_", " ").title()
                     self._log_widget.insert(tk.END, f"{display_name}:\n", "tool_header")
-                    # Formatted input
                     self._log_widget.insert(
-                        tk.END,
-                        self._format_tool_input(name, inp) + "\n",
-                        "tool_call",
+                        tk.END, self._format_tool_input(name, inp) + "\n", "tool_call",
                     )
-                    # Formatted result
                     self._log_widget.insert(
-                        tk.END,
-                        self._format_tool_result(name, str(res)) + "\n\n",
-                        "tool_result",
+                        tk.END, self._format_tool_result(name, str(res)) + "\n\n", "tool_result",
                     )
 
             # Command

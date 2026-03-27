@@ -223,29 +223,122 @@ def _parse_json_tool_call(text: str) -> dict | None:
     return None
 
 
-def _run_openai(client, model, system_prompt, tool_schemas, messages, **_kwargs):
-    """One API round-trip using the OpenAI SDK. Returns same format as _run_anthropic."""
-    # Build messages with system prompt prepended
+def _run_openai(client, model, system_prompt, tool_schemas, messages,
+                thinking=False, **_kwargs):
+    """One API round-trip using the OpenAI SDK. Always streams for compatibility."""
+    usage = {"input": 0, "output": 0}
     api_messages = [{"role": "system", "content": system_prompt}] + messages
 
-    response = client.chat.completions.create(
+    extra_kwargs = {}
+    if thinking:
+        extra_kwargs["reasoning_effort"] = "high"
+
+    max_tokens = 16384 if thinking else 2048
+
+    sys.stdout.write("  [waiting for model...] ")
+    sys.stdout.flush()
+
+    stream = client.chat.completions.create(
         model=model,
         messages=api_messages,
         tools=tool_schemas if tool_schemas else None,
-        max_tokens=2048,
+        max_tokens=max_tokens,
+        stream=True,
+        stream_options={"include_usage": True},
+        **extra_kwargs,
     )
 
-    choice = response.choices[0]
-    message = choice.message
+    collected_content = []
+    collected_tool_calls: dict[int, dict] = {}
+    usage_data = None
+    reasoning_content_parts = []
+    chunk_count = 0
 
-    # Usage
-    usage = {"input": 0, "output": 0}
-    if response.usage:
-        usage["input"] = response.usage.prompt_tokens
-        usage["output"] = response.usage.completion_tokens
+    for chunk in stream:
+        chunk_count += 1
+        if chunk.usage:
+            usage_data = chunk.usage
+        for choice_delta in (chunk.choices or []):
+            delta = choice_delta.delta
+            if delta.content:
+                collected_content.append(delta.content)
+            if hasattr(delta, "reasoning_content") and delta.reasoning_content:
+                reasoning_content_parts.append(delta.reasoning_content)
+            if delta.tool_calls:
+                for tc_delta in delta.tool_calls:
+                    idx = tc_delta.index
+                    if idx not in collected_tool_calls:
+                        collected_tool_calls[idx] = {
+                            "id": tc_delta.id or "",
+                            "name": (tc_delta.function.name
+                                     if tc_delta.function and tc_delta.function.name else ""),
+                            "arguments": "",
+                        }
+                    if tc_delta.function and tc_delta.function.arguments:
+                        collected_tool_calls[idx]["arguments"] += tc_delta.function.arguments
+                    if tc_delta.id:
+                        collected_tool_calls[idx]["id"] = tc_delta.id
+                    if tc_delta.function and tc_delta.function.name:
+                        collected_tool_calls[idx]["name"] = tc_delta.function.name
+
+    print(f"({chunk_count} chunks)")
+
+    # Build message
+    class _Msg:
+        pass
+    message = _Msg()
+    message.content = "".join(collected_content) or None
+    message.reasoning_content = "".join(reasoning_content_parts) if reasoning_content_parts else None
+    if collected_tool_calls:
+        class _TC:
+            pass
+        class _Fn:
+            pass
+        tcs = []
+        for idx in sorted(collected_tool_calls):
+            tc = _TC()
+            tc.id = collected_tool_calls[idx]["id"]
+            fn = _Fn()
+            fn.name = collected_tool_calls[idx]["name"]
+            fn.arguments = collected_tool_calls[idx]["arguments"]
+            tc.function = fn
+            tcs.append(tc)
+        message.tool_calls = tcs
+    else:
+        message.tool_calls = None
+
+    if usage_data:
+        usage["input"] = getattr(usage_data, "prompt_tokens", 0) or 0
+        usage["output"] = getattr(usage_data, "completion_tokens", 0) or 0
+
+    # Extract thinking/reasoning content if present
+    thinking_text = None
+    # Some models (DeepSeek, Kimi) put reasoning in a separate field
+    reasoning_content = getattr(message, "reasoning_content", None)
+    if reasoning_content:
+        thinking_text = reasoning_content
+    # Some models wrap thinking in <think> tags in the content
+    elif message.content and "<think>" in (message.content or ""):
+        import re
+        think_match = re.search(r"<think>(.*?)</think>", message.content, re.DOTALL)
+        if think_match:
+            thinking_text = think_match.group(1).strip()
 
     # Append assistant message to conversation
-    messages.append(message.model_dump(exclude_none=True))
+    if hasattr(message, "model_dump"):
+        messages.append(message.model_dump(exclude_none=True))
+    else:
+        # Streaming path: build the message dict manually
+        msg_dict = {"role": "assistant"}
+        if message.content:
+            msg_dict["content"] = message.content
+        if message.tool_calls:
+            msg_dict["tool_calls"] = [
+                {"id": tc.id, "type": "function",
+                 "function": {"name": tc.function.name, "arguments": tc.function.arguments}}
+                for tc in message.tool_calls
+            ]
+        messages.append(msg_dict)
 
     # Handle proper tool calls
     if message.tool_calls:
@@ -257,9 +350,13 @@ def _run_openai(client, model, system_prompt, tool_schemas, messages, **_kwargs)
                 args = {}
             tool_calls.append({"id": tc.id, "name": tc.function.name, "input": args})
         return {"type": "tool_use", "tool_calls": tool_calls,
-                "thinking": None, "usage": usage}
+                "thinking": thinking_text, "usage": usage}
 
     text = message.content or ""
+    # Strip <think> tags from visible text if we already captured them
+    if thinking_text and "<think>" in text:
+        import re
+        text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
     # Fallback: some models dump tool calls as JSON in the text
     parsed_tc = _parse_json_tool_call(text)
@@ -308,8 +405,13 @@ def run_agent(
     else:
         from openai import OpenAI
         if backend == "fireworks":
+            api_key = os.environ.get("FIREWORKS_API_KEY")
+            if not api_key:
+                print("Error: FIREWORKS_API_KEY environment variable is not set.")
+                print("Run: export FIREWORKS_API_KEY=your-key-here")
+                sys.exit(1)
             client = OpenAI(
-                api_key=os.environ.get("FIREWORKS_API_KEY"),
+                api_key=api_key,
                 base_url="https://api.fireworks.ai/inference/v1",
             )
         elif backend == "openai":
@@ -344,6 +446,11 @@ def run_agent(
     for turn in range(1, max_turns + 1):
         tool_calls_this_turn: list[dict] = []
         thinking_text = None
+        tool_rounds = 0
+        max_tool_rounds = 10
+
+        if viewer:
+            viewer.log_event("turn_start", turn=turn)
 
         # Inner loop: handle tool use until we get a plain text response
         while True:
@@ -355,6 +462,7 @@ def run_agent(
             else:
                 result = _run_openai(
                     client, model, system_prompt, tool_schemas, messages,
+                    thinking=thinking,
                 )
 
             # Track tokens
@@ -365,6 +473,8 @@ def run_agent(
 
             if result.get("thinking"):
                 thinking_text = result["thinking"]
+                if viewer:
+                    viewer.log_event("thinking", text=thinking_text)
 
             if result["type"] == "tool_use":
                 for tc in result["tool_calls"]:
@@ -373,6 +483,8 @@ def run_agent(
                         {"name": tc["name"], "input": tc["input"], "result": tool_result}
                     )
                     print(f"[{turn}] tool: {tc['name']}({tc['input']}) => {tool_result[:200]}")
+                    if viewer:
+                        viewer.log_event("tool_call", name=tc["name"], input=tc["input"], result=tool_result)
 
                     # Append tool result in the right format
                     if is_anthropic:
@@ -397,6 +509,13 @@ def run_agent(
                         })
                     _append_anthropic_tool_results(messages, tool_results)
 
+                tool_rounds += 1
+                if tool_rounds >= max_tool_rounds:
+                    # Force the model to stop calling tools and issue a command
+                    messages.append({
+                        "role": "user",
+                        "content": "You have used too many tools this turn. Stop calling tools and issue a game command now. Your final line MUST be the command prefixed with \"> \".",
+                    })
                 continue
 
             # Got text response
@@ -404,6 +523,24 @@ def run_agent(
             break
 
         command = _extract_command(text)
+        if command is None:
+            # Give the model one more chance with a nudge
+            messages.append({
+                "role": "user",
+                "content": "Now issue a game command. Your response must end with the command on its own line prefixed with \"> \".",
+            })
+            if is_anthropic:
+                retry = _run_anthropic(client, model, system_prompt, tool_schemas, messages, thinking, budget_tokens)
+            else:
+                retry = _run_openai(client, model, system_prompt, tool_schemas, messages)
+            total_input_tokens += retry["usage"]["input"]
+            total_output_tokens += retry["usage"]["output"]
+            if viewer:
+                viewer.set_tokens(total_input_tokens, total_output_tokens)
+            if retry["type"] == "text":
+                text = retry["text"]
+                command = _extract_command(text)
+
         if command is None:
             print(f"[turn {turn}] Could not parse a command from model response:")
             print(text)
@@ -413,19 +550,16 @@ def run_agent(
         game_output = session.send_command(command)
         room = _detect_room(game_output)
 
-        # Update viewer
+        # Update viewer with streamed events
         if viewer:
             if room:
                 viewer.set_room(room)
-            viewer.log(
-                turn=turn,
-                command=command,
-                output=game_output,
-                thinking=thinking_text,
-                reasoning=text,
-                room=room,
-                tool_calls=tool_calls_this_turn,
-            )
+            # Send reasoning as thinking if we didn't already send thinking
+            if not thinking_text and text.strip() != f"> {command}":
+                reasoning_lines = [l for l in text.strip().split("\n") if not l.startswith(">")]
+                if reasoning_lines:
+                    viewer.log_event("thinking", text="\n".join(reasoning_lines))
+            viewer.log_event("command", command=command, output=game_output, room=room)
 
         logger.log_turn(
             turn=turn,
@@ -456,7 +590,7 @@ def run_agent(
         messages.append({"role": "user", "content": game_output})
 
     session.close()
-    logger.finalize()
+    logger.finalize(recorded_rooms=registry.recorded_rooms)
     print(f"Session ended. Transcript: {logger.txt_path}")
     print(f"Session data: {logger.jsonl_path}")
 
