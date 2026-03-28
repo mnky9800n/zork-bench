@@ -1,5 +1,6 @@
 """Live map viewer: split-pane window with zoomed map (left) and game log (right)."""
 
+import queue
 import threading
 import tkinter as tk
 from pathlib import Path
@@ -21,6 +22,8 @@ PRESCALE_WIDTH = 3200
 
 class MapViewer:
     """Split-pane viewer: zoomed map on left, game log on right."""
+
+    PLAYER_EMOJI = "\U0001F916"  # robot face
 
     def __init__(self, starting_room: str = "West of House") -> None:
         self._current_room: str | None = starting_room
@@ -69,8 +72,9 @@ class MapViewer:
             if room_name != self._current_room:
                 self._current_room = room_name
                 self._room_history.append(room_name)
-                # When LLM moves, snap back to following it
-                self._pan_center = None
+                # Only snap back if follow mode is on
+                if self._follow_player:
+                    self._pan_center = None
                 self._dirty = True
 
     def log_event(self, event_type: str, **data) -> None:
@@ -95,23 +99,8 @@ class MapViewer:
                 "tool_calls": tool_calls or [],
             })
 
-    def run(self) -> None:
-        """Start the tkinter main loop. Must be called from the main thread."""
-        self._root = tk.Tk()
-        self._root.title("Zork Map - LLM Position Tracker")
-        self._root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
-        self._root.configure(bg="#1a1a1a")
-
-        # Load and pre-scale the map for fast rendering
-        original = Image.open(MAP_IMAGE_PATH)
-        self._prescale = PRESCALE_WIDTH / original.width
-        prescale_h = int(original.height * self._prescale)
-        self._scaled_image = original.resize(
-            (PRESCALE_WIDTH, prescale_h), Image.LANCZOS
-        )
-        original.close()
-
-        # ── Token counter bar at top ──
+    def _build_token_bar(self) -> None:
+        """Build the token counter bar at the top of the window."""
         self._token_var = tk.StringVar(value="Tokens: 0 input | 0 output | 0 total")
         token_bar = tk.Label(
             self._root, textvariable=self._token_var,
@@ -121,41 +110,8 @@ class MapViewer:
         )
         token_bar.pack(side=tk.TOP, fill=tk.X)
 
-        # ── 50/50 split pane ──
-        pane = tk.PanedWindow(
-            self._root, orient=tk.HORIZONTAL,
-            bg="#333333", sashwidth=4, sashrelief=tk.FLAT,
-        )
-        pane.pack(fill=tk.BOTH, expand=True)
-
-        # ── Left panel: map ──
-        left_frame = tk.Frame(pane, bg="#1a1a1a")
-
-        self._status_var = tk.StringVar(value="Waiting for first move...")
-        status_bar = tk.Label(
-            left_frame, textvariable=self._status_var,
-            bg="#000000", fg="#39FF14",
-            font=("Menlo", 13, "bold"),
-            anchor=tk.W, padx=8, pady=4,
-        )
-        status_bar.pack(side=tk.TOP, fill=tk.X)
-
-        self._map_canvas = tk.Canvas(
-            left_frame, bg="#1a1a1a", highlightthickness=0,
-            cursor="fleur",
-        )
-        self._map_canvas.pack(fill=tk.BOTH, expand=True)
-
-        self._map_canvas.bind("<ButtonPress-1>", self._on_drag_start)
-        self._map_canvas.bind("<B1-Motion>", self._on_drag_motion)
-        self._map_canvas.bind("<ButtonRelease-1>", self._on_drag_end)
-        self._map_canvas.bind("<Double-Button-1>", self._on_snap_back)
-
-        pane.add(left_frame, width=WINDOW_WIDTH // 2)
-
-        # ── Right panel: log ──
-        right_frame = tk.Frame(pane, bg="#1a1a1a")
-
+    def _build_right_panel(self, right_frame: tk.Frame) -> None:
+        """Build the log text widget and scrollbar inside right_frame."""
         log_label = tk.Label(
             right_frame, text="Game Log",
             bg="#000000", fg="#39FF14",
@@ -193,6 +149,81 @@ class MapViewer:
         self._log_widget.tag_configure("tool_call", foreground="#FFA500", font=("Menlo", 10))
         self._log_widget.tag_configure("tool_result", foreground="#DAA520", font=("Menlo", 10))
 
+    def run(self) -> None:
+        """Start the tkinter main loop. Must be called from the main thread."""
+        self._root = tk.Tk()
+        self._root.title("Zork Map - LLM Position Tracker")
+        self._root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+        self._root.configure(bg="#1a1a1a")
+
+        # Load and pre-scale the map for fast rendering
+        original = Image.open(MAP_IMAGE_PATH)
+        self._prescale = PRESCALE_WIDTH / original.width
+        prescale_h = int(original.height * self._prescale)
+        self._scaled_image = original.resize(
+            (PRESCALE_WIDTH, prescale_h), Image.LANCZOS
+        )
+        original.close()
+
+        # Top bar (token counter or title, depending on subclass)
+        self._build_token_bar()
+
+        # ── 50/50 split pane ──
+        pane = tk.PanedWindow(
+            self._root, orient=tk.HORIZONTAL,
+            bg="#333333", sashwidth=4, sashrelief=tk.FLAT,
+        )
+        pane.pack(fill=tk.BOTH, expand=True)
+
+        # ── Left panel: map ──
+        left_frame = tk.Frame(pane, bg="#1a1a1a")
+
+        # Status + follow toggle bar
+        status_frame = tk.Frame(left_frame, bg="#000000")
+        status_frame.pack(side=tk.TOP, fill=tk.X)
+
+        self._status_var = tk.StringVar(value="Waiting for first move...")
+        tk.Label(
+            status_frame, textvariable=self._status_var,
+            bg="#000000", fg="#39FF14",
+            font=("Menlo", 13, "bold"),
+            anchor=tk.W, padx=8, pady=4,
+        ).pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        self._follow_player = True
+        self._follow_btn_var = tk.StringVar(value="Free Scroll")
+
+        def toggle_follow():
+            self._follow_player = not self._follow_player
+            if self._follow_player:
+                self._follow_btn_var.set("Free Scroll")
+                self._pan_center = None
+                self._dirty = True
+            else:
+                self._follow_btn_var.set("Follow Player")
+
+        tk.Button(
+            status_frame, textvariable=self._follow_btn_var,
+            command=toggle_follow,
+            font=("Menlo", 11), padx=8,
+        ).pack(side=tk.RIGHT, padx=4, pady=2)
+
+        self._map_canvas = tk.Canvas(
+            left_frame, bg="#1a1a1a", highlightthickness=0,
+            cursor="fleur",
+        )
+        self._map_canvas.pack(fill=tk.BOTH, expand=True)
+
+        self._map_canvas.bind("<ButtonPress-1>", self._on_drag_start)
+        self._map_canvas.bind("<B1-Motion>", self._on_drag_motion)
+        self._map_canvas.bind("<ButtonRelease-1>", self._on_drag_end)
+        self._map_canvas.bind("<Double-Button-1>", self._on_snap_back)
+
+        pane.add(left_frame, width=WINDOW_WIDTH // 2)
+
+        # ── Right panel: log + optional input ──
+        right_frame = tk.Frame(pane, bg="#1a1a1a")
+        self._build_right_panel(right_frame)
         pane.add(right_frame, width=WINDOW_WIDTH // 2)
 
         self._render_map()
@@ -367,18 +398,19 @@ class MapViewer:
                     self._marker_items.append(self._map_canvas.create_text(
                         px, py,
                         anchor=tk.CENTER,
-                        text="\U0001F916",
+                        text=self.PLAYER_EMOJI,
                         font=("Apple Color Emoji", 56),
                     ))
 
-        # Update token counter
-        with self._lock:
-            inp_tok = self._input_tokens
-            out_tok = self._output_tokens
-        total_tok = inp_tok + out_tok
-        self._token_var.set(
-            f"Tokens: {inp_tok:,} input  |  {out_tok:,} output  |  {total_tok:,} total"
-        )
+        # Update token counter (only present in the LLM viewer)
+        if hasattr(self, "_token_var"):
+            with self._lock:
+                inp_tok = self._input_tokens
+                out_tok = self._output_tokens
+            total_tok = inp_tok + out_tok
+            self._token_var.set(
+                f"Tokens: {inp_tok:,} input  |  {out_tok:,} output  |  {total_tok:,} total"
+            )
 
         # Status bar
         with self._lock:
@@ -621,3 +653,87 @@ class MapViewer:
     def close(self) -> None:
         if self._root:
             self._root.quit()
+
+
+class HumanMapViewer(MapViewer):
+    """MapViewer subclass for human play: adds a command input field."""
+
+    PLAYER_EMOJI = "\U0001F467"  # girl emoji
+
+    def __init__(self, starting_room: str = "West of House") -> None:
+        super().__init__(starting_room)
+        self._command_queue: queue.Queue[str] = queue.Queue()
+        self.closed = threading.Event()
+
+    def get_command(self, timeout: float = 0.5) -> str | None:
+        """Block up to timeout seconds for a command typed by the human.
+
+        Returns the command string, or None if the timeout elapsed with no input.
+        """
+        try:
+            return self._command_queue.get(timeout=timeout)
+        except queue.Empty:
+            return None
+
+    def _build_token_bar(self) -> None:
+        """Replace the token counter with a simple title bar."""
+        title_bar = tk.Label(
+            self._root, text="Zork - Human Player",
+            bg="#111111", fg="#00DDFF",
+            font=("Menlo", 14, "bold"),
+            anchor=tk.CENTER, pady=6,
+        )
+        title_bar.pack(side=tk.TOP, fill=tk.X)
+
+    def _build_right_panel(self, right_frame: tk.Frame) -> None:
+        """Build the log widget plus a command input field at the bottom."""
+        super()._build_right_panel(right_frame)
+
+        # Input row: "> " label + entry field
+        input_frame = tk.Frame(right_frame, bg="#0a0a0a")
+        input_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        prompt_label = tk.Label(
+            input_frame, text="> ",
+            bg="#0a0a0a", fg="#39FF14",
+            font=("Menlo", 13, "bold"),
+            padx=4, pady=6,
+        )
+        prompt_label.pack(side=tk.LEFT)
+
+        self._entry_var = tk.StringVar()
+        self._entry = tk.Entry(
+            input_frame,
+            textvariable=self._entry_var,
+            bg="#0a0a0a", fg="#39FF14",
+            font=("Menlo", 13),
+            insertbackground="#39FF14",
+            highlightthickness=1,
+            highlightcolor="#39FF14",
+            highlightbackground="#222222",
+            relief=tk.FLAT,
+        )
+        self._entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 8))
+        self._entry.bind("<Return>", self._on_submit)
+
+    def _on_submit(self, _event=None) -> None:
+        """Called when the user presses Enter in the input field."""
+        command = self._entry_var.get().strip()
+        if command:
+            self._command_queue.put(command)
+            self._entry_var.set("")
+
+    def run(self) -> None:
+        """Start the viewer; grabs input focus after the window opens."""
+        super().run()
+
+    def _render_map(self) -> None:
+        """Render the map and grab entry focus on the first call."""
+        super()._render_map()
+        # Give the entry focus once the window is visible
+        if hasattr(self, "_entry") and self._entry:
+            self._entry.focus_set()
+
+    def close(self) -> None:
+        self.closed.set()
+        super().close()

@@ -107,24 +107,277 @@ _NON_ROOM_PATTERNS = [
 ]
 
 
-def _detect_room(game_output: str) -> str | None:
-    for line in game_output.split("\n"):
+# Rooms that share the same name but have different descriptions.
+# Maps room_name -> [(description_substring, disambiguated_name), ...]
+_AMBIGUOUS_BY_DESCRIPTION: dict[str, list[tuple[str, str]]] = {
+    "Forest": [
+        ("trees in all directions", "Forest (1)"),
+        ("dimly lit forest", "Forest (2)"),  # fallback for dimly lit
+    ],
+    "Clearing": [
+        ("forest surrounding you on all sides", "Clearing (north)"),
+        ("well marked forest path", "Clearing"),
+    ],
+    "Frigid River": [
+        ("dam", "Frigid River (1)"),
+        ("cliffs", "Frigid River (2)"),
+        ("sandy beach", "Frigid River (3)"),
+        ("beach", "Frigid River (4)"),
+        ("falls", "Frigid River (5)"),
+    ],
+    "Cave": [
+        ("damp cave", "Cave (near Hades)"),
+        ("cave", "Cave (near Atlantis)"),  # fallback
+    ],
+}
+
+# Rooms that can only be disambiguated by knowing where the player came from.
+# Maps (previous_disambiguated_room, command_direction, raw_room_name) -> disambiguated_name.
+# The command_direction is extracted from the last command (e.g., "go south" -> "south").
+_AMBIGUOUS_BY_TRANSITION: dict[tuple[str, str, str], str] = {
+    # Forest rooms: all "dimly lit" but reachable from different places
+    ("South of House", "south", "Forest"): "Forest (3)",
+    ("Forest (3)", "north", "Clearing"): "Clearing",
+    ("Clearing", "south", "Forest"): "Forest (3)",
+    ("Clearing", "north", "Forest"): "Forest (4)",
+    ("Clearing", "south", "Forest"): "Forest (3)",
+    ("Clearing", "west", "Forest"): "Forest (1)",
+    ("Clearing (north)", "east", "Forest"): "Forest (2)",
+    ("Forest (2)", "west", "Clearing"): "Clearing (north)",
+    ("Forest (4)", "south", "Clearing"): "Clearing",
+    ("Forest (4)", "west", "Forest"): "Forest (4)",  # loops, but game sends to Forest Path
+    ("Forest (3)", "north", "Clearing"): "Clearing",
+    ("Forest Path", "west", "Forest"): "Forest (1)",
+    ("Forest Path", "east", "Forest"): "Forest (4)",
+    ("Forest (1)", "east", "Forest"): "Forest (1)",
+    ("Forest (1)", "north", "Clearing"): "Clearing (north)",
+
+    # Cave disambiguation by transition
+    ("Winding Passage", "west", "Cave"): "Cave (near Hades)",
+    ("Entrance to Hades", "north", "Cave"): "Cave (near Hades)",
+    ("Twisting Passage", "east", "Cave"): "Cave (near Atlantis)",
+    ("Atlantis Room", "up", "Cave"): "Cave (near Atlantis)",
+
+    # Maze rooms: all "twisty little passages, all alike"
+    # Transitions from non-maze rooms into the maze
+    ("Troll Room", "west", "Maze"): "Maze (1)",
+    ("Grating Room", "south", "Maze"): "Maze (10)",
+    ("Cyclops Room", "east", "Maze"): "Maze (15)",
+
+    # Maze-to-maze transitions (reading connections from the map)
+    # Maze (1)
+    ("Maze (1)", "south", "Maze"): "Maze (2)",
+    ("Maze (1)", "west", "Maze"): "Maze (3)",
+    ("Maze (1)", "east", "Maze"): "Maze (4)",
+
+    # Maze (2)
+    ("Maze (2)", "south", "Maze"): "Maze (3)",
+    ("Maze (2)", "east", "Maze"): "Maze (5)",
+    ("Maze (2)", "up", "Maze"): "Maze (1)",
+
+    # Maze (3)
+    ("Maze (3)", "north", "Maze"): "Maze (2)",
+    ("Maze (3)", "up", "Maze"): "Maze (1)",
+    ("Maze (3)", "east", "Maze"): "Maze (4)",
+
+    # Maze (4)
+    ("Maze (4)", "west", "Maze"): "Maze (3)",
+    ("Maze (4)", "north", "Maze"): "Maze (1)",
+
+    # Maze (5)
+    ("Maze (5)", "south", "Maze"): "Maze (6)",
+    ("Maze (5)", "west", "Maze"): "Maze (2)",
+
+    # Maze (6)
+    ("Maze (6)", "north", "Maze"): "Maze (5)",
+    ("Maze (6)", "east", "Maze"): "Maze (7)",
+    ("Maze (6)", "south", "Maze"): "Maze (9)",
+    ("Maze (6)", "down", "Maze"): "Maze (9)",
+
+    # Maze (7)
+    ("Maze (7)", "west", "Maze"): "Maze (6)",
+    ("Maze (7)", "south", "Maze"): "Maze (14)",
+
+    # Maze (8)
+    ("Maze (8)", "west", "Maze"): "Maze (14)",
+    ("Maze (8)", "north", "Maze"): "Maze (14)",
+
+    # Maze (9)
+    ("Maze (9)", "north", "Maze"): "Maze (6)",
+    ("Maze (9)", "south", "Maze"): "Maze (13)",
+    ("Maze (9)", "east", "Maze"): "Maze (14)",
+
+    # Maze (10)
+    ("Maze (10)", "north", "Maze"): "Maze (13)",
+    ("Maze (10)", "east", "Maze"): "Maze (15)",
+    ("Maze (10)", "west", "Maze"): "Maze (11)",
+
+    # Maze (11)
+    ("Maze (11)", "north", "Maze"): "Maze (12)",
+    ("Maze (11)", "east", "Maze"): "Maze (13)",
+    ("Maze (11)", "up", "Maze"): "Maze (12)",
+
+    # Maze (12)
+    ("Maze (12)", "south", "Maze"): "Maze (11)",
+    ("Maze (12)", "down", "Maze"): "Maze (11)",
+
+    # Maze (13)
+    ("Maze (13)", "north", "Maze"): "Maze (9)",
+    ("Maze (13)", "south", "Maze"): "Maze (10)",
+    ("Maze (13)", "west", "Maze"): "Maze (11)",
+    ("Maze (13)", "up", "Maze"): "Maze (6)",
+
+    # Maze (14)
+    ("Maze (14)", "west", "Maze"): "Maze (7)",
+    ("Maze (14)", "south", "Maze"): "Maze (8)",
+    ("Maze (14)", "north", "Maze"): "Maze (9)",
+
+    # Maze (15)
+    ("Maze (15)", "west", "Maze"): "Maze (10)",
+
+    # Coal Mine rooms
+    ("Smelly Room", "down", "Coal Mine"): "Coal Mine (1)",
+    ("Shaft Room", "down", "Coal Mine"): "Coal Mine (1)",
+    ("Coal Mine (1)", "north", "Coal Mine"): "Coal Mine (2)",
+    ("Coal Mine (1)", "east", "Coal Mine"): "Coal Mine (4)",
+    ("Coal Mine (2)", "south", "Coal Mine"): "Coal Mine (1)",
+    ("Coal Mine (2)", "east", "Coal Mine"): "Coal Mine (3)",
+    ("Coal Mine (3)", "west", "Coal Mine"): "Coal Mine (2)",
+    ("Coal Mine (3)", "south", "Coal Mine"): "Coal Mine (4)",
+    ("Coal Mine (4)", "north", "Coal Mine"): "Coal Mine (3)",
+    ("Coal Mine (4)", "west", "Coal Mine"): "Coal Mine (1)",
+
+    # Dead End transitions (multiple dead ends, all say "Dead End")
+    ("Maze (4)", "east", "Dead End"): "Dead End",
+    ("Maze (5)", "east", "Dead End"): "Dead End",
+    ("Maze (7)", "east", "Dead End"): "Dead End",
+    ("Maze (8)", "east", "Dead End"): "Dead End",
+    ("Maze (12)", "west", "Dead End"): "Dead End",
+    ("Maze (15)", "east", "Dead End"): "Dead End",
+}
+
+_DIRECTIONS = {"north", "south", "east", "west", "up", "down",
+               "ne", "nw", "se", "sw", "in", "out", "enter"}
+
+_SHORT_DIRECTIONS = {
+    "n": "north", "s": "south", "e": "east", "w": "west",
+    "u": "up", "d": "down",
+}
+
+
+def _extract_direction(command: str) -> str | None:
+    """Extract the movement direction from a game command."""
+    if not command:
+        return None
+    parts = command.lower().strip().split()
+    # "go north" -> "north"
+    if len(parts) >= 2 and parts[0] in ("go", "walk", "run", "move"):
+        word = parts[1]
+        return _SHORT_DIRECTIONS.get(word, word) if word not in _DIRECTIONS else word
+    if len(parts) == 1:
+        word = parts[0]
+        # "n" -> "north", "north" -> "north"
+        if word in _SHORT_DIRECTIONS:
+            return _SHORT_DIRECTIONS[word]
+        if word in _DIRECTIONS:
+            return word
+    return None
+
+
+class RoomTracker:
+    """Tracks the player's current disambiguated room using description + transitions."""
+
+    def __init__(self):
+        self.current_room: str | None = None
+
+    def detect_room(self, game_output: str, last_command: str | None = None) -> str | None:
+        """Detect the room from game output, using transition history for disambiguation."""
+        raw_name = _detect_raw_room_name(game_output)
+        if raw_name is None:
+            return None
+
+        direction = _extract_direction(last_command) if last_command else None
+
+        # First try transition-based disambiguation
+        if direction and self.current_room:
+            key = (self.current_room, direction, raw_name)
+            if key in _AMBIGUOUS_BY_TRANSITION:
+                resolved = _AMBIGUOUS_BY_TRANSITION[key]
+                self.current_room = resolved
+                return resolved
+
+        # Then try description-based disambiguation
+        if raw_name in _AMBIGUOUS_BY_DESCRIPTION:
+            output_lower = game_output.lower()
+            for substring, disambiguated in _AMBIGUOUS_BY_DESCRIPTION[raw_name]:
+                if substring in output_lower:
+                    self.current_room = disambiguated
+                    return disambiguated
+
+        # No disambiguation needed
+        self.current_room = raw_name
+        return raw_name
+
+
+def _looks_like_room_name(line: str) -> bool:
+    """Check if a line looks like a Zork room name."""
+    if not line or len(line) > 50:
+        return False
+    if line.endswith((".", "!", "?", ":")):
+        return False
+    if line.startswith(("[", "(", ">", "*")):
+        return False
+    lower = line.lower()
+    if any(lower.startswith(p) for p in _NON_ROOM_PATTERNS):
+        return False
+    if line[0].islower():
+        return False
+    return True
+
+
+def _detect_raw_room_name(game_output: str) -> str | None:
+    """Extract the raw room name from game output.
+
+    First tries the opening line (normal room entry). If that fails,
+    scans the rest of the output for a room name after death/teleport
+    messages like "You have died" or "you can't have everything".
+    """
+    lines = game_output.split("\n")
+
+    # First pass: check the first non-blank line (normal case)
+    for line in lines:
         line = line.strip()
         if not line:
             continue
-        if len(line) > 50:
-            break
-        if line.endswith((".", "!", "?", ":")):
-            break
-        if line.startswith(("[", "(", ">")):
-            break
-        lower = line.lower()
-        if any(lower.startswith(p) for p in _NON_ROOM_PATTERNS):
-            break
-        if line[0].islower():
-            break
-        return line
+        if _looks_like_room_name(line):
+            return line
+        break  # first non-blank line wasn't a room name
+
+    # Second pass: look for a room name after death/teleport markers
+    found_death = False
+    for line in lines:
+        stripped = line.strip()
+        if "you have died" in stripped.lower() or "another chance" in stripped.lower():
+            found_death = True
+            continue
+        if found_death and stripped and _looks_like_room_name(stripped):
+            return stripped
+
     return None
+
+
+# Keep the old function signature working for backwards compat
+def _detect_room(game_output: str) -> str | None:
+    """Simple room detection without transition tracking. Use RoomTracker for full disambiguation."""
+    raw = _detect_raw_room_name(game_output)
+    if raw is None:
+        return None
+    if raw in _AMBIGUOUS_BY_DESCRIPTION:
+        output_lower = game_output.lower()
+        for substring, disambiguated in _AMBIGUOUS_BY_DESCRIPTION[raw]:
+            if substring in output_lower:
+                return disambiguated
+    return raw
 
 
 # ---------------------------------------------------------------------------
@@ -395,7 +648,7 @@ def run_agent(
 ) -> None:
     registry = ToolRegistry(map_mode=map_mode)
     system_prompt = _build_system_prompt(map_mode)
-    logger = SessionLogger(session_dir, game=game, model=model)
+    logger = SessionLogger(session_dir, game=game, model=model, backend=backend, map_mode=map_mode)
 
     # Set up client and schemas based on backend
     if backend == "anthropic":
@@ -432,7 +685,8 @@ def run_agent(
     print(opening_text)
     print()
 
-    opening_room = _detect_room(opening_text)
+    room_tracker = RoomTracker()
+    opening_room = room_tracker.detect_room(opening_text)
     if viewer and opening_room:
         viewer.set_room(opening_room)
 
@@ -548,7 +802,7 @@ def run_agent(
             break
 
         game_output = session.send_command(command)
-        room = _detect_room(game_output)
+        room = room_tracker.detect_room(game_output, last_command=command)
 
         # Update viewer with streamed events
         if viewer:
@@ -590,6 +844,7 @@ def run_agent(
         messages.append({"role": "user", "content": game_output})
 
     session.close()
+    logger.set_tokens(total_input_tokens, total_output_tokens)
     logger.finalize(recorded_rooms=registry.recorded_rooms)
     print(f"Session ended. Transcript: {logger.txt_path}")
     print(f"Session data: {logger.jsonl_path}")
@@ -605,9 +860,9 @@ def main() -> None:
     )
     parser.add_argument(
         "--backend",
-        choices=["anthropic", "fireworks", "openai"],
+        choices=["anthropic", "fireworks", "openai", "human"],
         default="fireworks",
-        help="API backend (default: fireworks)",
+        help="API backend: fireworks (default), anthropic, openai, human (play yourself).",
     )
     parser.add_argument(
         "--model",
@@ -647,7 +902,40 @@ def main() -> None:
         default="explore",
         help="Map mode: none, explore (default), full.",
     )
+    parser.add_argument(
+        "--play",
+        action="store_true",
+        help="Human play mode: play the game yourself with the map tracker.",
+    )
     args = parser.parse_args()
+
+    # Human play mode: --play or --backend human
+    if args.play or args.backend == "human":
+        from zork_harness.map_viewer import HumanMapViewer
+        from zork_harness.human_player import run_human_session
+
+        viewer = HumanMapViewer()
+
+        def _run_human():
+            try:
+                run_human_session(
+                    game=args.game,
+                    viewer=viewer,
+                    session_dir=args.session_dir,
+                )
+            except KeyboardInterrupt:
+                pass
+            finally:
+                viewer.close()
+
+        human_thread = threading.Thread(target=_run_human, daemon=True)
+        human_thread.start()
+        try:
+            viewer.run()
+        except KeyboardInterrupt:
+            print("\n[Interrupted]")
+            sys.exit(0)
+        return
 
     # Default models per backend
     if args.model is None:
@@ -655,8 +943,9 @@ def main() -> None:
             "fireworks": "accounts/fireworks/models/llama4-maverick-instruct-basic",
             "anthropic": "claude-sonnet-4-6",
             "openai": "gpt-4o",
+            "human": "human",
         }
-        args.model = defaults[args.backend]
+        args.model = defaults.get(args.backend, "unknown")
 
     use_thinking = args.thinking or args.budget_tokens > 0
 

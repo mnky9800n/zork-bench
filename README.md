@@ -69,7 +69,7 @@ uv run zork-harness --max-turns 50 --frontend
 
 | Flag | Description |
 |------|-------------|
-| `--backend` | API backend: `fireworks` (default), `anthropic`, `openai`. |
+| `--backend` | API backend: `fireworks` (default), `anthropic`, `openai`, `human` (play yourself). |
 | `--game` | Which game to play (default: `zork1`). Supports 40 Infocom titles. |
 | `--model` | Model ID. Defaults: `llama4-maverick-instruct-basic` (Fireworks), `claude-sonnet-4-6` (Anthropic), `gpt-4o` (OpenAI). |
 | `--map-mode` | Map knowledge level: `none`, `explore` (default), `full`. See below. |
@@ -77,7 +77,24 @@ uv run zork-harness --max-turns 50 --frontend
 | `--thinking` | Enable adaptive extended thinking (Anthropic only). |
 | `--budget-tokens N` | Fixed thinking budget in tokens (Anthropic only). Implies `--thinking`. |
 | `--frontend` | Open the live viewer window (split-pane map + game log). |
+| `--play` | Human play mode: play the game yourself with the map tracker. |
 | `--session-dir` | Directory for session logs (default: `sessions/`). |
+
+## Human play mode
+
+Play Zork yourself with the live map tracker:
+
+```bash
+uv run zork-harness --backend human --game zork1
+```
+
+Or equivalently:
+
+```bash
+uv run zork-harness --play --game zork1
+```
+
+Type commands in the input field at the bottom right. The map tracks your position automatically. All gameplay is logged to `sessions/`.
 
 ## Map knowledge modes
 

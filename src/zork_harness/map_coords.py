@@ -2,135 +2,128 @@
 
 Each entry maps a room name (as output by the game) to the approximate
 center (x, y) of that room's rectangle on the map image.
-
-Coordinates were measured by cropping tight sections around each box
-and computing: full_x = crop_offset_x + box_center_in_crop_x.
 """
 
 ROOM_COORDS: dict[str, tuple[int, int]] = {
-    # ── LEFT PAGE: House area ──
-    # Measured from tight box crops
-    "West of House": (610, 1480),
-    "North of House": (1150, 1020),
-    "Living Room": (1075, 1520),
-    "Kitchen": (1325, 1520),
-    "Attic": (1310, 1310),
-    "Behind House": (1680, 1510),
-    "South of House": (1150, 1960),
-
-    # ── LEFT PAGE: Forest / Canyon ──
-    # Measured from crop (700, 500) and crop (1600, 500)
-    "Forest Path": (1120, 790),
-    "Up a Tree": (950, 600),
-    "Forest": (1850, 620),
-    "Clearing": (1920, 1020),
-    "Canyon View": (2200, 1330),
-    "Rocky Ledge": (2340, 1700),
-    "Canyon Bottom": (2350, 1950),
-
-    # ── LEFT PAGE: Maze area ──
-    "Maze": (2250, 4400),
-    "Dead End": (2850, 3900),
-
-    # ── RIGHT PAGE: Bat Room / Slide / Mine Entrance ──
-    # Measured from crop (3600, 600, 4600, 2000)
-    "Bat Room": (3880, 840),
-    "Squeaky Room": (3820, 1080),
-    "Mine Entrance": (4020, 1080),
-    "Slide Room": (3940, 1320),
-    # Measured from wider crop (3500, 500, 4800, 2100)
-    "Cold Passage": (4520, 1400),
-    "Mirror Room": (4500, 1650),       # Mirror Room (North)
-    "Twisting Passage": (4480, 1850),
-
-    # ── RIGHT PAGE: Coal Mine area ──
-    # Measured from crop (4900, 200, 6400, 1500)
-    "Gas Room": (5100, 430),
-    "Smelly Room": (5120, 630),
-    "Coal Mine": (5430, 600),           # Coal Mine (1)
-    "Shaft Room": (5100, 880),
-    "Ladder Top": (5950, 950),
-    "Ladder Bottom": (5950, 1140),
-    "Drafty Room": (5150, 1200),
-    "Timber Room": (5420, 1200),
-    "Machine Room": (5150, 1400),
-
-    # ── RIGHT PAGE: Stream / Reservoir / Dam ──
-    # Measured from crop (4200, 2400, 5000, 2900) and (4700, 2300, 5800, 3000)
-    "Stream": (4400, 2640),
-    "Reservoir": (4820, 2600),
-    "Stream View": (4400, 2800),
-    "Reservoir North": (4800, 2360),
-    "Reservoir South": (4820, 2820),
-    "Dam Lobby": (5600, 2360),
-    "Dam": (5430, 2620),
-    "Dam Base": (5400, 2850),
-
-    # ── RIGHT PAGE: Chasm / North-South / Loud Room area ──
-    # Measured from crop (4400, 2700, 5200, 3500)
-    "Chasm": (4650, 2970),
-    "Deep Canyon": (4900, 2970),
-    "North-South Passage": (4680, 3200),
-    "Loud Room": (4950, 3350),
-    "Damp Cave": (5200, 3380),
-
-    # ── RIGHT PAGE: Grating Room ──
-    # Measured from crop (3400, 2600, 4100, 3200)
-    "Grating Room": (3880, 3080),
-
-    # ── RIGHT PAGE: Underground central ──
-    # Measured from crop (3400, 3300, 5000, 4000)
-    "Troll Room": (3740, 3640),
-    "East-West Passage": (3960, 3640),
-    "Round Room": (4400, 3550),
-    "Cellar": (3860, 3780),
-    "Studio": (4080, 3780),
-
-    # ── RIGHT PAGE: Cyclops / Strange / Treasure ──
-    # Measured from crop (3200, 3600, 4000, 4200)
-    "Cyclops Room": (3390, 3880),
-    "Strange Passage": (3630, 3880),
-    "Treasure Room": (3390, 4110),
-
-    # ── RIGHT PAGE: Narrow / Engravings / Mirror(S) / Gallery ──
-    # Measured from crop (4300, 3500, 5100, 4300)
-    "Narrow Passage": (4530, 3750),
-    "Engravings Cave": (4820, 3750),
-    "Mirror Room (South)": (4550, 3970),
-    "Gallery": (4380, 4070),
-    "East of Chasm": (3880, 4070),
-    "Winding Passage": (4550, 4100),
-
-    # ── RIGHT PAGE: Dome / Torch / Temple / Egyptian ──
-    # Measured from crop (4600, 3600, 5600, 4500)
-    "Dome Room": (5130, 3800),
-    "Torch Room": (5080, 3980),
-    "Cave": (4720, 4140),
-    "Temple": (5030, 4140),
-    "Egyptian Room": (5300, 4140),
-    "Altar": (4800, 4300),
-    "Entrance to Hades": (4720, 4300),
-    "Land of the Dead": (5000, 4450),
-
-    # ── RIGHT PAGE: White Cliffs / Frigid River ──
-    # Measured from crop (5200, 2700, 6500, 4300)
-    "White Cliffs Beach": (5450, 3230),       # North
-    "White Cliffs Beach (South)": (5450, 3470),
-    "Frigid River": (5750, 2880),              # Section 1
-    "Sandy Cave": (6150, 3200),
-    "Sandy Beach": (6100, 3460),
-    "Shore": (6150, 3620),
-
-    # ── RIGHT PAGE: Bottom south area ──
-    "Aragain Falls": (6250, 4250),
-    "On the Rainbow": (5950, 4300),
-    "End of Rainbow": (5650, 4300),
+    "Altar": (5233, 4643),
+    "Aragain Falls": (6313, 4822),
+    "Atlantis Room": (4900, 2100),
+    "Attic": (1323, 1319),
+    "Bat Room": (4223, 851),
+    "Behind House": (1669, 1523),
+    "Canyon Bottom": (2663, 2325),
+    "Canyon View": (2386, 1808),
+    "Cave (near Atlantis)": (4867, 1857),
+    "Cave (near Hades)": (4814, 4370),
+    "Cellar": (4085, 3910),
+    "Chasm": (4684, 3038),
+    "Clearing": (1938, 1531),
+    "Clearing (north)": (1124, 358),
+    "Coal Mine (1)": (5889, 643),
+    "Coal Mine (2)": (6162, 240),
+    "Coal Mine (3)": (6276, 553),
+    "Coal Mine (4)": (6154, 802),
+    "Cold Passage": (4716, 1356),
+    "Cyclops Room": (3478, 3930),
+    "Dam": (5457, 2696),
+    "Dam Base": (5478, 3095),
+    "Dam Lobby": (5608, 2333),
+    "Damp Cave": (5233, 3572),
+    "Dead End": (2737, 3678),
+    "Deep Canyon": (5071, 3038),
+    "Dome Room": (5229, 3861),
+    "Drafty Room": (5645, 1205),
+    "East of Chasm": (4077, 4170),
+    "East-West Passage": (4346, 3563),
+    "Egyptian Room": (5474, 4362),
+    "End of Rainbow": (2895, 2073),
+    "Engravings Cave": (4981, 3865),
+    "Entrance to Hades": (4814, 4610),
+    "Forest (1)": (305, 782),
+    "Forest (2)": (1938, 769),
+    "Forest (3)": (1946, 2305),
+    "Forest (4)": (2350, 769),
+    "Forest Path": (1128, 777),
+    "Frigid River (1)": (5787, 3018),
+    "Frigid River (2)": (5796, 3307),
+    "Frigid River (3)": (5808, 3568),
+    "Frigid River (4)": (5787, 3812),
+    "Frigid River (5)": (5787, 4073),
+    "Gallery": (4321, 4154),
+    "Gas Room": (5637, 460),
+    "Grating Room": (3959, 3075),
+    "Kitchen": (1315, 1560),
+    "Ladder Bottom": (6150, 1209),
+    "Ladder Top": (6138, 1046),
+    "Land of the Dead": (4830, 4834),
+    "Living Room": (1087, 1564),
+    "Loud Room": (4973, 3462),
+    "Machine Room": (5641, 1462),
+    "Maintenance Room": (5751, 2166),
+    "Maze": (2342, 4309),
+    "Maze (1)": (2883, 3572),
+    "Maze (10)": (2362, 4692),
+    "Maze (11)": (2003, 4806),
+    "Maze (12)": (1824, 4602),
+    "Maze (13)": (2203, 4590),
+    "Maze (14)": (2753, 4525),
+    "Maze (15)": (2737, 4724),
+    "Maze (2)": (2236, 3881),
+    "Maze (3)": (2419, 3877),
+    "Maze (4)": (2582, 3779),
+    "Maze (5)": (2443, 4126),
+    "Maze (6)": (2358, 4329),
+    "Maze (7)": (2631, 4325),
+    "Maze (8)": (3001, 4606),
+    "Maze (9)": (2354, 4496),
+    "Mine Entrance": (4472, 1103),
+    "Mirror Room": (4724, 1592),
+    "Mirror Room (South)": (4680, 4113),
+    "Narrow Passage": (4671, 3881),
+    "North of House": (1148, 1010),
+    "North-South Passage": (4667, 3303),
+    "On the Rainbow": (6060, 4826),
+    "Reservoir": (4887, 2590),
+    "Reservoir North": (4875, 2350),
+    "Reservoir South": (4871, 2843),
+    "Rocky Ledge": (2545, 2052),
+    "Round Room": (4700, 3572),
+    "Sandy Beach": (6117, 3828),
+    "Sandy Cave": (6325, 3625),
+    "Shaft Room": (5649, 957),
+    "Shore": (6117, 4077),
+    "Slide Room": (4455, 1364),
+    "Smelly Room": (5641, 708),
+    "South of House": (1128, 2028),
+    "Squeaky Room": (4207, 1103),
+    "Strange Passage": (3706, 3918),
+    "Stream": (4411, 2606),
+    "Stream View": (4431, 2847),
+    "Studio": (4325, 3922),
+    "Temple": (5221, 4370),
+    "Timber Room": (5901, 1201),
+    "Torch Room": (5229, 4109),
+    "Treasure Room": (3482, 4162),
+    "Troll Room": (4069, 3563),
+    "Twisting Passage": (4561, 1857),
+    "Up a Tree": (1356, 566),
+    "West of House": (606, 1539),
+    "White Cliffs Beach": (5502, 3551),
+    "White Cliffs Beach (South)": (5515, 3816),
+    "Winding Passage": (4525, 4370),
 }
+
 
 # Aliases for variant room names the game may output
 _ALIASES: dict[str, str] = {
     "The Cellar": "Cellar",
     "Mirror Room (North)": "Mirror Room",
+    "Forest": "Forest (1)",
+    "Maze": "Maze (1)",
+    "Coal Mine": "Coal Mine (1)",
+    "Frigid River": "Frigid River (1)",
+    "Cave": "Cave (near Hades)",
+    "Dead End": "Dead End",
 }
 
 
