@@ -218,6 +218,8 @@ def run_human_session(game: str, viewer, session_dir: str) -> None:
             if room:
                 viewer.set_room(room)
 
+            score = session.get_score()
+
             viewer.log_event("command", command=command, output=game_output, room=room)
 
             logger.log_turn(
@@ -225,6 +227,7 @@ def run_human_session(game: str, viewer, session_dir: str) -> None:
                 command=command,
                 output=game_output,
                 room=room,
+                score=score,
             )
     finally:
         session.close()

@@ -68,6 +68,7 @@ class SessionLogger:
         thinking: str | None = None,
         reasoning: str | None = None,
         room: str | None = None,
+        score: int | None = None,
     ) -> None:
         timestamp = datetime.now(timezone.utc).isoformat()
         self._last_turn = turn
@@ -82,8 +83,9 @@ class SessionLogger:
         if died:
             self._deaths.append(turn)
 
-        # Detect score in output (e.g., "Your score is 25")
-        score = self._parse_score(output)
+        # Use explicitly provided score, or try to parse from output
+        if score is None:
+            score = self._parse_score(output)
 
         record = {
             "type": "turn",

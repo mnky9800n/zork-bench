@@ -815,6 +815,8 @@ def run_agent(
                     viewer.log_event("thinking", text="\n".join(reasoning_lines))
             viewer.log_event("command", command=command, output=game_output, room=room)
 
+        score = session.get_score()
+
         logger.log_turn(
             turn=turn,
             command=command,
@@ -823,6 +825,7 @@ def run_agent(
             thinking=thinking_text,
             reasoning=text,
             room=room,
+            score=score,
         )
 
         # Terminal output

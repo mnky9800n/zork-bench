@@ -140,6 +140,22 @@ class ZorkSession:
 
         return response if response else "[No response from game]"
 
+    def get_score(self) -> int | None:
+        """Silently send the 'score' command and parse the current score."""
+        if self.process is None or not self.process.isalive():
+            return None
+        try:
+            raw = self.send_command("score")
+            m = re.search(r"your score is (\d+)", raw.lower())
+            if m:
+                return int(m.group(1))
+            m = re.search(r"score[:\s]+(\d+)", raw.lower())
+            if m:
+                return int(m.group(1))
+        except Exception:
+            pass
+        return None
+
     def close(self) -> None:
         """Terminate the game process."""
         if self.process and self.process.isalive():
