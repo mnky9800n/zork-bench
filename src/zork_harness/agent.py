@@ -345,9 +345,13 @@ def _detect_raw_room_name(game_output: str) -> str | None:
     lines = game_output.split("\n")
 
     # First pass: check the first non-blank line (normal case)
+    # Skip parenthetical annotations like "(down the cliff)" that Zork
+    # emits before the room name on movement.
     for line in lines:
         line = line.strip()
         if not line:
+            continue
+        if line.startswith("(") and line.endswith(")"):
             continue
         if _looks_like_room_name(line):
             return line
