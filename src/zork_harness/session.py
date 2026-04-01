@@ -1,6 +1,8 @@
 """ZorkSession: spawns the game container via docker and communicates over stdin/stdout."""
 
 import re
+import shutil
+import subprocess
 import pexpect
 
 GAMES: dict[str, str] = {
@@ -48,6 +50,55 @@ GAMES: dict[str, str] = {
 
 _ANSI_ESCAPE = re.compile(r"\x1b\[[^a-zA-Z]*[a-zA-Z]")
 
+# Path to the Dockerfile is at the project root, two levels above this file:
+# src/zork_harness/session.py -> src/zork_harness -> src -> project root
+_PROJECT_ROOT = str(__import__("pathlib").Path(__file__).parent.parent.parent)
+
+
+def _ensure_docker_ready(image_name: str) -> None:
+    """Ensure Docker is running and the game image is built.
+
+    Steps:
+    1. Check if Docker daemon is reachable via `docker info`.
+    2. If not, and Colima is installed, start Colima automatically.
+    3. Check whether the target image exists locally.
+    4. If not, build it from the Dockerfile at the project root.
+    """
+    # Step 1: check if Docker is already reachable.
+    result = subprocess.run(
+        ["docker", "info"],
+        capture_output=True,
+    )
+    docker_available = result.returncode == 0
+
+    # Step 2: if Docker isn't reachable and Colima is installed, start it.
+    if not docker_available:
+        if shutil.which("colima") is None:
+            raise RuntimeError(
+                "Docker daemon is not running and Colima is not installed. "
+                "Start Docker or install Colima before running zork-harness."
+            )
+        print("Docker not running. Starting Colima...")
+        subprocess.run(["colima", "start"], check=True)
+        print("Colima started.")
+
+    # Step 3: check whether the image exists.
+    result = subprocess.run(
+        ["docker", "images", "-q", image_name],
+        capture_output=True,
+        text=True,
+    )
+    image_exists = bool(result.stdout.strip())
+
+    # Step 4: build the image if it is missing.
+    if not image_exists:
+        print(f"Image '{image_name}' not found. Building from {_PROJECT_ROOT}/Dockerfile...")
+        subprocess.run(
+            ["docker", "build", "-t", image_name, _PROJECT_ROOT],
+            check=True,
+        )
+        print(f"Image '{image_name}' built successfully.")
+
 
 class ZorkSession:
     """Manages a dfrotz process running inside a Docker container."""
@@ -63,6 +114,7 @@ class ZorkSession:
 
     def start(self) -> str:
         """Spawn the Docker container and return the game's opening text."""
+        _ensure_docker_ready(self.DOCKER_IMAGE)
         game_path = f"/home/frotz/DATA/{self.game_file}"
         cmd = f"docker run --rm -i {self.DOCKER_IMAGE} {game_path}"
         self.process = pexpect.spawn(
