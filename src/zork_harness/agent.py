@@ -99,6 +99,11 @@ def _extract_command(text: str) -> str | None:
     return matches[-1].strip()
 
 
+def _is_dfrotz_error(output: str) -> bool:
+    """Return True if dfrotz emitted a system-level error rather than game output."""
+    return "line too long" in output.lower()
+
+
 _NON_ROOM_PATTERNS = [
     "score", "move", "rank", "total", "opening",
     "you ", "there ", "it ", "the ", "a ", "your ",
@@ -705,6 +710,9 @@ def run_agent(
         tool_rounds = 0
         max_tool_rounds = 10
 
+        turn_input_start = total_input_tokens
+        turn_output_start = total_output_tokens
+
         if viewer:
             viewer.log_event("turn_start", turn=turn)
 
@@ -804,6 +812,33 @@ def run_agent(
             break
 
         game_output = session.send_command(command)
+
+        turn_input_tokens = total_input_tokens - turn_input_start
+        turn_output_tokens = total_output_tokens - turn_output_start
+
+        if _is_dfrotz_error(game_output):
+            error_feedback = (
+                f"Your previous command was malformed and the game could not process it. "
+                f"The game responded: '{game_output}'. "
+                f"Please issue a single, short game command on its own line prefixed with '> '."
+            )
+            messages.append({"role": "user", "content": error_feedback})
+            logger.log_turn(
+                turn=turn,
+                command=command,
+                output=game_output,
+                tool_calls=tool_calls_this_turn,
+                thinking=thinking_text,
+                reasoning=text,
+                room=None,
+                score=None,
+                malformed=True,
+                input_tokens=turn_input_tokens,
+                output_tokens=turn_output_tokens,
+            )
+            print(f"[{turn}] dfrotz error (malformed command): {game_output.strip()}")
+            continue
+
         room = room_tracker.detect_room(game_output, last_command=command)
 
         # Update viewer with streamed events
@@ -828,6 +863,8 @@ def run_agent(
             reasoning=text,
             room=room,
             score=score,
+            input_tokens=turn_input_tokens,
+            output_tokens=turn_output_tokens,
         )
 
         # Terminal output

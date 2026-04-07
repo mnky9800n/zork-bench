@@ -69,6 +69,9 @@ class SessionLogger:
         reasoning: str | None = None,
         room: str | None = None,
         score: int | None = None,
+        malformed: bool = False,
+        input_tokens: int | None = None,
+        output_tokens: int | None = None,
     ) -> None:
         timestamp = datetime.now(timezone.utc).isoformat()
         self._last_turn = turn
@@ -98,6 +101,9 @@ class SessionLogger:
             "room": room,
             "died": died,
             "score": score,
+            "malformed": malformed,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
             "timestamp": timestamp,
         }
         self._jsonl.write(json.dumps(record) + "\n")
