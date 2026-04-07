@@ -46,7 +46,8 @@ class MapViewer:
         self._log_widget: tk.Text | None = None
         self._pending_logs: list[dict] = []
 
-        # Pan state
+        # Pan / follow state
+        self._follow_player = True
         self._pan_center: tuple[int, int] | None = None
         self._drag_start: tuple[int, int] | None = None
         self._vp_x1 = 0

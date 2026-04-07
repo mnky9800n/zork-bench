@@ -344,18 +344,16 @@ def _detect_raw_room_name(game_output: str) -> str | None:
     """
     lines = game_output.split("\n")
 
-    # First pass: check the first non-blank line (normal case)
-    # Skip parenthetical annotations like "(down the cliff)" that Zork
-    # emits before the room name on movement.
-    for line in lines:
+    # First pass: scan the first several lines for a room name.
+    # Zork may emit narrative text ("The trap door crashes shut..."),
+    # parenthetical annotations ("(down the cliff)"), or blank lines
+    # before the actual room name.
+    for line in lines[:8]:
         line = line.strip()
         if not line:
             continue
-        if line.startswith("(") and line.endswith(")"):
-            continue
         if _looks_like_room_name(line):
             return line
-        break  # first non-blank line wasn't a room name
 
     # Second pass: look for a room name after death/teleport markers
     found_death = False
