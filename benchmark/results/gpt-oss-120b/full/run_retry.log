@@ -1,0 +1,282 @@
+Starting game: zork1
+Backend: fireworks | Model: accounts/fireworks/models/gpt-oss-120b
+Thinking: off | Map: full
+Session log: benchmark/results/gpt-oss-120b/full/session_20260413T172839Z.txt
+Using normal formatting.
+Loading /home/frotz/DATA/zork1-r88-s840726.z3.
+
+
+ZORK I: The Great Underground Empire
+Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.
+ZORK is a registered trademark of Infocom, Inc.
+Revision 88 / Serial number 840726
+
+West of House
+You are standing in an open field west of a white house, with a boarded front
+door.
+There is a small mailbox here.
+
+  [waiting for model...] (336 chunks)
+[1] > open mailbox
+Opening the small mailbox reveals a leaflet.
+
+  [waiting for model...] (59 chunks)
+[2] > take leaflet
+Taken.
+
+  [waiting for model...] (50 chunks)
+[3] > read leaflet
+"WELCOME TO ZORK!
+
+ZORK is a game of adventure, danger, and low cunning. In it you will explore
+some of the most amazing territory ever seen by mortals. No computer should be
+without one!"
+
+  [waiting for model...] (468 chunks)
+[4] tool: record_room({'room_name': 'West of House', 'exits': {}, 'items': []}) => {'recorded': 'West of House', 'exits': {'north': 'North of House', 'south': 'South of House', 'east': 'Behind House', 'west': 'Forest (1)'}, 'items': ['mailbox']}
+  [waiting for model...] (809 chunks)
+[4] dfrotz error (malformed command): Line too long, truncated to
+  [waiting for model...] (155 chunks)
+[5] > go east
+take leaflet
+Taken.
+
+  [waiting for model...] (320 chunks)
+[6] > go north
+read leaflet
+"WELCOME TO ZORK!
+
+ZORK is a game of adventure, danger, and low cunning. In it you will explore
+some of the most amazing territory ever seen by mortals. No computer should be
+without one!"
+
+I don't know the word "eastyou".
+
+  [waiting for model...] (486 chunks)
+[7] > go north
+score
+Your score is 0 (total of 350 points), in 4 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (746 chunks)
+[8] > look> look
+score
+Your score is 0 (total of 350 points), in 5 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (653 chunks)
+[9] > look<|message|>
+score
+Your score is 0 (total of 350 points), in 6 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (311 chunks)
+[10] > go north
+score
+Your score is 0 (total of 350 points), in 6 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (1320 chunks)
+[11] > go north
+score
+Your score is 0 (total of 350 points), in 6 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (1663 chunks)
+[12] > go north
+score
+Your score is 0 (total of 350 points), in 7 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (555 chunks)
+[13] > look
+score
+Your score is 0 (total of 350 points), in 8 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (1224 chunks)
+[14] > north
+score
+Your score is 0 (total of 350 points), in 9 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (183 chunks)
+[15] tool: record_room({'room_name': 'Behind House', 'exits': {'north': 'North of House', 'south': 'South of House', 'west': 'West of House'}, 'items': []}) => {'recorded': 'Behind House', 'exits': {'north': 'North of House', 'south': 'South of House', 'west': 'West of House', 'in': 'Kitchen', 'east': 'Forest Path'}, 'items': ['window (slightly open)']}
+  [waiting for model...] (1309 chunks)
+[15] thinking: We need to get orientation. We are behind house. There is a path north and south around house. The earlier attempts to go north did not work? Probably need "go north". The game didn't have path? Let's... (667 chars)
+[15] reasoning: 
+[15] > look> go eastWe need to capture the game's response to the "go east" command.> open doorWe need the game's output for the open door action.> open door
+score
+Your score is 0 (total of 350 points), in 10 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (711 chunks)
+[16] tool: record_room({'room_name': 'Behind House', 'exits': {'north': 'North of House', 'south': 'South of House', 'west': 'West of House'}, 'items': ['slightly open window']}) => {'recorded': 'Behind House', 'exits': {'north': 'North of House', 'south': 'South of House', 'west': 'West of House', 'in': 'Kitchen', 'east': 'Forest Path'}, 'items': ['window (slightly open)', 'slig
+  [waiting for model...] (209 chunks)
+[16] thinking: We have a messed up state. We need to get back on track. The last known location: Behind House (the area behind white house). The description said: “You are standing behind a white house. The house bl... (2815 chars)
+[16] > go north
+score
+Your score is 0 (total of 350 points), in 11 moves.
+This gives you the rank of Beginner.
+
+  [waiting for model...] (385 chunks)
+[17] > look
+[17] room: Clearing (north)
+Clearing
+You are in a clearing, with a forest surrounding you on all sides. A path leads
+south.
+On the ground is a pile of leaves.
+
+I don't know the word "look>".
+
+  [waiting for model...] (1023 chunks)
+[18] > go east
+go north
+
+
+The forest becomes impenetrable to the north.
+
+  [waiting for model...] (1552 chunks)
+[19] tool: list_known_rooms({}) => {'known_rooms': {'West of House': {'exits': ['north', 'south', 'east', 'west'], 'destinations': ['North of House', 'South of House', 'Behind House', 'Forest (1)']}, 'North of House': {'exits': ['west'
+  [waiting for model...] (1308 chunks)
+[19] thinking: We need to orient. Current location: "Clearing". Description: forest surrounding, path south, pile of leaves. So we are at clearing north of house? Actually clearing is north of house? The path leads ... (6467 chars)
+[19] reasoning: "room_name": "West of House", "exits": {"north":"North of House","south":"South of House","east":"Behind House","west":"Forest (1)"}, "items": [] }
+[19] > look to=functions.record_room <|constrain|>json<|message|>{
+[19] room: Clearing (north)
+look
+
+
+Clearing
+You are in a clearing, with a forest surrounding you on all sides. A path leads
+south.
+On the ground is a pile of leaves.
+
+  [waiting for model...] (722 chunks)
+[20] > go south
+[20] room: Forest (2)
+go east
+
+
+Forest
+This is a dimly lit forest, with large trees all around.
+You hear in the distance the chirping of a song bird.
+
+  [waiting for model...] (443 chunks)
+[21] tool: look_up_room({'room_name': 'Forest'}) => Room not recorded yet: 'Forest'
+  [waiting for model...] (263 chunks)
+[21] thinking: We have to continue playing Zork. Current location: we are in a forest (dimly lit) after moving east from clearing? Let's recap.
+
+We started West of House, opened mailbox, took leaflet, read. Then we ... (1775 chars)
+[21] > look
+I don't know the word "to=functions".
+
+  [waiting for model...] (958 chunks)
+[22] > go west
+[22] room: Clearing (north)
+go south
+
+
+Clearing
+You are in a small clearing in a well marked forest path that extends to the
+east and west.
+
+  [waiting for model...] (879 chunks)
+[23] > go east
+[23] room: Clearing
+look
+
+
+Clearing
+You are in a small clearing in a well marked forest path that extends to the
+east and west.
+
+  [waiting for model...] (1444 chunks)
+[24] > go south
+[24] room: Behind House
+go west
+
+
+Behind House
+You are behind the white house. A path leads into the forest to the east. In one
+corner of the house there is a small window which is slightly ajar.
+
+  [waiting for model...] (1464 chunks)
+[25] > enter house
+[25] room: Clearing
+go east
+
+
+Clearing
+
+  [waiting for model...] (1433 chunks)
+[26] > go west
+[26] room: Forest (1)
+go south
+
+
+Forest
+This is a dimly lit forest, with large trees all around.
+
+  [waiting for model...] (1424 chunks)
+[27] > go west
+enter house
+
+
+You're not at the house.
+
+  [waiting for model...] (2047 chunks)
+  [waiting for model...] (177 chunks)
+[28] > go east
+[28] room: Forest (1)
+go west
+
+
+Forest
+This is a forest, with trees in all directions. To the east, there appears to be
+sunlight.
+
+  [waiting for model...] (391 chunks)
+[29] > go east
+go west
+
+
+You would need a machete to go further west.
+
+  [waiting for model...] (343 chunks)
+[30] > go east
+[30] room: Forest Path
+Forest Path
+
+  [waiting for model...] (269 chunks)
+[31] > go east
+[31] room: Forest (4)
+Forest
+
+  [waiting for model...] (234 chunks)
+[32] > go north
+[32] room: Forest
+go east
+
+
+Forest
+The forest thins out, revealing impassable mountains.
+
+  [waiting for model...] (509 chunks)
+[33] > go east
+The mountains are impassable.
+
+  [waiting for model...] (414 chunks)
+[34] > go south
+[34] room: Forest
+go north
+
+
+Forest
+
+  [waiting for model...] (2047 chunks)
+  [waiting for model...] (274 chunks)
+[turn 35] Could not parse a command from model response:
+
+[Stopping]
+Session ended. Transcript: benchmark/results/gpt-oss-120b/full/session_20260413T172839Z.txt
+Session data: benchmark/results/gpt-oss-120b/full/session_20260413T172839Z.jsonl

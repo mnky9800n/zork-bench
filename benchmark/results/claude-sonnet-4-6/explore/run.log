@@ -1,0 +1,51 @@
+Starting game: zork1
+Backend: anthropic | Model: claude-sonnet-4-6
+Thinking: off | Map: explore
+Session log: benchmark/results/claude-sonnet-4-6/explore/session_20260413T155702Z.txt
+Using normal formatting.
+Loading /home/frotz/DATA/zork1-r88-s840726.z3.
+
+
+ZORK I: The Great Underground Empire
+Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.
+ZORK is a registered trademark of Infocom, Inc.
+Revision 88 / Serial number 840726
+
+West of House
+You are standing in an open field west of a white house, with a boarded front
+door.
+There is a small mailbox here.
+
+Traceback (most recent call last):
+  File "/home/mnky9800n/repos/llm-text-adventure/.venv/bin/zork-harness", line 10, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/mnky9800n/repos/llm-text-adventure/src/zork_harness/agent.py", line 1028, in main
+    _run()
+    ~~~~^^
+  File "/home/mnky9800n/repos/llm-text-adventure/src/zork_harness/agent.py", line 1001, in _run
+    run_agent(
+    ~~~~~~~~~^
+        game=args.game,
+        ^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        backend=args.backend,
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/mnky9800n/repos/llm-text-adventure/src/zork_harness/agent.py", line 722, in run_agent
+    result = _run_anthropic(
+        client, model, system_prompt, tool_schemas, messages,
+        thinking, budget_tokens,
+    )
+  File "/home/mnky9800n/repos/llm-text-adventure/src/zork_harness/agent.py", line 413, in _run_anthropic
+    with client.messages.stream(**api_kwargs) as stream:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/mnky9800n/repos/llm-text-adventure/.venv/lib/python3.14/site-packages/anthropic/lib/streaming/_messages.py", line 167, in __enter__
+    raw_stream = self.__api_request()
+  File "/home/mnky9800n/repos/llm-text-adventure/.venv/lib/python3.14/site-packages/anthropic/_base_client.py", line 1368, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mnky9800n/repos/llm-text-adventure/.venv/lib/python3.14/site-packages/anthropic/_base_client.py", line 1141, in request
+    raise self._make_status_error_from_response(err.response) from None
+anthropic.BadRequestError: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ca23YSSKVwBwCR38bTyDt'}

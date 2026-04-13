@@ -1,0 +1,72 @@
+Zork Harness Session - 20260407T150055Z
+Game: zork1 | Player: accounts/fireworks/models/gpt-oss-120b (fireworks)
+Map mode: none
+============================================================
+
+--- Turn 1 ---
+[reasoning]
+> open mailbox
+[/reasoning]
+
+[score] 0
+> open mailbox
+Opening the small mailbox reveals a leaflet.
+
+--- Turn 2 ---
+[reasoning]
+> read leaflet
+[/reasoning]
+
+[score] 0
+> read leaflet
+(Taken)
+"WELCOME TO ZORK!
+
+ZORK is a game of adventure, danger, and low cunning. In it you will explore
+some of the most amazing territory ever seen by mortals. No computer should be
+without one!"
+
+--- Turn 3 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 0
+> go east
+The door is boarded and you can't remove the boards.
+
+--- Turn 4 ---
+[reasoning]
+> move board
+[/reasoning]
+
+[score] 0
+> move board
+You can't move the board.
+
+--- Turn 5 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] North of House
+[score] 0
+> go north
+North of House
+You are facing the north side of a white house. There is no door here, and all
+the windows are boarded up. To the north a narrow path winds through the trees.
+
+============================================================
+SESSION SUMMARY
+============================================================
+Player: accounts/fireworks/models/gpt-oss-120b (fireworks)
+Total turns: 5
+Deaths: 0
+Unique rooms visited: 1
+Rooms:
+  - North of House (turns: 5)
+
+Tokens: 2,820 input, 2,019 output, 4,839 total
+
+Room visit sequence:
+  T005: North of House

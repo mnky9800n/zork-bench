@@ -1,0 +1,92 @@
+Zork Harness Session - 20260407T150207Z
+Game: zork1 | Player: accounts/fireworks/models/gpt-oss-120b (fireworks)
+Map mode: full
+============================================================
+
+--- Turn 1 ---
+[reasoning]
+> open mailbox
+[/reasoning]
+
+[score] 0
+> open mailbox
+Opening the small mailbox reveals a leaflet.
+
+--- Turn 2 ---
+[reasoning]
+> take leaflet
+[/reasoning]
+
+[score] 0
+> take leaflet
+Taken.
+
+--- Turn 3 ---
+[reasoning]
+> read leaflet
+[/reasoning]
+
+[score] 0
+> read leaflet
+"WELCOME TO ZORK!
+
+ZORK is a game of adventure, danger, and low cunning. In it you will explore
+some of the most amazing territory ever seen by mortals. No computer should be
+without one!"
+
+--- Turn 4 ---
+[thinking]
+We have opened mailbox, taken leaflet. After reading, it tells us nothing else. Next step likely to go east (to house) or north/south etc. Classic Zork start: West of House. Exits: east (to house) maybe north to forest? Actually starting location is "West of House". Exits: east to the house front, north, south? In original Zork, "West of House" has exits: east leads to "North of House"? Wait recall: Room "West of House". Exits: east leads to "Living Room"? No, the house interior is north of house? Let's recall: West of House is open field. Directions: east leads to "House", north leads to "Forest"? Actually in Zork, "West of House" has exits: east (front of house), north (any?), south (any?). Let’s check memory: The house front is boarded door. There is a mailbox. West of house. To the north is "Forest"? I think north is "North of House"? Wait there is "North of House" location (by the mailbox?) Not sure. Better to explore: go east to house.
+
+But there is a boarded front door; may not be open. Trying to "open door" may need a key; there is a small brass key hidden behind mailbox? Actually typical puzzle: You need to get the mailbox, the leaflet is just flavor; the house door is locked; you'll need to go into the kitchen etc later.
+
+Standard start: go east, open door (blocked), look inside, find a window? Actually maybe you need to go north to "North of House". There is a forest. Usually you go north to "North of House", then west to "East of House"? Hmm.
+
+Let's try typical early actions: "go east" to Approach house. Probably gives "The door is boarded and you cannot open it". Let's do that.
+
+But first we should record the current room. Use record_room.
+
+Current room: "West of House". Exits? We haven't observed. We only see mailbox. Probably there are exits west (open field continues?) Not sure. But we see "West of House" description: you are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here.
+
+Exits: east (to house). Possibly north, south, west maybe? In original Zork, you can go north into the forest, south into the field. Let's check memory: I think "West of House" has exits: east (to the front of the house), north (to north of house), south (to a forest???). Actually there is also "North of House" location separate; maybe to north there is "North of House". So we can "go east". Let's try that.
+
+But we also need to keep track inventory: we have leaflet.
+
+We should add leaflet to inventory.
+
+We have used take leaflet (so automatically have). Let's update inventory.
+
+
+[/thinking]
+
+[reasoning]
+> go eastWe need to wait for game output....> look...> go north> look> go east> look> open door> inventory> search> go west> look
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'leaflet'})
+       => ['leaflet']
+> go eastWe need to wait for game output....> look...> go north> look> go east> look> open door> inventory> search> go west> look
+[No response from game]
+
+--- Turn 5 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 0
+> go east
+score
+Your score is 0 (total of 350 points), in 3 moves.
+This gives you the rank of Beginner.
+
+============================================================
+SESSION SUMMARY
+============================================================
+Player: accounts/fireworks/models/gpt-oss-120b (fireworks)
+Total turns: 5
+Deaths: 0
+Unique rooms visited: 0
+
+Tokens: 6,345 input, 3,245 output, 9,590 total
+
+Room visit sequence:
