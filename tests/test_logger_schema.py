@@ -29,7 +29,8 @@ REQUIRED_HEADER_FIELDS = {
 
 REQUIRED_TURN_FIELDS = {
     "type", "turn", "command", "output", "tool_calls", "thinking", "reasoning",
-    "room", "died", "score", "malformed", "input_tokens", "output_tokens", "timestamp",
+    "room", "died", "score", "malformed", "input_tokens", "output_tokens",
+    "thinking_chars", "timestamp",
 }
 
 REQUIRED_SUMMARY_FIELDS = {
@@ -106,6 +107,19 @@ def test_turn_detects_death_from_output(tmp_session_dir):
     summary = next(r for r in records if r["type"] == "summary")
     assert summary["deaths"] == 1
     assert summary["death_turns"] == [5]
+
+
+def test_thinking_chars_counts_thinking_text_length(tmp_session_dir):
+    """thinking_chars is the len() of the thinking arg; 0 when absent."""
+    logger = SessionLogger(tmp_session_dir, game="zork1", model="test", backend="anthropic", map_mode="none")
+    thinking_text = "I should examine my surroundings first."
+    logger.log_turn(turn=1, command="look", output="", thinking=thinking_text)
+    logger.log_turn(turn=2, command="look", output="", thinking=None)
+    logger.finalize()
+    records = _read_jsonl(logger.jsonl_path)
+    turns = [r for r in records if r["type"] == "turn"]
+    assert turns[0]["thinking_chars"] == len(thinking_text)
+    assert turns[1]["thinking_chars"] == 0
 
 
 def test_turn_parses_score_from_output_when_not_provided(tmp_session_dir):

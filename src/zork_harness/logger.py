@@ -90,6 +90,12 @@ class SessionLogger:
         if score is None:
             score = self._parse_score(output)
 
+        # Thinking intensity proxy: Anthropic's API bundles extended-thinking tokens
+        # into output_tokens rather than exposing them separately, so we log a char
+        # count of the thinking text instead. Approximate tokens ≈ thinking_chars // 4
+        # for Claude's tokenizer (documented convention, not measured per-response).
+        thinking_chars = len(thinking) if thinking else 0
+
         record = {
             "type": "turn",
             "turn": turn,
@@ -104,6 +110,7 @@ class SessionLogger:
             "malformed": malformed,
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
+            "thinking_chars": thinking_chars,
             "timestamp": timestamp,
         }
         self._jsonl.write(json.dumps(record) + "\n")
