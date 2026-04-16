@@ -37,7 +37,10 @@ REQUIRED_SUMMARY_FIELDS = {
     "type", "game", "model", "backend", "map_mode", "player_type",
     "total_turns", "deaths", "death_turns", "unique_rooms", "rooms_list",
     "rooms_recorded_by_model", "phantom_rooms", "phantom_room_count",
-    "total_input_tokens", "total_output_tokens", "room_sequence", "timestamp",
+    "total_input_tokens", "total_output_tokens", "room_sequence",
+    "treasures_found", "treasures_deposited",
+    "treasures_found_count", "treasures_deposited_count",
+    "timestamp",
 }
 
 
@@ -107,6 +110,46 @@ def test_turn_detects_death_from_output(tmp_session_dir):
     summary = next(r for r in records if r["type"] == "summary")
     assert summary["deaths"] == 1
     assert summary["death_turns"] == [5]
+
+
+def test_treasure_take_and_deposit_aggregates(tmp_session_dir):
+    """End-to-end: take a treasure, take a non-treasure, deposit the treasure.
+    Summary should record one found and one deposited."""
+    logger = SessionLogger(tmp_session_dir, game="zork1", model="test",
+                           backend="anthropic", map_mode="explore")
+    logger.log_turn(turn=1, command="take painting", output="Taken.",
+                    room="Gallery", score=4)
+    logger.log_turn(turn=2, command="take lamp", output="Taken.",
+                    room="Living Room", score=4)  # not a treasure
+    logger.log_turn(turn=3, command="put painting in trophy case", output="Done.",
+                    room="Living Room", score=10)
+    logger.finalize()
+
+    records = _read_jsonl(logger.jsonl_path)
+    summary = next(r for r in records if r["type"] == "summary")
+    assert summary["treasures_found"] == ["painting"]
+    assert summary["treasures_deposited"] == ["painting"]
+    assert summary["treasures_found_count"] == 1
+    assert summary["treasures_deposited_count"] == 1
+
+
+def test_treasure_found_minus_deposited_is_carry_state(tmp_session_dir):
+    """A treasure can be found without ever being deposited.
+    That gap is the inventory-management puzzle."""
+    logger = SessionLogger(tmp_session_dir, game="zork1", model="test",
+                           backend="anthropic", map_mode="explore")
+    logger.log_turn(turn=1, command="take egg", output="Taken.", score=5)
+    logger.log_turn(turn=2, command="take painting", output="Taken.", score=9)
+    logger.log_turn(turn=3, command="put egg in trophy case", output="Done.", score=14)
+    logger.finalize()
+
+    records = _read_jsonl(logger.jsonl_path)
+    summary = next(r for r in records if r["type"] == "summary")
+    assert summary["treasures_found_count"] == 2
+    assert summary["treasures_deposited_count"] == 1
+    # The painting was found but never made it home.
+    assert "painting" in summary["treasures_found"]
+    assert "painting" not in summary["treasures_deposited"]
 
 
 def test_thinking_chars_counts_thinking_text_length(tmp_session_dir):
