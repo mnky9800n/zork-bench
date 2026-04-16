@@ -275,6 +275,24 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
             treasures_found = sorted(found_set)
             treasures_deposited = sorted(deposited_set)
 
+    # --- Termination (roadmap: harness resilience) ---
+    # Tiers:
+    #   - summary present with termination_reason: use it.
+    #   - summary present without it: 'ok' (pre-resilience but cleanly finalized).
+    #   - no summary, LLM session: 'crashed' (harness died before finalize ran).
+    #   - no summary, human session: 'ok' (humans normally Ctrl-C out and that
+    #     skips finalize; not a crash, just an expected human exit).
+    if not session.get("summary"):
+        is_human = (header.get("player_type") == "human"
+                    or header.get("backend") == "human")
+        termination_reason = "ok" if is_human else "crashed"
+        last_error = None
+        terminated_early = not is_human
+    else:
+        termination_reason = summary.get("termination_reason") or "ok"
+        last_error = summary.get("last_error")
+        terminated_early = summary.get("terminated_early", termination_reason != "ok")
+
     return {
         # Identity
         "model": model_nickname,
@@ -286,6 +304,9 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
         "session_file": str(session["path"]),
         "player_type": header.get("player_type")
                        or ("human" if header.get("backend") == "human" else "llm"),
+        "termination_reason": termination_reason,
+        "terminated_early": terminated_early,
+        "last_error": last_error,
         # Scores
         "final_score": final_score,
         "max_score": max_score,
@@ -414,6 +435,17 @@ def print_console_table(metrics_list: list[dict[str, Any]]) -> None:
                         f"{str(malformed):>6} {tokens:>8} {found:>5} {depos:>5}")
         print(row)
 
+    # Early-termination footnote so the matrix stays narrow but the user
+    # can see which cells died mid-run and why.
+    early = [m for m in metrics_list if m.get("terminated_early")]
+    if early:
+        print()
+        print("Early terminations:")
+        for m in early:
+            err_snip = (m.get("last_error") or "")[:80]
+            print(f"  {m['model']}/{m['map_mode']}: {m['termination_reason']}"
+                  + (f" ({err_snip})" if err_snip else ""))
+
     print()
 
 
@@ -433,19 +465,21 @@ def print_humans_table(metrics_list: list[dict[str, Any]]) -> None:
     print()
     print("Humans")
     header = (f"{'Player':<8} {'Turns':>6} {'MaxScore':>9} {'Rooms':>6} "
-              f"{'Found':>6} {'Deposit':>8}  Session")
+              f"{'Found':>6} {'Deposit':>8} {'Ended':>20}  Session")
     print(header)
     print("-" * len(header))
     for i, m in enumerate(humans, start=1):
         # Pull session timestamp out of the path for the trailing label.
         session_stem = Path(m["session_file"]).stem
+        ended = m["termination_reason"]
         print(
             f"{'human ' + str(i):<8} "
             f"{m['total_turns']:>6} "
             f"{(m['max_score'] or 0):>9} "
             f"{m['unique_rooms']:>6} "
             f"{m['treasures_found_count']:>6} "
-            f"{m['treasures_deposited_count']:>8}  "
+            f"{m['treasures_deposited_count']:>8} "
+            f"{ended:>20}  "
             f"{session_stem}"
         )
     print()
@@ -471,6 +505,7 @@ def write_csv(metrics_list: list[dict[str, Any]], output_path: Path) -> None:
         "tool_calls_per_turn", "malformed_turns", "malformed_tokens",
         "phantom_room_count",
         "treasures_found_count", "treasures_deposited_count",
+        "termination_reason", "terminated_early", "last_error",
     ]
 
     # Add one column per tool type seen across all sessions

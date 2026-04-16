@@ -62,6 +62,42 @@ def _stats(turns: list[dict]) -> tuple[int, int, int, float | None, int, int]:
             len(found), len(deposited))
 
 
+def _termination_reason(path: Path) -> str:
+    """Pull termination_reason from a session's summary record.
+
+    Cases:
+      1. Summary present with termination_reason: use it (resilience-era log).
+      2. Summary present without that field: 'ok' (pre-resilience but cleanly
+         finalized, so the loop ran to completion).
+      3. No summary, LLM session: 'crashed' (the harness died before
+         logger.finalize() ran -- typically an unhandled API error or game
+         process death from a pre-resilience session).
+      4. No summary, human session: 'ok'. Humans normally exit by Ctrl-C
+         which short-circuits finalize, so absent summary is expected and
+         not a crash.
+    """
+    summary_seen = False
+    is_human = False
+    try:
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                rec = json.loads(line)
+                if rec.get("type") == "header":
+                    is_human = (rec.get("player_type") == "human"
+                                or rec.get("backend") == "human")
+                if rec.get("type") == "summary":
+                    summary_seen = True
+                    return rec.get("termination_reason") or "ok"
+    except (OSError, json.JSONDecodeError):
+        pass
+    if summary_seen:
+        return "ok"
+    return "ok" if is_human else "crashed"
+
+
 def _is_human_session(header: dict | None) -> bool:
     if not header:
         return False
@@ -92,10 +128,10 @@ def _fmt_tpt(tpt: float | None) -> str:
 
 def build_leaderboard(results_dir: Path, min_turns: int = 0):
     # Rows: (model, mode, turns, max_score, rooms, mean_tokens_per_turn,
-    #        treasures_found, treasures_deposited)
+    #        treasures_found, treasures_deposited, termination_reason)
     ai_rows: list[tuple] = []
     # Rows: (turns, max_score, rooms, mean_tokens_per_turn,
-    #        treasures_found, treasures_deposited, session_name)
+    #        treasures_found, treasures_deposited, termination_reason, session_name)
     human_rows: list[tuple] = []
 
     # AI runs: pick the longest session per <model>/<mode>/ directory
@@ -111,7 +147,8 @@ def build_leaderboard(results_dir: Path, min_turns: int = 0):
         n_turns, max_score, rooms, mean_tpt, found, deposited = _stats(turns)
         if n_turns < min_turns:
             continue
-        ai_rows.append((model, mode, n_turns, max_score, rooms, mean_tpt, found, deposited))
+        ended = _termination_reason(path)
+        ai_rows.append((model, mode, n_turns, max_score, rooms, mean_tpt, found, deposited, ended))
 
     # Human runs: every non-empty human session
     humans_dir = results_dir / "humans"
@@ -123,32 +160,35 @@ def build_leaderboard(results_dir: Path, min_turns: int = 0):
             n_turns, max_score, rooms, mean_tpt, found, deposited = _stats(turns)
             if n_turns < min_turns:
                 continue
-            human_rows.append((n_turns, max_score, rooms, mean_tpt, found, deposited, path.stem))
+            ended = _termination_reason(path)
+            human_rows.append((n_turns, max_score, rooms, mean_tpt, found, deposited, ended, path.stem))
 
     ai_rows.sort(key=lambda r: -r[3])
     human_rows.sort(key=lambda r: -r[1])
 
     # Two separate columns: Found (took with `take`) and Deposit (placed in
     # trophy case). The gap between them is the inventory-management puzzle.
+    # Ended column shows why a session stopped (ok / api_error / etc).
     header = (f"{'Player':<22} {'Mode':<10} {'Turns':>6} {'MaxScore':>9} "
-              f"{'Rooms':>6} {'Tok/turn':>9} {'Found':>6} {'Deposit':>8}")
+              f"{'Rooms':>6} {'Tok/turn':>9} {'Found':>6} {'Deposit':>8} "
+              f"{'Ended':>22}")
     sep = "-" * len(header)
 
     print(f"\n=== AI Models (min turns: {min_turns}) ===\n")
     print(header)
     print(sep)
-    for model, mode, n_turns, max_score, rooms, mean_tpt, found, deposited in ai_rows:
+    for model, mode, n_turns, max_score, rooms, mean_tpt, found, deposited, ended in ai_rows:
         print(f"{model:<22} {mode:<10} {n_turns:>6} {max_score:>9} {rooms:>6} "
-              f"{_fmt_tpt(mean_tpt):>9} {found:>6} {deposited:>8}")
+              f"{_fmt_tpt(mean_tpt):>9} {found:>6} {deposited:>8} {ended:>22}")
 
     print(f"\n=== Humans (min turns: {min_turns}) ===\n")
     human_header = (f"{'Player':<22} {'Turns':>6} {'MaxScore':>9} {'Rooms':>6} "
-                    f"{'Tok/turn':>9} {'Found':>6} {'Deposit':>8}  Session")
+                    f"{'Tok/turn':>9} {'Found':>6} {'Deposit':>8} {'Ended':>22}  Session")
     print(human_header)
     print("-" * len(human_header))
-    for i, (n_turns, max_score, rooms, mean_tpt, found, deposited, session_name) in enumerate(human_rows, start=1):
+    for i, (n_turns, max_score, rooms, mean_tpt, found, deposited, ended, session_name) in enumerate(human_rows, start=1):
         print(f"{'human ' + str(i):<22} {n_turns:>6} {max_score:>9} {rooms:>6} "
-              f"{_fmt_tpt(mean_tpt):>9} {found:>6} {deposited:>8}  {session_name}")
+              f"{_fmt_tpt(mean_tpt):>9} {found:>6} {deposited:>8} {ended:>22}  {session_name}")
     print()
 
 
