@@ -37,12 +37,17 @@ def _load(path: Path) -> tuple[dict | None, list[dict]]:
     return header, turns
 
 
-def _stats(turns: list[dict]) -> tuple[int, int, int, float | None]:
-    """Return (n_turns, max_score, unique_rooms, mean_tokens_per_turn).
+def _stats(turns: list[dict]) -> tuple[int, int, int, float | None, int, int]:
+    """Return (n_turns, max_score, unique_rooms, mean_tokens_per_turn,
+    treasures_found, treasures_deposited).
 
     mean_tokens_per_turn is None when no turn logged token usage (e.g. human
-    sessions); callers render this as '-'.
+    sessions); callers render this as '-'. Treasure counts come from
+    find_treasure_events which detects directly from (command, output) so
+    sessions logged before treasure tracking landed still show real numbers.
     """
+    from zork_harness.treasures import find_treasure_events
+
     scores = [t.get("score") for t in turns if t.get("score") is not None]
     rooms = {t.get("room") for t in turns if t.get("room")}
     token_turns = [
@@ -51,7 +56,10 @@ def _stats(turns: list[dict]) -> tuple[int, int, int, float | None]:
         if t.get("input_tokens") is not None or t.get("output_tokens") is not None
     ]
     mean_tpt: float | None = sum(token_turns) / len(token_turns) if token_turns else None
-    return len(turns), max(scores) if scores else 0, len(rooms), mean_tpt
+
+    found, deposited = find_treasure_events(turns)
+    return (len(turns), max(scores) if scores else 0, len(rooms), mean_tpt,
+            len(found), len(deposited))
 
 
 def _is_human_session(header: dict | None) -> bool:
@@ -83,9 +91,11 @@ def _fmt_tpt(tpt: float | None) -> str:
 
 
 def build_leaderboard(results_dir: Path, min_turns: int = 0):
-    # Rows: (model, mode, turns, max_score, rooms, mean_tokens_per_turn)
+    # Rows: (model, mode, turns, max_score, rooms, mean_tokens_per_turn,
+    #        treasures_found, treasures_deposited)
     ai_rows: list[tuple] = []
-    # Rows: (turns, max_score, rooms, mean_tokens_per_turn, session_name)
+    # Rows: (turns, max_score, rooms, mean_tokens_per_turn,
+    #        treasures_found, treasures_deposited, session_name)
     human_rows: list[tuple] = []
 
     # AI runs: pick the longest session per <model>/<mode>/ directory
@@ -98,10 +108,10 @@ def build_leaderboard(results_dir: Path, min_turns: int = 0):
         if len(parts) < 3:
             continue  # not <model>/<mode>/session.jsonl
         model, mode = parts[0], parts[1]
-        n_turns, max_score, rooms, mean_tpt = _stats(turns)
+        n_turns, max_score, rooms, mean_tpt, found, deposited = _stats(turns)
         if n_turns < min_turns:
             continue
-        ai_rows.append((model, mode, n_turns, max_score, rooms, mean_tpt))
+        ai_rows.append((model, mode, n_turns, max_score, rooms, mean_tpt, found, deposited))
 
     # Human runs: every non-empty human session
     humans_dir = results_dir / "humans"
@@ -110,29 +120,35 @@ def build_leaderboard(results_dir: Path, min_turns: int = 0):
             header, turns = _load(path)
             if not _is_human_session(header) and header is not None:
                 continue
-            n_turns, max_score, rooms, mean_tpt = _stats(turns)
+            n_turns, max_score, rooms, mean_tpt, found, deposited = _stats(turns)
             if n_turns < min_turns:
                 continue
-            human_rows.append((n_turns, max_score, rooms, mean_tpt, path.stem))
+            human_rows.append((n_turns, max_score, rooms, mean_tpt, found, deposited, path.stem))
 
     ai_rows.sort(key=lambda r: -r[3])
     human_rows.sort(key=lambda r: -r[1])
 
-    header = f"{'Player':<22} {'Mode':<10} {'Turns':>6} {'MaxScore':>9} {'Rooms':>6} {'Tok/turn':>9}"
+    # Two separate columns: Found (took with `take`) and Deposit (placed in
+    # trophy case). The gap between them is the inventory-management puzzle.
+    header = (f"{'Player':<22} {'Mode':<10} {'Turns':>6} {'MaxScore':>9} "
+              f"{'Rooms':>6} {'Tok/turn':>9} {'Found':>6} {'Deposit':>8}")
     sep = "-" * len(header)
 
     print(f"\n=== AI Models (min turns: {min_turns}) ===\n")
     print(header)
     print(sep)
-    for model, mode, n_turns, max_score, rooms, mean_tpt in ai_rows:
-        print(f"{model:<22} {mode:<10} {n_turns:>6} {max_score:>9} {rooms:>6} {_fmt_tpt(mean_tpt):>9}")
+    for model, mode, n_turns, max_score, rooms, mean_tpt, found, deposited in ai_rows:
+        print(f"{model:<22} {mode:<10} {n_turns:>6} {max_score:>9} {rooms:>6} "
+              f"{_fmt_tpt(mean_tpt):>9} {found:>6} {deposited:>8}")
 
     print(f"\n=== Humans (min turns: {min_turns}) ===\n")
-    human_header = f"{'Player':<22} {'Turns':>6} {'MaxScore':>9} {'Rooms':>6} {'Tok/turn':>9}  Session"
+    human_header = (f"{'Player':<22} {'Turns':>6} {'MaxScore':>9} {'Rooms':>6} "
+                    f"{'Tok/turn':>9} {'Found':>6} {'Deposit':>8}  Session")
     print(human_header)
     print("-" * len(human_header))
-    for i, (n_turns, max_score, rooms, mean_tpt, session_name) in enumerate(human_rows, start=1):
-        print(f"{'human ' + str(i):<22} {n_turns:>6} {max_score:>9} {rooms:>6} {_fmt_tpt(mean_tpt):>9}  {session_name}")
+    for i, (n_turns, max_score, rooms, mean_tpt, found, deposited, session_name) in enumerate(human_rows, start=1):
+        print(f"{'human ' + str(i):<22} {n_turns:>6} {max_score:>9} {rooms:>6} "
+              f"{_fmt_tpt(mean_tpt):>9} {found:>6} {deposited:>8}  {session_name}")
     print()
 
 

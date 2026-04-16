@@ -57,41 +57,60 @@ def _most_recent_jsonl(directory: Path) -> Path | None:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
+def _is_human_session(parsed: dict[str, Any]) -> bool:
+    """Treat a session as human if its header says so. Falls back to backend."""
+    header = parsed.get("header") or {}
+    return header.get("player_type") == "human" or header.get("backend") == "human"
+
+
 def load_all_sessions(results_dir: Path) -> list[dict[str, Any]]:
-    """Walk results_dir, find one JSONL per leaf directory, return parsed sessions."""
+    """Walk results_dir and return parsed sessions.
+
+    AI sessions: layout is results/<model>/<map_mode>/session_*.jsonl. We pick
+    the most recent session per leaf directory so each (model, map_mode) cell
+    in the matrix has exactly one row.
+
+    Human sessions: layout is results/humans/session_*.jsonl. We load every
+    session so each playthrough appears as its own row in the humans table
+    (same behavior as leaderboard.py).
+    """
     sessions = []
 
     # Collect all directories that contain at least one session_*.jsonl file.
-    # results_dir layout: results/<model>/<map_mode>/session_*.jsonl
     seen_dirs: set[Path] = set()
     for jsonl_path in sorted(results_dir.rglob("session_*.jsonl")):
-        parent = jsonl_path.parent
-        if parent not in seen_dirs:
-            seen_dirs.add(parent)
+        seen_dirs.add(jsonl_path.parent)
 
     for directory in sorted(seen_dirs):
-        jsonl_path = _most_recent_jsonl(directory)
-        if jsonl_path is None:
-            continue
-
-        # Derive model and map_mode from path relative to results_dir.
-        # Expected structure: results/<model>/<map_mode>/session_*.jsonl
         rel = directory.relative_to(results_dir)
         parts = rel.parts
-        if len(parts) >= 2:
-            model_nickname = parts[0]
-            map_mode = parts[1]
-        elif len(parts) == 1:
-            model_nickname = parts[0]
-            map_mode = "unknown"
-        else:
-            model_nickname = "unknown"
-            map_mode = "unknown"
+        is_humans_dir = parts == ("humans",)
 
-        parsed = _parse_jsonl(jsonl_path)
-        parsed["model_nickname"] = model_nickname
-        parsed["map_mode_dir"] = map_mode
-        sessions.append(parsed)
+        if is_humans_dir:
+            # Every human playthrough is its own row.
+            paths = sorted(directory.glob("session_*.jsonl"))
+        else:
+            recent = _most_recent_jsonl(directory)
+            paths = [recent] if recent is not None else []
+
+        for jsonl_path in paths:
+            # Derive model and map_mode from the path. AI dirs use
+            # <model>/<mode>; the humans dir has no map_mode subdir, so we
+            # mark the row 'humans' / 'human' for the table grouping.
+            if is_humans_dir:
+                model_nickname = jsonl_path.stem  # session_<timestamp>
+                map_mode = "human"
+            elif len(parts) >= 2:
+                model_nickname, map_mode = parts[0], parts[1]
+            elif len(parts) == 1:
+                model_nickname, map_mode = parts[0], "unknown"
+            else:
+                model_nickname, map_mode = "unknown", "unknown"
+
+            parsed = _parse_jsonl(jsonl_path)
+            parsed["model_nickname"] = model_nickname
+            parsed["map_mode_dir"] = map_mode
+            sessions.append(parsed)
 
     return sessions
 
@@ -239,6 +258,23 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
     # --- Phantom rooms ---
     phantom_rooms: list[str] = summary.get("phantom_rooms") or []
 
+    # --- Treasures (roadmap item #3) ---
+    # Two metrics, two puzzles: "found" (took with `take`) and "deposited"
+    # (put in trophy case despite Zork's tight carry limit). Prefer summary
+    # aggregates when present; fall back to detection over (command, output)
+    # so old session files still produce numbers without re-running.
+    treasures_found: list[str] = summary.get("treasures_found") or []
+    treasures_deposited: list[str] = summary.get("treasures_deposited") or []
+    if not treasures_found and not treasures_deposited and turns:
+        try:
+            from zork_harness.treasures import find_treasure_events  # noqa: PLC0415
+        except ImportError:
+            find_treasure_events = None  # type: ignore[assignment]
+        if find_treasure_events is not None:
+            found_set, deposited_set = find_treasure_events(turns)
+            treasures_found = sorted(found_set)
+            treasures_deposited = sorted(deposited_set)
+
     return {
         # Identity
         "model": model_nickname,
@@ -248,6 +284,8 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
         "game": header.get("game", ""),
         "started_at": header.get("started_at", ""),
         "session_file": str(session["path"]),
+        "player_type": header.get("player_type")
+                       or ("human" if header.get("backend") == "human" else "llm"),
         # Scores
         "final_score": final_score,
         "max_score": max_score,
@@ -282,6 +320,11 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
         # Misc
         "phantom_rooms": phantom_rooms,
         "phantom_room_count": len(phantom_rooms),
+        # Treasures
+        "treasures_found": treasures_found,
+        "treasures_deposited": treasures_deposited,
+        "treasures_found_count": len(treasures_found),
+        "treasures_deposited_count": len(treasures_deposited),
     }
 
 
@@ -306,7 +349,15 @@ def _format_float(v: float | None, decimals: int = 2) -> str:
 
 
 def print_console_table(metrics_list: list[dict[str, Any]]) -> None:
-    """Print a model x map_mode matrix with Score, Rooms, Deaths, Tokens."""
+    """Print a model x map_mode matrix with Score, Rooms, Deaths, Tokens.
+
+    Humans are excluded from this matrix because they have no map_mode and
+    aren't a model. They get their own table via print_humans_table().
+    """
+    metrics_list = [m for m in metrics_list if m.get("player_type") != "human"]
+    if not metrics_list:
+        return
+
     # Gather unique models and map_modes in a stable order
     models = sorted({m["model"] for m in metrics_list})
     map_modes_present = {m["map_mode"] for m in metrics_list}
@@ -321,7 +372,8 @@ def print_console_table(metrics_list: list[dict[str, Any]]) -> None:
     # Column widths
     model_col_w = max(len("Model"), max(len(m) for m in models))
     map_col_w = max(len(mm) for mm in map_modes) if map_modes else 7
-    cell_w = 36  # "Score Rooms Deaths Malfrm Tokens" per map_mode header
+    # Per-map-mode cell carries: Score Rooms Deaths Malfrm Tokens Found Depos
+    cell_w = 49
 
     # Header row 1: map_modes
     header1 = f"{'Model':<{model_col_w}}"
@@ -333,7 +385,8 @@ def print_console_table(metrics_list: list[dict[str, Any]]) -> None:
     # Header row 2: metric labels
     header2 = " " * model_col_w
     for _ in map_modes:
-        header2 += f"  {'Score':>6} {'Rooms':>5} {'Deaths':>6} {'Malfrm':>6} {'Tokens':>8}"
+        header2 += (f"  {'Score':>6} {'Rooms':>5} {'Deaths':>6} "
+                    f"{'Malfrm':>6} {'Tokens':>8} {'Found':>5} {'Depos':>5}")
     print(header2)
 
     # Separator
@@ -346,16 +399,55 @@ def print_console_table(metrics_list: list[dict[str, Any]]) -> None:
         for mm in map_modes:
             m = lookup.get((model, mm))
             if m is None:
-                row += f"  {'—':>6} {'—':>5} {'—':>6} {'—':>6} {'—':>8}"
+                row += f"  {'—':>6} {'—':>5} {'—':>6} {'—':>6} {'—':>8} {'—':>5} {'—':>5}"
             else:
                 score = m["final_score"] if m["final_score"] is not None else "—"
                 rooms = m["unique_rooms"] if m["unique_rooms"] is not None else "—"
                 deaths = m["total_deaths"]
                 malformed = m["malformed_turns"]
                 tokens = _format_tokens(m["total_tokens"])
-                row += f"  {str(score):>6} {str(rooms):>5} {str(deaths):>6} {str(malformed):>6} {tokens:>8}"
+                # Found = took with `take`; Depos = placed in trophy case.
+                # The gap between them is the inventory-management puzzle.
+                found = m["treasures_found_count"]
+                depos = m["treasures_deposited_count"]
+                row += (f"  {str(score):>6} {str(rooms):>5} {str(deaths):>6} "
+                        f"{str(malformed):>6} {tokens:>8} {found:>5} {depos:>5}")
         print(row)
 
+    print()
+
+
+def print_humans_table(metrics_list: list[dict[str, Any]]) -> None:
+    """Print a flat table of human playthroughs ranked by max score.
+
+    Humans don't fit the model x map_mode matrix (no map_mode, not a model),
+    so they get their own section. Mirrors the layout used by leaderboard.py
+    so the two tools agree.
+    """
+    humans = [m for m in metrics_list if m.get("player_type") == "human"]
+    if not humans:
+        return
+
+    humans.sort(key=lambda m: -(m["max_score"] or 0))
+
+    print()
+    print("Humans")
+    header = (f"{'Player':<8} {'Turns':>6} {'MaxScore':>9} {'Rooms':>6} "
+              f"{'Found':>6} {'Deposit':>8}  Session")
+    print(header)
+    print("-" * len(header))
+    for i, m in enumerate(humans, start=1):
+        # Pull session timestamp out of the path for the trailing label.
+        session_stem = Path(m["session_file"]).stem
+        print(
+            f"{'human ' + str(i):<8} "
+            f"{m['total_turns']:>6} "
+            f"{(m['max_score'] or 0):>9} "
+            f"{m['unique_rooms']:>6} "
+            f"{m['treasures_found_count']:>6} "
+            f"{m['treasures_deposited_count']:>8}  "
+            f"{session_stem}"
+        )
     print()
 
 
@@ -378,6 +470,7 @@ def write_csv(metrics_list: list[dict[str, Any]], output_path: Path) -> None:
         "mean_thinking_chars_per_turn", "thinking_turn_fraction",
         "tool_calls_per_turn", "malformed_turns", "malformed_tokens",
         "phantom_room_count",
+        "treasures_found_count", "treasures_deposited_count",
     ]
 
     # Add one column per tool type seen across all sessions
@@ -669,8 +762,9 @@ def main() -> None:
 
     metrics_list = [compute_metrics(s) for s in sessions]
 
-    # --- Console table ---
+    # --- Console tables (AI matrix + Humans flat) ---
     print_console_table(metrics_list)
+    print_humans_table(metrics_list)
 
     # --- CSV ---
     csv_path = results_dir / "benchmark_results.csv"
