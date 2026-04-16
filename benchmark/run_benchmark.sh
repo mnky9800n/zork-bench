@@ -24,12 +24,20 @@ MAX_TURNS=500
 MAP_MODES=("none" "explore" "full")
 
 # Parallel arrays: index N describes one model configuration.
+# Order is roughly small-to-large by parameter count so the cheap runs
+# finish first and produce useful intermediate signal even if we abort.
 NAMES=(
     "gpt-oss-120b"
-    "kimi-k2.5"
+    "minimax-m2p7"
     "glm-5p1"
+    "kimi-k2.5"
+    "deepseek-v3p2"
+    "cogito-671b"
 )
 BACKENDS=(
+    "fireworks"
+    "fireworks"
+    "fireworks"
     "fireworks"
     "fireworks"
     "fireworks"
@@ -37,8 +45,11 @@ BACKENDS=(
 # Empty string means omit --model flag (uses backend default).
 MODELS=(
     "accounts/fireworks/models/gpt-oss-120b"
-    "accounts/fireworks/models/kimi-k2p5"
+    "accounts/fireworks/models/minimax-m2p7"
     "accounts/fireworks/models/glm-5p1"
+    "accounts/fireworks/models/kimi-k2p5"
+    "accounts/fireworks/models/deepseek-v3p2"
+    "accounts/fireworks/models/cogito-671b-v2-p1"
 )
 
 # ---------------------------------------------------------------------------
