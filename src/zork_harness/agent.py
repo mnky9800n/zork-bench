@@ -1129,7 +1129,7 @@ def main() -> None:
     # Default models per backend
     if args.model is None:
         defaults = {
-            "fireworks": "accounts/fireworks/models/llama4-maverick-instruct-basic",
+            "fireworks": "accounts/fireworks/models/glm-5p1",
             "anthropic": "claude-sonnet-4-6",
             "openai": "gpt-4o",
             "human": "human",
