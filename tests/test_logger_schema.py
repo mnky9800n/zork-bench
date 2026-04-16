@@ -40,6 +40,7 @@ REQUIRED_SUMMARY_FIELDS = {
     "total_input_tokens", "total_output_tokens", "room_sequence",
     "treasures_found", "treasures_deposited",
     "treasures_found_count", "treasures_deposited_count",
+    "terminated_early", "termination_reason", "last_error",
     "timestamp",
 }
 
@@ -110,6 +111,40 @@ def test_turn_detects_death_from_output(tmp_session_dir):
     summary = next(r for r in records if r["type"] == "summary")
     assert summary["deaths"] == 1
     assert summary["death_turns"] == [5]
+
+
+def test_finalize_default_termination_is_max_turns(tmp_session_dir):
+    """A session that finishes naturally records terminated_early=False."""
+    logger = SessionLogger(tmp_session_dir, game="zork1", model="test",
+                           backend="anthropic", map_mode="none")
+    logger.log_turn(turn=1, command="look", output="West of House")
+    logger.finalize()
+    records = _read_jsonl(logger.jsonl_path)
+    summary = next(r for r in records if r["type"] == "summary")
+    assert summary["terminated_early"] is False
+    assert summary["termination_reason"] == "max_turns"
+    assert summary["last_error"] is None
+
+
+def test_finalize_records_early_termination(tmp_session_dir):
+    """Caller can pass termination_reason and last_error to record an early stop."""
+    logger = SessionLogger(tmp_session_dir, game="zork1", model="test",
+                           backend="anthropic", map_mode="none")
+    logger.log_turn(turn=1, command="look", output="West of House")
+    logger.finalize(
+        termination_reason="api_error",
+        last_error="anthropic.BadRequestError: credits exhausted",
+    )
+    records = _read_jsonl(logger.jsonl_path)
+    summary = next(r for r in records if r["type"] == "summary")
+    assert summary["terminated_early"] is True
+    assert summary["termination_reason"] == "api_error"
+    assert summary["last_error"] == "anthropic.BadRequestError: credits exhausted"
+    # Transcript footer surfaces it too.
+    with open(logger.txt_path) as fh:
+        content = fh.read()
+    assert "Terminated early: api_error" in content
+    assert "credits exhausted" in content
 
 
 def test_treasure_take_and_deposit_aggregates(tmp_session_dir):

@@ -163,8 +163,20 @@ class SessionLogger:
         self._total_input_tokens = input_tokens
         self._total_output_tokens = output_tokens
 
-    def finalize(self, recorded_rooms: set[str] | None = None) -> None:
-        """Write session summary and close files."""
+    def finalize(
+        self,
+        recorded_rooms: set[str] | None = None,
+        termination_reason: str = "max_turns",
+        last_error: str | None = None,
+    ) -> None:
+        """Write session summary and close files.
+
+        termination_reason is one of: "max_turns" (loop ran to completion),
+        "api_error", "parse_failure_streak", "game_session_error",
+        "user_interrupt". `last_error` carries the raw error message when
+        applicable. `terminated_early` is derived as `termination_reason !=
+        "max_turns"` and written into the summary record.
+        """
         phantom_rooms: set[str] = set()
         if recorded_rooms:
             phantom_rooms = recorded_rooms - self._unique_rooms
@@ -197,6 +209,10 @@ class SessionLogger:
                 f"Treasures deposited ({len(self._treasures_deposited)}): "
                 f"{', '.join(sorted(self._treasures_deposited)) or 'none'}\n"
             )
+        if termination_reason != "max_turns":
+            self._txt.write(f"\nTerminated early: {termination_reason}\n")
+            if last_error:
+                self._txt.write(f"  last error: {last_error}\n")
         if recorded_rooms:
             self._txt.write(f"\nRooms recorded by model: {len(recorded_rooms)}\n")
         if phantom_rooms:
@@ -231,6 +247,9 @@ class SessionLogger:
             "treasures_deposited": sorted(self._treasures_deposited),
             "treasures_found_count": len(self._treasures_found),
             "treasures_deposited_count": len(self._treasures_deposited),
+            "terminated_early": termination_reason != "max_turns",
+            "termination_reason": termination_reason,
+            "last_error": last_error,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         self._jsonl.write(json.dumps(summary) + "\n")
