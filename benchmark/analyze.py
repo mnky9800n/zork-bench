@@ -187,6 +187,44 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
     else:
         tokens_per_score_point = float("inf")
 
+    # --- Per-turn token distribution (roadmap item #5) ---
+    # Series of total tokens spent on each turn. Skips turns with null tokens
+    # (human sessions, or crashed turns before usage was recorded).
+    per_turn_totals = [
+        (t.get("input_tokens") or 0) + (t.get("output_tokens") or 0)
+        for t in turns
+        if t.get("input_tokens") is not None or t.get("output_tokens") is not None
+    ]
+    tokens_per_turn_series: list[tuple[int, int]] = [
+        (t["turn"], (t.get("input_tokens") or 0) + (t.get("output_tokens") or 0))
+        for t in turns
+        if t.get("input_tokens") is not None or t.get("output_tokens") is not None
+    ]
+
+    def _percentile(values: list[int], pct: float) -> float | None:
+        if not values:
+            return None
+        s = sorted(values)
+        k = max(0, min(len(s) - 1, int(round((pct / 100.0) * (len(s) - 1)))))
+        return float(s[k])
+
+    if per_turn_totals:
+        mean_tokens_per_turn: float | None = sum(per_turn_totals) / len(per_turn_totals)
+        median_tokens_per_turn = _percentile(per_turn_totals, 50)
+        p90_tokens_per_turn = _percentile(per_turn_totals, 90)
+    else:
+        mean_tokens_per_turn = median_tokens_per_turn = p90_tokens_per_turn = None
+
+    # --- Thinking intensity (proxy via thinking_chars; see logger.py) ---
+    thinking_chars_series = [t.get("thinking_chars") or 0 for t in turns]
+    thinking_turns = [c for c in thinking_chars_series if c > 0]
+    if thinking_turns:
+        mean_thinking_chars_per_turn: float | None = sum(thinking_turns) / len(thinking_turns)
+        thinking_turn_fraction: float | None = len(thinking_turns) / total_turns if total_turns else None
+    else:
+        mean_thinking_chars_per_turn = None
+        thinking_turn_fraction = 0.0 if total_turns else None
+
     # --- Tool usage ---
     all_tool_calls = []
     for t in turns:
@@ -228,6 +266,13 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
         "total_tokens": total_tokens,
         "tokens_per_room": tokens_per_room,
         "tokens_per_score_point": tokens_per_score_point,
+        "mean_tokens_per_turn": mean_tokens_per_turn,
+        "median_tokens_per_turn": median_tokens_per_turn,
+        "p90_tokens_per_turn": p90_tokens_per_turn,
+        "tokens_per_turn_series": tokens_per_turn_series,
+        # Thinking (proxy via thinking_chars)
+        "mean_thinking_chars_per_turn": mean_thinking_chars_per_turn,
+        "thinking_turn_fraction": thinking_turn_fraction,
         # Tools
         "tool_calls_per_turn": tool_calls_per_turn,
         "tool_usage_breakdown": tool_usage_breakdown,
@@ -329,6 +374,8 @@ def write_csv(metrics_list: list[dict[str, Any]], output_path: Path) -> None:
         "total_deaths", "total_turns", "death_rate", "mean_turns_between_deaths",
         "total_input_tokens", "total_output_tokens", "total_tokens",
         "tokens_per_room", "tokens_per_score_point",
+        "mean_tokens_per_turn", "median_tokens_per_turn", "p90_tokens_per_turn",
+        "mean_thinking_chars_per_turn", "thinking_turn_fraction",
         "tool_calls_per_turn", "malformed_turns", "malformed_tokens",
         "phantom_room_count",
     ]
@@ -468,6 +515,64 @@ def plot_room_discovery(
     plt.close(fig)
 
 
+def plot_tokens_per_turn(
+    metrics_list: list[dict[str, Any]],
+    output_path: Path,
+) -> None:
+    """1x3 subplots (one per map_mode): per-turn total tokens over time, one line per model.
+
+    A coarse "compute-per-decision" signal, useful for spotting models that
+    front-load reasoning on specific turns vs. ones that spend uniformly.
+    Skips sessions with no token data (e.g. human play).
+    """
+    import matplotlib.pyplot as plt  # noqa: PLC0415
+
+    # Filter to sessions that actually have per-turn token data
+    has_data = [m for m in metrics_list if m.get("tokens_per_turn_series")]
+    if not has_data:
+        return
+
+    map_modes_present = {m["map_mode"] for m in has_data}
+    map_modes = [mm for mm in MAP_MODE_ORDER if mm in map_modes_present]
+    map_modes += sorted(map_modes_present - set(MAP_MODE_ORDER))
+
+    models = sorted({m["model"] for m in has_data})
+    colors = _get_model_colors(models)
+
+    fig, axes = plt.subplots(1, len(map_modes), figsize=(6 * len(map_modes), 5), sharey=False)
+    if len(map_modes) == 1:
+        axes = [axes]
+
+    for ax, mm in zip(axes, map_modes):
+        ax.set_title(f"Map mode: {mm}")
+        ax.set_xlabel("Turn")
+        ax.set_ylabel("Tokens spent (input + output)")
+        ax.grid(True, alpha=0.3)
+
+        for m in has_data:
+            if m["map_mode"] != mm:
+                continue
+            series = m["tokens_per_turn_series"]
+            if not series:
+                continue
+            turns_x = [p[0] for p in series]
+            tokens_y = [p[1] for p in series]
+            ax.plot(turns_x, tokens_y, label=m["model"],
+                    color=colors[m["model"]], linewidth=1.5, alpha=0.8)
+
+        handles = [
+            plt.Line2D([0], [0], color=colors[model], linewidth=2, label=model)
+            for model in models
+        ]
+        ax.legend(handles=handles, fontsize=8)
+
+    fig.suptitle("Tokens per Turn by Map Mode", fontsize=14)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=120, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plot_model_comparison(
     metrics_list: list[dict[str, Any]],
     output_path: Path,
@@ -582,6 +687,7 @@ def main() -> None:
 
     score_png = results_dir / "score_progression.png"
     room_png = results_dir / "room_discovery.png"
+    tokens_png = results_dir / "tokens_per_turn.png"
     comparison_png = results_dir / "model_comparison.png"
 
     plot_score_progression(metrics_list, score_png)
@@ -589,6 +695,9 @@ def main() -> None:
 
     plot_room_discovery(metrics_list, room_png)
     print(f"Chart written to: {room_png}")
+
+    plot_tokens_per_turn(metrics_list, tokens_png)
+    print(f"Chart written to: {tokens_png}")
 
     plot_model_comparison(metrics_list, comparison_png)
     print(f"Chart written to: {comparison_png}")

@@ -1,9 +1,9 @@
 """Tests for ToolRegistry: room merging, BFS pathfinding, inventory, dispatch.
 
 These tests pin the tool contract. Any LLM session replay depends on this
-behavior being identical turn-over-turn — e.g., repeated record_room calls
-must merge (not overwrite) exits + items, which the LLM depends on when it
-re-records a partially-seen room.
+behavior being identical turn-over-turn. For example, repeated record_room
+calls must merge (not overwrite) exits and items, which the LLM depends on
+when it re-records a partially-seen room.
 """
 
 import pytest
@@ -187,7 +187,7 @@ def test_execute_unknown_tool_returns_error():
 
 
 # ---------------------------------------------------------------------------
-# Schema generation — map_mode gating
+# Schema generation and map_mode gating
 # ---------------------------------------------------------------------------
 
 def test_anthropic_schemas_omit_map_tools_when_none():

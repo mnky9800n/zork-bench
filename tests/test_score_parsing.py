@@ -15,7 +15,7 @@ def parse(output: str) -> int | None:
 
 
 def test_canonical_zork_score_line():
-    """'Your score is N (total of M points).' — Zork's standard 'score' command reply."""
+    """'Your score is N (total of M points).' is Zork's standard 'score' command reply."""
     assert parse("Your score is 25 (total of 350 points), in 47 moves.") == 25
 
 

@@ -1,11 +1,11 @@
 """Tests for RoomTracker and _detect_raw_room_name.
 
-Room detection is the most fragile part of the harness — Zork reuses room
+Room detection is the most fragile part of the harness. Zork reuses room
 names (four Forest rooms, 15 maze rooms, etc.) and the tracker disambiguates
 them via description substrings and prev-room/direction transitions. These
 tests pin the three detection tiers:
 
-  1. Unambiguous names (Living Room, Kitchen) — return as-is.
+  1. Unambiguous names (Living Room, Kitchen): return as-is.
   2. Description-based (Forest "trees in all directions" -> Forest (1)).
   3. Transition-based (South of House + "south" -> Forest (3)).
 """
