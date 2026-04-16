@@ -516,8 +516,17 @@ def plot_score_progression(
     metrics_list: list[dict[str, Any]],
     output_path: Path,
 ) -> None:
-    """1x3 subplots (one per map_mode): score over turns, one line per model."""
+    """1x3 subplots (one per map_mode): score over turns, one line per model.
+
+    Humans are excluded from this chart (they have no map_mode and their
+    session names blow up the legend). Adding them as dashed baselines is
+    roadmap item #4.
+    """
     import matplotlib.pyplot as plt  # noqa: PLC0415
+
+    metrics_list = [m for m in metrics_list if m.get("player_type") != "human"]
+    if not metrics_list:
+        return
 
     map_modes_present = {m["map_mode"] for m in metrics_list}
     map_modes = [mm for mm in MAP_MODE_ORDER if mm in map_modes_present]
@@ -564,8 +573,15 @@ def plot_room_discovery(
     metrics_list: list[dict[str, Any]],
     output_path: Path,
 ) -> None:
-    """1x3 subplots (one per map_mode): cumulative unique rooms over turns."""
+    """1x3 subplots (one per map_mode): cumulative unique rooms over turns.
+
+    Humans excluded for the same reason as plot_score_progression.
+    """
     import matplotlib.pyplot as plt  # noqa: PLC0415
+
+    metrics_list = [m for m in metrics_list if m.get("player_type") != "human"]
+    if not metrics_list:
+        return
 
     map_modes_present = {m["map_mode"] for m in metrics_list}
     map_modes = [mm for mm in MAP_MODE_ORDER if mm in map_modes_present]
@@ -616,7 +632,8 @@ def plot_tokens_per_turn(
 
     A coarse "compute-per-decision" signal, useful for spotting models that
     front-load reasoning on specific turns vs. ones that spend uniformly.
-    Skips sessions with no token data (e.g. human play).
+    Skips sessions with no token data (e.g. human play, hence no human filter
+    needed; the empty-series check handles them naturally).
     """
     import matplotlib.pyplot as plt  # noqa: PLC0415
 
@@ -670,9 +687,18 @@ def plot_model_comparison(
     metrics_list: list[dict[str, Any]],
     output_path: Path,
 ) -> None:
-    """Grouped bar chart: 2 subplots (final_score, unique_rooms), bars grouped by model, colored by map_mode."""
+    """Grouped bar chart: 2 subplots (final_score, unique_rooms), bars grouped by model, colored by map_mode.
+
+    Humans are excluded; their per-session 'model_nickname' is the session
+    timestamp (since they have no model name) and that blows up the x-axis.
+    Adding humans as a separate aggregated bar group is roadmap item #4.
+    """
     import matplotlib.pyplot as plt  # noqa: PLC0415
     import numpy as np  # noqa: PLC0415
+
+    metrics_list = [m for m in metrics_list if m.get("player_type") != "human"]
+    if not metrics_list:
+        return
 
     map_modes_present = {m["map_mode"] for m in metrics_list}
     map_modes = [mm for mm in MAP_MODE_ORDER if mm in map_modes_present]
