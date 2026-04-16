@@ -4,6 +4,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from zork_harness.treasures import match_take, match_deposit
+
 
 class SessionLogger:
     def __init__(
@@ -36,6 +38,12 @@ class SessionLogger:
         self._last_turn = 0
         self._total_input_tokens = 0
         self._total_output_tokens = 0
+        # Treasure tracking: two sets, two puzzles. "Found" requires the agent
+        # to have run `take <treasure>` successfully; "deposited" requires
+        # placing it in the trophy case (a separate puzzle because of Zork's
+        # tight inventory limit).
+        self._treasures_found: set[str] = set()
+        self._treasures_deposited: set[str] = set()
 
         # Write JSONL header record
         header = {
@@ -96,6 +104,16 @@ class SessionLogger:
         # for Claude's tokenizer (documented convention, not measured per-response).
         thinking_chars = len(thinking) if thinking else 0
 
+        # Treasure detection: update running sets when this turn either takes
+        # a known treasure (game says "Taken.") or deposits one in the trophy
+        # case (game says "Done.").
+        found_id = match_take(command, output)
+        if found_id:
+            self._treasures_found.add(found_id)
+        deposited_id = match_deposit(command, output)
+        if deposited_id:
+            self._treasures_deposited.add(deposited_id)
+
         record = {
             "type": "turn",
             "turn": turn,
@@ -132,6 +150,10 @@ class SessionLogger:
             self._txt.write("[DIED]\n")
         if score is not None:
             self._txt.write(f"[score] {score}\n")
+        if found_id:
+            self._txt.write(f"[treasure found] {found_id}\n")
+        if deposited_id:
+            self._txt.write(f"[treasure deposited] {deposited_id}\n")
         self._txt.write(f"> {command}\n")
         self._txt.write(output + "\n\n")
         self._txt.flush()
@@ -166,6 +188,15 @@ class SessionLogger:
             total = self._total_input_tokens + self._total_output_tokens
             self._txt.write(f"\nTokens: {self._total_input_tokens:,} input, "
                             f"{self._total_output_tokens:,} output, {total:,} total\n")
+        if self._treasures_found or self._treasures_deposited:
+            self._txt.write(
+                f"\nTreasures found ({len(self._treasures_found)}): "
+                f"{', '.join(sorted(self._treasures_found)) or 'none'}\n"
+            )
+            self._txt.write(
+                f"Treasures deposited ({len(self._treasures_deposited)}): "
+                f"{', '.join(sorted(self._treasures_deposited)) or 'none'}\n"
+            )
         if recorded_rooms:
             self._txt.write(f"\nRooms recorded by model: {len(recorded_rooms)}\n")
         if phantom_rooms:
@@ -196,6 +227,10 @@ class SessionLogger:
             "total_input_tokens": self._total_input_tokens,
             "total_output_tokens": self._total_output_tokens,
             "room_sequence": self._rooms_visited,
+            "treasures_found": sorted(self._treasures_found),
+            "treasures_deposited": sorted(self._treasures_deposited),
+            "treasures_found_count": len(self._treasures_found),
+            "treasures_deposited_count": len(self._treasures_deposited),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         self._jsonl.write(json.dumps(summary) + "\n")
