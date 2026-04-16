@@ -6,10 +6,70 @@ import os
 import re
 import sys
 import threading
+import time
 
 from zork_harness.logger import SessionLogger
-from zork_harness.session import GAMES, ZorkSession
+from zork_harness.session import GAMES, GameSessionError, ZorkSession
 from zork_harness.tools import ToolRegistry, get_anthropic_schemas, get_openai_schemas
+
+
+# ---------------------------------------------------------------------------
+# LLM API resilience
+# ---------------------------------------------------------------------------
+
+# Exception class names we definitely should NOT retry. These are surfaced
+# unchanged so the user sees a clear error (auth failure, bad request, etc).
+_NON_RETRIABLE_LLM_ERRORS = frozenset({
+    "BadRequestError",          # 400: malformed request, credits exhausted
+    "AuthenticationError",      # 401
+    "PermissionDeniedError",    # 403
+    "NotFoundError",            # 404
+    "UnprocessableEntityError", # 422
+})
+
+
+def _is_retriable_llm_error(exc: Exception) -> bool:
+    """Return True if `exc` looks like a transient LLM API error worth retrying.
+
+    Conservative by design: explicit retry rules, default to not retrying.
+    Status-code-based detection (5xx, 429) plus a small allowlist of error
+    class names from the OpenAI and Anthropic SDKs.
+    """
+    name = type(exc).__name__
+    if name in _NON_RETRIABLE_LLM_ERRORS:
+        return False
+    status = getattr(exc, "status_code", None)
+    if status is not None:
+        return status >= 500 or status == 429
+    return any(s in name for s in ("APIError", "APIConnection", "Timeout", "ConnectionError"))
+
+
+def _call_llm_with_retry(
+    call_fn,
+    *args,
+    max_attempts: int = 3,
+    base_delay: float = 2.0,
+    label: str = "LLM",
+    **kwargs,
+):
+    """Run ``call_fn(*args, **kwargs)`` with exponential backoff on transient errors.
+
+    Backoff: base_delay * 2^(attempt-1). With defaults, retry delays are 2s, 4s.
+    Non-retriable errors (auth, bad request, etc.) re-raise immediately.
+    Retriable errors that exhaust max_attempts also re-raise the last exception.
+    """
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return call_fn(*args, **kwargs)
+        except Exception as exc:
+            if not _is_retriable_llm_error(exc):
+                raise
+            if attempt >= max_attempts:
+                raise
+            delay = base_delay * (2 ** (attempt - 1))
+            print(f"  [{label} attempt {attempt}/{max_attempts} failed: {type(exc).__name__}: {exc}]")
+            print(f"  [retrying in {delay:.0f}s]")
+            time.sleep(delay)
 
 # ---------------------------------------------------------------------------
 # System prompt fragments
@@ -704,6 +764,13 @@ def run_agent(
     total_input_tokens = 0
     total_output_tokens = 0
 
+    # Termination tracking. Default to "max_turns" if the loop runs to
+    # completion. Set to a more specific reason from the catch sites below.
+    termination_reason: str = "max_turns"
+    last_error: str | None = None
+    consecutive_parse_failures = 0
+    MAX_CONSECUTIVE_PARSE_FAILURES = 5
+
     for turn in range(1, max_turns + 1):
         tool_calls_this_turn: list[dict] = []
         thinking_text = None
@@ -718,16 +785,29 @@ def run_agent(
 
         # Inner loop: handle tool use until we get a plain text response
         while True:
-            if is_anthropic:
-                result = _run_anthropic(
-                    client, model, system_prompt, tool_schemas, messages,
-                    thinking, budget_tokens,
-                )
-            else:
-                result = _run_openai(
-                    client, model, system_prompt, tool_schemas, messages,
-                    thinking=thinking,
-                )
+            try:
+                if is_anthropic:
+                    result = _call_llm_with_retry(
+                        _run_anthropic,
+                        client, model, system_prompt, tool_schemas, messages,
+                        thinking, budget_tokens,
+                        label=f"anthropic turn {turn}",
+                    )
+                else:
+                    result = _call_llm_with_retry(
+                        _run_openai,
+                        client, model, system_prompt, tool_schemas, messages,
+                        thinking=thinking,
+                        label=f"openai turn {turn}",
+                    )
+            except Exception as exc:
+                # Either retries exhausted on a transient, or a non-retriable
+                # error like auth failure / credits exhausted. Either way,
+                # we cannot continue the run.
+                termination_reason = "api_error"
+                last_error = f"{type(exc).__name__}: {exc}"
+                print(f"[Stopping: LLM API error ({last_error})]")
+                break
 
             # Track tokens
             total_input_tokens += result["usage"]["input"]
@@ -786,6 +866,12 @@ def run_agent(
             text = result["text"]
             break
 
+        # If the inner while broke because of an LLM API error, the outer
+        # for loop also has to stop (termination_reason was set, last_error
+        # was set, but we'd otherwise fall through and try to use `result`).
+        if termination_reason != "max_turns":
+            break
+
         command = _extract_command(text)
         if command is None:
             # Give the model one more chance with a nudge
@@ -793,10 +879,25 @@ def run_agent(
                 "role": "user",
                 "content": "Now issue a game command. Your response must end with the command on its own line prefixed with \"> \".",
             })
-            if is_anthropic:
-                retry = _run_anthropic(client, model, system_prompt, tool_schemas, messages, thinking, budget_tokens)
-            else:
-                retry = _run_openai(client, model, system_prompt, tool_schemas, messages)
+            try:
+                if is_anthropic:
+                    retry = _call_llm_with_retry(
+                        _run_anthropic,
+                        client, model, system_prompt, tool_schemas, messages,
+                        thinking, budget_tokens,
+                        label=f"anthropic turn {turn} (parse-retry)",
+                    )
+                else:
+                    retry = _call_llm_with_retry(
+                        _run_openai,
+                        client, model, system_prompt, tool_schemas, messages,
+                        label=f"openai turn {turn} (parse-retry)",
+                    )
+            except Exception as exc:
+                termination_reason = "api_error"
+                last_error = f"{type(exc).__name__}: {exc}"
+                print(f"[Stopping: LLM API error during parse-retry ({last_error})]")
+                break
             total_input_tokens += retry["usage"]["input"]
             total_output_tokens += retry["usage"]["output"]
             if viewer:
@@ -806,12 +907,51 @@ def run_agent(
                 command = _extract_command(text)
 
         if command is None:
-            print(f"[turn {turn}] Could not parse a command from model response:")
+            consecutive_parse_failures += 1
+            print(f"[turn {turn}] Could not parse a command from model response "
+                  f"({consecutive_parse_failures}/{MAX_CONSECUTIVE_PARSE_FAILURES} "
+                  f"consecutive parse failures):")
             print(text)
-            print("[Stopping]")
-            break
+            # Log a malformed turn so it shows in the Malfrm column and the
+            # transcript records what the model actually emitted.
+            logger.log_turn(
+                turn=turn,
+                command="",
+                output="",
+                tool_calls=tool_calls_this_turn,
+                thinking=thinking_text,
+                reasoning=text,
+                room=None,
+                score=None,
+                malformed=True,
+                input_tokens=total_input_tokens - turn_input_start,
+                output_tokens=total_output_tokens - turn_output_start,
+            )
+            if consecutive_parse_failures >= MAX_CONSECUTIVE_PARSE_FAILURES:
+                termination_reason = "parse_failure_streak"
+                last_error = (f"{consecutive_parse_failures} consecutive turns "
+                              f"with no parsable game command")
+                print(f"[Stopping: {last_error}]")
+                break
+            # Nudge the model toward valid output and try the next turn.
+            messages.append({
+                "role": "user",
+                "content": ("Your previous response did not contain a parsable game "
+                            "command. Issue exactly ONE game command on its own line, "
+                            "prefixed with '> '."),
+            })
+            continue
 
-        game_output = session.send_command(command)
+        # A successful parse resets the failure streak.
+        consecutive_parse_failures = 0
+
+        try:
+            game_output = session.send_command(command)
+        except GameSessionError as exc:
+            termination_reason = "game_session_error"
+            last_error = str(exc)
+            print(f"[Stopping: game session ended ({exc})]")
+            break
 
         turn_input_tokens = total_input_tokens - turn_input_start
         turn_output_tokens = total_output_tokens - turn_output_start
@@ -887,8 +1027,15 @@ def run_agent(
 
     session.close()
     logger.set_tokens(total_input_tokens, total_output_tokens)
-    logger.finalize(recorded_rooms=registry.recorded_rooms)
-    print(f"Session ended. Transcript: {logger.txt_path}")
+    logger.finalize(
+        recorded_rooms=registry.recorded_rooms,
+        termination_reason=termination_reason,
+        last_error=last_error,
+    )
+    if termination_reason != "max_turns":
+        print(f"Session ended early: {termination_reason}"
+              + (f" ({last_error})" if last_error else ""))
+    print(f"Transcript: {logger.txt_path}")
     print(f"Session data: {logger.jsonl_path}")
 
 
