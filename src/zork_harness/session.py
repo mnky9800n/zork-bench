@@ -5,6 +5,18 @@ import shutil
 import subprocess
 import pexpect
 
+
+class GameSessionError(Exception):
+    """Raised when the underlying game process becomes unusable.
+
+    The agent loop catches this and terminates the session cleanly with a
+    `termination_reason="game_session_error"` summary entry. The exception is
+    deliberately emulator-agnostic: ZorkSession (dfrotz) raises it on EOF or
+    persistent timeout, but any future Z-machine emulator implementation can
+    raise the same type from its own dead-process detection without the agent
+    loop needing to change.
+    """
+
 GAMES: dict[str, str] = {
     "abyss": "abyss-r1-s890320.z6",
     "amfv": "amfv-r77-s850814.z4",
@@ -126,9 +138,13 @@ class ZorkSession:
         return self._read_until_prompt(timeout=30)
 
     def send_command(self, command: str) -> str:
-        """Send a command to the game and return the response text."""
+        """Send a command to the game and return the response text.
+
+        Raises GameSessionError if the game process is dead or becomes dead
+        during the read.
+        """
         if self.process is None or not self.process.isalive():
-            raise RuntimeError("Game session is not running. Call start() first.")
+            raise GameSessionError("Game session is not running.")
 
         self.process.sendline(command)
         response = self._read_until_prompt()
@@ -163,13 +179,18 @@ class ZorkSession:
         self.process = None
 
     def _read_until_prompt(self, timeout: int = 10) -> str:
-        """Read output until dfrotz is waiting for input (prompt ends with '>\\n')."""
+        """Read output until dfrotz is waiting for input (prompt ends with '>\\n').
+
+        Raises GameSessionError if the game process has ended (pexpect EOF).
+        Times out gracefully on slow output (returns whatever was read) since
+        the model may still be able to recover from a partial response.
+        """
         try:
             self.process.expect(r"\n>", timeout=timeout)
             output = self.process.before
         except pexpect.TIMEOUT:
             output = self.process.before or ""
         except pexpect.EOF:
-            return "[Game process ended]"
+            raise GameSessionError("Game process ended unexpectedly (EOF).") from None
 
         return _ANSI_ESCAPE.sub("", output).strip()
