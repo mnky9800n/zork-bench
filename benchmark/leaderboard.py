@@ -41,7 +41,7 @@ def _stats(turns: list[dict]) -> tuple[int, int, int, float | None]:
     """Return (n_turns, max_score, unique_rooms, mean_tokens_per_turn).
 
     mean_tokens_per_turn is None when no turn logged token usage (e.g. human
-    sessions) — callers render this as '—'.
+    sessions); callers render this as '-'.
     """
     scores = [t.get("score") for t in turns if t.get("score") is not None]
     rooms = {t.get("room") for t in turns if t.get("room")}
@@ -78,7 +78,7 @@ def _best_per_leaf(results_dir: Path) -> list[Path]:
 
 def _fmt_tpt(tpt: float | None) -> str:
     if tpt is None:
-        return "—"
+        return "-"
     return f"{tpt:,.0f}"
 
 

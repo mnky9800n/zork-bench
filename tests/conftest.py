@@ -16,8 +16,8 @@ def sample_session_jsonl() -> Path:
     """A real recorded zork1 session log used as a source of game-output fixtures.
 
     Picking the most recent claude-sonnet-4-6 none-mode session gives us a
-    transcript rich in maze/forest traversal — the disambiguation edge cases
-    we most want to exercise.
+    transcript rich in maze/forest traversal, which is where the
+    disambiguation edge cases we most want to exercise live.
     """
     path = RESULTS_DIR / "claude-sonnet-4-6" / "none" / "session_20260412T135923Z.jsonl"
     if not path.exists():

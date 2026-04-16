@@ -3,8 +3,8 @@
 Downstream analysis (benchmark/analyze.py, benchmark/leaderboard.py) depends
 on specific field names and shapes. This test pins the header/turn/summary
 record schemas. When later roadmap items extend the schema (e.g. adding
-`treasure_events` or `thinking_tokens`), update this test to include them
-— *and* verify old session files remain parseable (analyze uses .get() with
+`treasure_events` or `thinking_tokens`), update this test to include them,
+and verify old session files remain parseable (analyze uses .get() with
 default None, so additive changes are backwards-compatible).
 """
 

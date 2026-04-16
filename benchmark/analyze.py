@@ -521,7 +521,7 @@ def plot_tokens_per_turn(
 ) -> None:
     """1x3 subplots (one per map_mode): per-turn total tokens over time, one line per model.
 
-    A coarse "compute-per-decision" signal — useful for spotting models that
+    A coarse "compute-per-decision" signal, useful for spotting models that
     front-load reasoning on specific turns vs. ones that spend uniformly.
     Skips sessions with no token data (e.g. human play).
     """
