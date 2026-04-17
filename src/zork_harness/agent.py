@@ -712,6 +712,7 @@ def run_agent(
     viewer=None,
     map_mode: str = "explore",
     backend: str = "fireworks",
+    base_url: str | None = None,
 ) -> None:
     registry = ToolRegistry(map_mode=map_mode)
     system_prompt = _build_system_prompt(map_mode)
@@ -725,17 +726,19 @@ def run_agent(
     else:
         from openai import OpenAI
         if backend == "fireworks":
+            url = base_url or "https://api.fireworks.ai/inference/v1"
             api_key = os.environ.get("FIREWORKS_API_KEY")
             if not api_key:
                 print("Error: FIREWORKS_API_KEY environment variable is not set.")
                 print("Run: export FIREWORKS_API_KEY=your-key-here")
                 sys.exit(1)
-            client = OpenAI(
-                api_key=api_key,
-                base_url="https://api.fireworks.ai/inference/v1",
-            )
+            client = OpenAI(api_key=api_key, base_url=url)
         elif backend == "openai":
-            client = OpenAI()
+            kwargs: dict = {}
+            if base_url:
+                kwargs["base_url"] = base_url
+                kwargs["api_key"] = os.environ.get("OPENAI_API_KEY", "ollama")
+            client = OpenAI(**kwargs)
         else:
             raise ValueError(f"Unknown backend: {backend}")
         tool_schemas = get_openai_schemas(map_mode)
@@ -1099,6 +1102,15 @@ def main() -> None:
         action="store_true",
         help="Human play mode: play the game yourself with the map tracker.",
     )
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        help=(
+            "Override the API base URL. Use with --backend openai to point at "
+            "a local server (e.g. http://localhost:11434/v1 for Ollama). "
+            "For --backend fireworks, overrides the Fireworks endpoint."
+        ),
+    )
     args = parser.parse_args()
 
     # Human play mode: --play or --backend human
@@ -1158,6 +1170,7 @@ def main() -> None:
                 viewer=viewer,
                 map_mode=args.map_mode,
                 backend=args.backend,
+                base_url=args.base_url,
             )
         except KeyboardInterrupt:
             pass
