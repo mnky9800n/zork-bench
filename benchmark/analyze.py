@@ -355,6 +355,11 @@ def compute_metrics(session: dict[str, Any]) -> dict[str, Any]:
 
 MAP_MODE_ORDER = ["none", "explore", "full"]
 
+# Sessions shorter than this are excluded from charts. Filters out stub runs
+# (e.g. 5-turn quick tests) and dead-model sessions (0 turns from a 404) that
+# would otherwise appear as flat-zero lines cluttering the legend.
+MIN_CHART_TURNS = 50
+
 def _format_tokens(n: int) -> str:
     if n == 0:
         return "N/A"
@@ -559,7 +564,9 @@ def plot_score_progression(
     """
     import matplotlib.pyplot as plt  # noqa: PLC0415
 
-    metrics_list = [m for m in metrics_list if m.get("player_type") != "human"]
+    metrics_list = [m for m in metrics_list
+                    if m.get("player_type") != "human"
+                    and m.get("total_turns", 0) >= MIN_CHART_TURNS]
     if not metrics_list:
         return
 
@@ -608,13 +615,12 @@ def plot_room_discovery(
     metrics_list: list[dict[str, Any]],
     output_path: Path,
 ) -> None:
-    """1x3 subplots (one per map_mode): cumulative unique rooms over turns.
-
-    Humans excluded for the same reason as plot_score_progression.
-    """
+    """1x3 subplots (one per map_mode): cumulative unique rooms over turns."""
     import matplotlib.pyplot as plt  # noqa: PLC0415
 
-    metrics_list = [m for m in metrics_list if m.get("player_type") != "human"]
+    metrics_list = [m for m in metrics_list
+                    if m.get("player_type") != "human"
+                    and m.get("total_turns", 0) >= MIN_CHART_TURNS]
     if not metrics_list:
         return
 
@@ -672,8 +678,10 @@ def plot_tokens_per_turn(
     """
     import matplotlib.pyplot as plt  # noqa: PLC0415
 
-    # Filter to sessions that actually have per-turn token data
-    has_data = [m for m in metrics_list if m.get("tokens_per_turn_series")]
+    # Filter to sessions that actually have per-turn token data and enough turns
+    has_data = [m for m in metrics_list
+                if m.get("tokens_per_turn_series")
+                and m.get("total_turns", 0) >= MIN_CHART_TURNS]
     if not has_data:
         return
 
@@ -731,7 +739,9 @@ def plot_model_comparison(
     import matplotlib.pyplot as plt  # noqa: PLC0415
     import numpy as np  # noqa: PLC0415
 
-    metrics_list = [m for m in metrics_list if m.get("player_type") != "human"]
+    metrics_list = [m for m in metrics_list
+                    if m.get("player_type") != "human"
+                    and m.get("total_turns", 0) >= MIN_CHART_TURNS]
     if not metrics_list:
         return
 
