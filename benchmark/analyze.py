@@ -631,7 +631,7 @@ def plot_room_discovery(
     models = sorted({m["model"] for m in metrics_list})
     colors = _get_model_colors(models)
 
-    fig, axes = plt.subplots(1, len(map_modes), figsize=(6 * len(map_modes), 5), sharey=False)
+    fig, axes = plt.subplots(1, len(map_modes), figsize=(6 * len(map_modes), 5), sharey=True)
     if len(map_modes) == 1:
         axes = [axes]
 
