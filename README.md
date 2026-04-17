@@ -6,6 +6,22 @@ LLMs are bad at text adventures ([arxiv.org/abs/2602.15867](https://arxiv.org/ab
 
 Standard LLM benchmarks measure component skills in isolation. Text adventures measure whether those skills compose into coherent agent behavior over extended interactions. The gap between a model's component scores and its gameplay performance reveals how well it integrates reasoning, memory, and planning which is the core unsolved problem in building capable AI agents.
 
+### Room discovery
+
+How quickly does each model explore Zork's ~40 rooms? Each line shows cumulative unique rooms visited over 500 turns. The three panels correspond to how much spatial help the model gets: `none` (no map tools, pure memory), `explore` (builds its own map with tools), and `full` (pre-loaded complete map).
+
+![Room Discovery Curve by Map Mode](benchmark/results/room_discovery.png)
+
+Models that plateau early have gotten stuck or are looping. The shared y-axis makes it clear that `explore` mode (where the model builds its own map) produces the most exploration, while `full` mode (pre-loaded map) does not automatically translate to more rooms visited. Some models explore *less* with a full map because they fixate on pathfinding to known rooms instead of pushing into new territory.
+
+### Tokens per turn
+
+How much compute does each model spend per game decision? Each bar shows the total tokens (input + output) consumed on a single turn. Spikes indicate turns where the model reasoned extensively or generated long tool-call chains.
+
+![Tokens per Turn by Map Mode](benchmark/results/tokens_per_turn.png)
+
+The cost of spatial reasoning is visible here: `explore` and `full` modes (which have map tools) tend to produce higher per-turn token counts than `none` mode, because every tool call adds tokens. But the relationship between token spend and game performance is not linear. kimi-k2.5 scores highest while staying relatively cheap per turn. glm-5p1 has massive 500K+ token spikes but does not score proportionally higher. Spending more tokens per decision does not mean making better decisions.
+
 ## How it works
 
 An LLM plays Zork through a game session running in Docker (dfrotz + Infocom game files). The harness manages the game I/O, provides tools the LLM can use (self-built map, inventory tracking, notes), and logs everything for analysis.
