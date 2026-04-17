@@ -1,0 +1,17 @@
+Zork Harness Session - 20260417T055112Z
+Game: zork1 | Player: accounts/fireworks/models/deepseek-v3p2 (fireworks)
+Map mode: full
+============================================================
+
+============================================================
+SESSION SUMMARY
+============================================================
+Player: accounts/fireworks/models/deepseek-v3p2 (fireworks)
+Total turns: 0
+Deaths: 0
+Unique rooms visited: 0
+
+Terminated early: api_error
+  last error: InternalServerError: no healthy upstream
+
+Room visit sequence:

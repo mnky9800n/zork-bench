@@ -1,0 +1,5740 @@
+Zork Harness Session - 20260417T030629Z
+Game: zork1 | Player: accounts/fireworks/models/kimi-k2p5 (fireworks)
+Map mode: none
+============================================================
+
+--- Turn 1 ---
+[reasoning]
+I see I'm at the starting location of Zork I, west of the white house. There's a small mailbox here that's worth investigating.
+
+> open mailbox
+[/reasoning]
+
+[score] 0
+> open mailbox
+Opening the small mailbox reveals a leaflet.
+
+--- Turn 2 ---
+[thinking]
+The mailbox is open and there's a leaflet inside. Let me take the leaflet to read it - this is likely the introductory text that will give me some hints about the game or the house.
+
+I should take the leaflet and read it.
+[/thinking]
+
+[reasoning]
+> take leaflet
+[/reasoning]
+
+[tool] add_note({'note': 'Game starts at West of House. Mailbox contains a leaflet.'})
+       => Note recorded. Total notes: 1
+[tool] update_inventory({'action': 'add', 'item': 'leaflet'})
+       => ['leaflet']
+[score] 0
+> take leaflet
+Taken.
+
+--- Turn 3 ---
+[reasoning]
+> read leaflet
+[/reasoning]
+
+[score] 0
+> read leaflet
+"WELCOME TO ZORK!
+
+ZORK is a game of adventure, danger, and low cunning. In it you will explore
+some of the most amazing territory ever seen by mortals. No computer should be
+without one!"
+
+--- Turn 4 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] West of House
+[score] 0
+> look
+West of House
+You are standing in an open field west of a white house, with a boarded front
+door.
+There is a small mailbox here.
+
+--- Turn 5 ---
+[thinking]
+The mailbox is empty now since I took the leaflet. I need to explore. Let me check the other directions. I know there's a house to the east with a boarded front door. Let me try going south first to see what's there.
+[/thinking]
+
+[reasoning]
+> go north
+[/reasoning]
+
+[tool] add_note({'note': "House front door is boarded - can't enter through front door."})
+       => Note recorded. Total notes: 2
+[room] North of House
+[score] 0
+> go north
+North of House
+You are facing the north side of a white house. There is no door here, and all
+the windows are boarded up. To the north a narrow path winds through the trees.
+
+--- Turn 6 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Forest Path
+[score] 0
+> go north
+Forest Path
+This is a path winding through a dimly lit forest. The path heads north-south
+here. One particularly large tree with some low branches stands at the edge of
+the path.
+
+--- Turn 7 ---
+[reasoning]
+> climb tree
+[/reasoning]
+
+[room] Up a Tree
+[score] 0
+> climb tree
+Up a Tree
+You are about 10 feet above the ground nestled among some large branches. The
+nearest branch above you is above your reach.
+Beside you on the branch is a small bird's nest.
+In the bird's nest is a large egg encrusted with precious jewels, apparently
+scavenged by a childless songbird. The egg is covered with fine gold inlay, and
+ornamented in lapis lazuli and mother-of-pearl. Unlike most eggs, this one is
+hinged and closed with a delicate looking clasp. The egg appears extremely
+fragile.
+
+--- Turn 8 ---
+[reasoning]
+> take egg
+[/reasoning]
+
+[score] 5
+[treasure found] egg
+> take egg
+Taken.
+
+--- Turn 9 ---
+[thinking]
+The description says the egg is hinged and closed with a delicate clasp, which means it can probably be opened. But first, let me make a note of it and record this in my inventory.
+[/thinking]
+
+[reasoning]
+> go down
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'jeweled egg'})
+       => ['leaflet', 'jeweled egg']
+[tool] add_note({'note': "Up a Tree - found jeweled egg in bird's nest. Egg is hinged with delicate clasp - can be opened."})
+       => Note recorded. Total notes: 3
+[room] Forest Path
+[score] 5
+> go down
+Forest Path
+
+--- Turn 10 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Clearing (north)
+[score] 5
+> go north
+Clearing
+You are in a clearing, with a forest surrounding you on all sides. A path leads
+south.
+On the ground is a pile of leaves.
+
+--- Turn 11 ---
+[reasoning]
+> move leaves
+[/reasoning]
+
+[score] 5
+> move leaves
+Done.
+In disturbing the pile of leaves, a grating is revealed.
+
+--- Turn 12 ---
+[thinking]
+I found a grating under the leaves. This is likely a way to get underground. Let me investigate the grating.
+[/thinking]
+
+[reasoning]
+> open grating
+[/reasoning]
+
+[tool] add_note({'note': 'Clearing - grating hidden under pile of leaves. This is likely an entrance to underground.'})
+       => Note recorded. Total notes: 4
+[score] 5
+> open grating
+The grating is locked.
+
+--- Turn 13 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Forest Path
+[score] 5
+> go south
+Forest Path
+
+--- Turn 14 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] North of House
+[score] 5
+> go south
+North of House
+
+--- Turn 15 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[score] 5
+> go south
+The windows are all boarded.
+
+--- Turn 16 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] West of House
+[score] 5
+> go west
+West of House
+There is a small mailbox here.
+
+--- Turn 17 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] South of House
+[score] 5
+> go south
+South of House
+You are facing the south side of a white house. There is no door here, and all
+the windows are boarded.
+
+--- Turn 18 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Behind House
+[score] 5
+> go east
+Behind House
+You are behind the white house. A path leads into the forest to the east. In one
+corner of the house there is a small window which is slightly ajar.
+
+--- Turn 19 ---
+[reasoning]
+> enter window
+[/reasoning]
+
+[score] 5
+> enter window
+The kitchen window is closed.
+
+--- Turn 20 ---
+[reasoning]
+> open window
+[/reasoning]
+
+[score] 5
+> open window
+With great effort, you open the window far enough to allow entry.
+
+--- Turn 21 ---
+[reasoning]
+> enter window
+[/reasoning]
+
+[room] Kitchen
+[score] 15
+> enter window
+Kitchen
+You are in the kitchen of the white house. A table seems to have been used
+recently for the preparation of food. A passage leads to the west and a dark
+staircase can be seen leading upward. A dark chimney leads down and to the east
+is a small window which is open.
+On the table is an elongated brown sack, smelling of hot peppers.
+A bottle is sitting on the table.
+The glass bottle contains:
+  A quantity of water
+
+--- Turn 22 ---
+[reasoning]
+> take bottle
+[/reasoning]
+
+[score] 15
+> take bottle
+Taken.
+
+--- Turn 23 ---
+[thinking]
+The bottle contains water. In Zork, having a source of water can be useful, and bottles can be used to carry other liquids. Let me take the sack as well.
+[/thinking]
+
+[reasoning]
+> take sack
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'glass bottle'})
+       => ['leaflet', 'jeweled egg', 'glass bottle']
+[score] 15
+> take sack
+Taken.
+
+--- Turn 24 ---
+[thinking]
+The sack is now in my inventory. I should track it and then explore the house.
+[/thinking]
+
+[reasoning]
+> go chimney
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'brown sack (hot peppers)'})
+       => ['leaflet', 'jeweled egg', 'glass bottle', 'brown sack (hot peppers)']
+[score] 15
+> go chimney
+Warning: @jin called with object 0 (PC = 8bea) (will ignore further occurrences)
+You should supply a direction!
+
+--- Turn 25 ---
+[reasoning]
+> down
+[/reasoning]
+
+[score] 15
+> down
+Only Santa Claus climbs down chimneys.
+
+--- Turn 26 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Living Room
+[score] 15
+> go west
+Living Room
+You are in the living room. There is a doorway to the east, a wooden door with
+strange gothic lettering to the west, which appears to be nailed shut, a trophy
+case, and a large oriental rug in the center of the room.
+Above the trophy case hangs an elvish sword of great antiquity.
+A battery-powered brass lantern is on the trophy case.
+
+--- Turn 27 ---
+[reasoning]
+> take lantern
+[/reasoning]
+
+[score] 15
+> take lantern
+Taken.
+
+--- Turn 28 ---
+[thinking]
+The lantern is important - it will help me see in dark areas. I should take the sword too, and investigate the gothic lettering on the door. The trophy case is where I should put treasures to increase my score.
+[/thinking]
+
+[reasoning]
+> take sword
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'brass lantern'})
+       => ['leaflet', 'jeweled egg', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern']
+[score] 15
+> take sword
+Taken.
+
+--- Turn 29 ---
+[thinking]
+I now have the sword. This is a key item for fighting enemies in the game. Let me update my inventory and then explore more.
+[/thinking]
+
+[reasoning]
+> open case
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'elvish sword'})
+       => ['leaflet', 'jeweled egg', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'elvish sword']
+[score] 15
+> open case
+Opened.
+
+--- Turn 30 ---
+[reasoning]
+> put egg in case
+[/reasoning]
+
+[score] 20
+> put egg in case
+Done.
+
+--- Turn 31 ---
+[thinking]
+The jeweled egg is now safely in the trophy case. Let me explore more. I should go down the trapdoor that might be under the rug.
+[/thinking]
+
+[reasoning]
+> move rug
+[/reasoning]
+
+[tool] update_inventory({'action': 'remove', 'item': 'jeweled egg'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'elvish sword']
+[score] 20
+> move rug
+With a great effort, the rug is moved to one side of the room, revealing the
+dusty cover of a closed trap door.
+
+--- Turn 32 ---
+[thinking]
+The trap door was under the rug. This is another entrance to the underground.
+[/thinking]
+
+[reasoning]
+> open trap door
+[/reasoning]
+
+[tool] add_note({'note': 'Living Room - trap door under the rug leads underground.'})
+       => Note recorded. Total notes: 5
+[score] 20
+> open trap door
+The door reluctantly opens to reveal a rickety staircase descending into
+darkness.
+
+--- Turn 33 ---
+[reasoning]
+> turn on lantern
+[/reasoning]
+
+[score] 20
+> turn on lantern
+The brass lantern is now on.
+
+--- Turn 34 ---
+[reasoning]
+> down
+[/reasoning]
+
+[room] Cellar
+[score] 45
+> down
+The trap door crashes shut, and you hear someone barring it.
+
+Cellar
+You are in a dark and damp cellar with a narrow passageway leading north, and a
+crawlway to the south. On the west is the bottom of a steep metal ramp which is
+unclimbable.
+Your sword is glowing with a faint blue glow.
+
+--- Turn 35 ---
+[thinking]
+The trap door was barred behind me - I'm trapped down here now. The sword is glowing blue, which means there's danger/enemies nearby. I need to explore carefully.
+
+I have a few options: north passageway, south crawlway, or the metal ramp (which is unclimbable from this side).
+
+Let me check the map logic - typically in Zork, the cellar connects to the tunnel system. Let me go north first to see what's there.
+[/thinking]
+
+[reasoning]
+> go north
+[/reasoning]
+
+[tool] add_note({'note': 'Cellar - trap door barred behind me! Sword glowing blue = danger nearby. Exits: north, south, west (ramp unclimbable).'})
+       => Note recorded. Total notes: 6
+[score] 45
+> go north
+The Troll Room
+This is a small room with passages to the east and south and a forbidding hole
+leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the
+walls.
+A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the
+room.
+Your sword has begun to glow very brightly.
+
+--- Turn 36 ---
+[reasoning]
+> kill troll
+[/reasoning]
+
+[score] 45
+> kill troll
+(with the sword)
+The troll is knocked out!
+
+--- Turn 37 ---
+[reasoning]
+> kill troll
+[/reasoning]
+
+[score] 45
+> kill troll
+(with the sword)
+The unarmed troll cannot defend himself: He dies.
+Almost as soon as the troll breathes his last breath, a cloud of sinister black
+fog envelops him, and when the fog lifts, the carcass has disappeared.
+Your sword is no longer glowing.
+
+--- Turn 38 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Cellar
+[score] 45
+> go south
+Cellar
+
+--- Turn 39 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 45
+> go north
+The Troll Room
+There is a bloody axe here.
+
+--- Turn 40 ---
+[reasoning]
+> take axe
+[/reasoning]
+
+[score] 45
+> take axe
+Taken.
+Someone carrying a large bag is casually leaning against one of the walls here.
+He does not speak, but it is clear from his aspect that the bag will be taken
+only over his dead body.
+Your sword has begun to glow very brightly.
+
+--- Turn 41 ---
+[reasoning]
+> kill thief
+[/reasoning]
+
+[score] 45
+> kill thief
+What do you want to kill the thief with?
+
+--- Turn 42 ---
+[reasoning]
+> kill thief with sword
+[/reasoning]
+
+[score] 45
+> kill thief with sword
+The thief is struck on the arm; blood begins to trickle down.
+The thief just left, still carrying his large bag. You may not have noticed that
+he robbed you blind first.
+
+--- Turn 43 ---
+[reasoning]
+> inventory
+[/reasoning]
+
+[score] 45
+> inventory
+You are carrying:
+  A bloody axe
+  A brass lantern (providing light)
+  A brown sack
+  A glass bottle
+  The glass bottle contains:
+    A quantity of water
+  A leaflet
+
+--- Turn 44 ---
+[thinking]
+The thief took my elvish sword! That's devastating. I need to find the thief and get my sword back, or find another weapon. Let me see what I still have:
+- bloody axe
+- brass lantern (on)
+- brown sack
+- glass bottle with water
+- leaflet
+
+I lost the elvish sword. I should probably try to find the thief and get it back. The thief went somewhere, probably further into the dungeon. Let me explore and try to find him.
+
+Let me continue exploring. I can go east or west from the Troll Room.
+[/thinking]
+
+[reasoning]
+> go east
+[/reasoning]
+
+[tool] update_inventory({'action': 'remove', 'item': 'elvish sword'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern']
+[tool] add_note({'note': 'Thief stole my elvish sword! Need to find him to get it back. Theif carries a large bag and is dangerous.'})
+       => Note recorded. Total notes: 7
+[room] East-West Passage
+[score] 50
+> go east
+East-West Passage
+This is a narrow east-west passageway. There is a narrow stairway leading down
+at the north end of the room.
+
+--- Turn 45 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Round Room
+[score] 50
+> go east
+Round Room
+This is a circular stone room with passages in all directions. Several of them
+have unfortunately been blocked by cave-ins.
+
+--- Turn 46 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[score] 50
+> go down
+You can't go that way.
+
+--- Turn 47 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] North-South Passage
+[score] 50
+> go north
+North-South Passage
+This is a high north-south passage, which forks to the northeast.
+
+--- Turn 48 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Chasm
+[score] 50
+> go north
+Chasm
+A chasm runs southwest to northeast and the path follows it. You are on the
+south side of the chasm, where a crack opens into a passage.
+
+--- Turn 49 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Reservoir South
+[score] 50
+> go northeast
+Reservoir South
+You are in a long room on the south shore of a large lake, far too deep and wide
+for crossing.
+There is a path along the stream to the east or west, a steep pathway climbing
+southwest along the edge of a chasm, and a path leading into a canyon to the
+southeast.
+
+--- Turn 50 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] Chasm
+[score] 50
+> go southwest
+Chasm
+
+--- Turn 51 ---
+[reasoning]
+> go northwest
+[/reasoning]
+
+[score] 50
+> go northwest
+You can't go that way.
+
+--- Turn 52 ---
+[reasoning]
+> go crack
+[/reasoning]
+
+[score] 50
+> go crack
+You should supply a direction!
+
+--- Turn 53 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] North-South Passage
+[score] 50
+> go south
+North-South Passage
+
+--- Turn 54 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Deep Canyon
+[score] 50
+> go northeast
+Deep Canyon
+You are on the south edge of a deep canyon. Passages lead off to the east,
+northwest and southwest. A stairway leads down. You can hear the sound of
+flowing water from below.
+
+--- Turn 55 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Loud Room
+> go down
+Loud Room
+This is a large room with a ceiling which cannot be detected from the ground.
+There is a narrow passage from east to west and a stone stairway leading upward.
+The room is deafeningly loud with an undetermined rushing sound. The sound seems
+to reverberate from all of the walls, making it difficult even to think.
+On the ground is a large platinum bar.
+
+--- Turn 56 ---
+[reasoning]
+> take platinum bar
+[/reasoning]
+
+> take platinum bar
+bar bar ...
+
+--- Turn 57 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Damp Cave
+[score] 50
+> go east
+Damp Cave
+This cave has exits to the west and east, and narrows to a crack toward the
+south. The earth is particularly damp here.
+
+--- Turn 58 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 50
+> go east
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+--- Turn 59 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Damp Cave
+[score] 50
+> go west
+Damp Cave
+
+--- Turn 60 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[score] 50
+> go south
+It is too narrow for most insects.
+
+--- Turn 61 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Loud Room
+> go west
+Loud Room
+On the ground is a large platinum bar.
+
+--- Turn 62 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Deep Canyon
+[score] 50
+> go up
+Deep Canyon
+
+--- Turn 63 ---
+[reasoning]
+> go northwest
+[/reasoning]
+
+[room] Reservoir South
+[score] 50
+> go northwest
+Reservoir South
+
+--- Turn 64 ---
+[reasoning]
+> go southeast
+[/reasoning]
+
+[room] Deep Canyon
+[score] 50
+> go southeast
+Deep Canyon
+
+--- Turn 65 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 50
+> go east
+Dam
+You are standing on the top of the Flood Control Dam #3, which was quite a
+tourist attraction in times far distant. There are paths to the north, south,
+and west, and a scramble down.
+The sluice gates on the dam are closed. Behind the dam, there can be seen a wide
+reservoir. Water is pouring over the top of the now abandoned dam.
+There is a control panel here, on which a large metal bolt is mounted. Directly
+above the bolt is a small green plastic bubble.
+
+--- Turn 66 ---
+[thinking]
+I found the dam. I need to explore this area. Let me check what's around here. The control panel with the bolt is interesting - likely need to do something with that later. Let me explore the exits.
+[/thinking]
+
+[reasoning]
+> go down
+[/reasoning]
+
+[tool] add_note({'note': 'Dam #3 - sluice gates closed, water pouring over. Control panel with metal bolt and green plastic bubble. Paths north, south, west, and down.'})
+       => Note recorded. Total notes: 8
+[room] Dam Base
+[score] 50
+> go down
+Dam Base
+You are at the base of Flood Control Dam #3, which looms above you and to the
+north. The river Frigid is flowing by here. Along the river are the White Cliffs
+which seem to form giant walls stretching from north to south along the shores
+of the river as it winds its way downstream.
+There is a folded pile of plastic here which has a small valve attached.
+
+--- Turn 67 ---
+[reasoning]
+> take plastic
+[/reasoning]
+
+[score] 50
+> take plastic
+Taken.
+
+--- Turn 68 ---
+[thinking]
+The plastic is described as a "folded pile of plastic" with a small valve attached. This sounds like an inflatable raft. Let me pick it up.
+[/thinking]
+
+[reasoning]
+> go north
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'inflatable raft'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft']
+[room] Dam
+[score] 50
+> go north
+Dam
+
+--- Turn 69 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Deep Canyon
+[score] 50
+> go south
+Deep Canyon
+
+--- Turn 70 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[score] 50
+> go northeast
+You can't go that way.
+
+--- Turn 71 ---
+[reasoning]
+> go northwest
+[/reasoning]
+
+[room] Reservoir South
+[score] 50
+> go northwest
+Reservoir South
+
+--- Turn 72 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] Chasm
+[score] 50
+> go southwest
+Chasm
+
+--- Turn 73 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] North-South Passage
+[score] 50
+> go south
+North-South Passage
+
+--- Turn 74 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Round Room
+[score] 50
+> go south
+Round Room
+
+--- Turn 75 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] East-West Passage
+[score] 50
+> go west
+East-West Passage
+
+--- Turn 76 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Chasm
+[score] 50
+> go north
+Chasm
+
+--- Turn 77 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 50
+> go west
+You can't go that way.
+
+--- Turn 78 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 50
+> go north
+You can't go that way.
+
+--- Turn 79 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 50
+> go east
+You can't go that way.
+
+--- Turn 80 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] Chasm
+[score] 50
+> look
+Chasm
+A chasm runs southwest to northeast and the path follows it. You are on the
+south side of the chasm, where a crack opens into a passage.
+
+--- Turn 81 ---
+[reasoning]
+> enter crack
+[/reasoning]
+
+[score] 50
+> enter crack
+You can't fit through the crack.
+
+--- Turn 82 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Reservoir South
+[score] 50
+> go northeast
+Reservoir South
+
+--- Turn 83 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 50
+> go east
+Dam
+
+--- Turn 84 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Reservoir South
+[score] 50
+> go west
+Reservoir South
+
+--- Turn 85 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 50
+> go north
+You would drown.
+
+--- Turn 86 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 50
+> go east
+Dam
+
+--- Turn 87 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Deep Canyon
+[score] 50
+> go south
+Deep Canyon
+
+--- Turn 88 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] North-South Passage
+[score] 50
+> go southwest
+North-South Passage
+
+--- Turn 89 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Round Room
+[score] 50
+> go south
+Round Room
+
+--- Turn 90 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Loud Room
+> go east
+Loud Room
+On the ground is a large platinum bar.
+
+--- Turn 91 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Deep Canyon
+[score] 50
+> go up
+Deep Canyon
+
+--- Turn 92 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 50
+> go west
+You can't go that way.
+
+--- Turn 93 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[score] 50
+> go northeast
+You can't go that way.
+
+--- Turn 94 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] North-South Passage
+[score] 50
+> go southwest
+North-South Passage
+
+--- Turn 95 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Deep Canyon
+[score] 50
+> go northeast
+Deep Canyon
+
+--- Turn 96 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Loud Room
+> go down
+Loud Room
+On the ground is a large platinum bar.
+
+--- Turn 97 ---
+[reasoning]
+> echo
+[/reasoning]
+
+[room] Loud Room
+[score] 50
+> echo
+The acoustics of the room change subtly.
+
+Loud Room
+On the ground is a large platinum bar.
+
+--- Turn 98 ---
+[reasoning]
+> take platinum bar
+[/reasoning]
+
+[score] 50
+> take platinum bar
+Your load is too heavy.
+
+--- Turn 99 ---
+[reasoning]
+> drop axe
+[/reasoning]
+
+[score] 50
+> drop axe
+Dropped.
+
+--- Turn 100 ---
+[reasoning]
+> take platinum bar
+[/reasoning]
+
+[score] 60
+[treasure found] platinum_bar
+> take platinum bar
+Taken.
+
+--- Turn 101 ---
+[reasoning]
+> drop sack
+[/reasoning]
+
+[score] 60
+> drop sack
+Dropped.
+
+--- Turn 102 ---
+[reasoning]
+> take sack
+[/reasoning]
+
+[score] 60
+> take sack
+Taken.
+
+--- Turn 103 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Damp Cave
+[score] 60
+> go east
+Damp Cave
+
+--- Turn 104 ---
+[reasoning]
+> inflate raft
+[/reasoning]
+
+[score] 60
+> inflate raft
+What do you want to inflate the raft with?
+
+--- Turn 105 ---
+[reasoning]
+> inflate raft with breath
+[/reasoning]
+
+[score] 60
+> inflate raft with breath
+You can't see any raft here!
+
+--- Turn 106 ---
+[reasoning]
+> drop raft
+[/reasoning]
+
+[score] 60
+> drop raft
+You don't have that!
+
+--- Turn 107 ---
+[reasoning]
+> inventory
+[/reasoning]
+
+[score] 60
+> inventory
+You are carrying:
+  A brown sack
+  A platinum bar
+  A pile of plastic
+  A brass lantern (providing light)
+  A glass bottle
+  The glass bottle contains:
+    A quantity of water
+  A leaflet
+
+--- Turn 108 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Loud Room
+[score] 60
+> go west
+Loud Room
+There is a bloody axe here.
+
+--- Turn 109 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Deep Canyon
+[score] 60
+> go up
+Deep Canyon
+
+--- Turn 110 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go southwest
+North-South Passage
+
+--- Turn 111 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Chasm
+[score] 60
+> go north
+Chasm
+
+--- Turn 112 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Reservoir South
+[score] 60
+> go northeast
+Reservoir South
+
+--- Turn 113 ---
+[reasoning]
+> inflate pile of plastic
+[/reasoning]
+
+[score] 60
+> inflate pile of plastic
+What do you want to inflate the plastic with?
+
+--- Turn 114 ---
+[reasoning]
+> inflate plastic with breath
+[/reasoning]
+
+[score] 60
+> inflate plastic with breath
+The boat must be on the ground to be inflated.
+
+--- Turn 115 ---
+[reasoning]
+> drop plastic
+[/reasoning]
+
+[score] 60
+> drop plastic
+Dropped.
+
+--- Turn 116 ---
+[reasoning]
+> inflate plastic with breath
+[/reasoning]
+
+[score] 60
+> inflate plastic with breath
+You don't have enough lung power to inflate it.
+
+--- Turn 117 ---
+[reasoning]
+> take plastic
+[/reasoning]
+
+[score] 60
+> take plastic
+Taken.
+
+--- Turn 118 ---
+[reasoning]
+> look in sack
+[/reasoning]
+
+[score] 60
+> look in sack
+The brown sack is closed.
+
+--- Turn 119 ---
+[reasoning]
+> open sack
+[/reasoning]
+
+[score] 60
+> open sack
+Opening the brown sack reveals a lunch, and a clove of garlic.
+
+--- Turn 120 ---
+[thinking]
+The sack contains lunch and a clove of garlic. Let me add these to my inventory tracking.
+[/thinking]
+
+[reasoning]
+> go south
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'lunch'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch']
+[tool] update_inventory({'action': 'add', 'item': 'clove of garlic'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic']
+[score] 60
+> go south
+You can't go that way.
+
+--- Turn 121 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] Chasm
+[score] 60
+> go southwest
+Chasm
+
+--- Turn 122 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Reservoir South
+[score] 60
+> go northeast
+Reservoir South
+
+--- Turn 123 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 60
+> go east
+Dam
+
+--- Turn 124 ---
+[reasoning]
+> examine garlic
+[/reasoning]
+
+[score] 60
+> examine garlic
+There's nothing special about the clove of garlic.
+
+--- Turn 125 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Dam Base
+[score] 60
+> go down
+Dam Base
+
+--- Turn 126 ---
+[reasoning]
+> enter raft
+[/reasoning]
+
+[score] 60
+> enter raft
+You can't see any raft here!
+
+--- Turn 127 ---
+[reasoning]
+> drop pile of plastic
+[/reasoning]
+
+[score] 60
+> drop pile of plastic
+Dropped.
+
+--- Turn 128 ---
+[reasoning]
+> inflate plastic with breath
+[/reasoning]
+
+[score] 60
+> inflate plastic with breath
+You don't have enough lung power to inflate it.
+
+--- Turn 129 ---
+[reasoning]
+> examine plastic
+[/reasoning]
+
+[score] 60
+> examine plastic
+There's nothing special about the pile of plastic.
+
+--- Turn 130 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Dam
+[score] 60
+> go up
+Dam
+
+--- Turn 131 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Deep Canyon
+[score] 60
+> go south
+Deep Canyon
+
+--- Turn 132 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You can't go that way.
+
+--- Turn 133 ---
+[reasoning]
+> go northwest
+[/reasoning]
+
+[room] Reservoir South
+[score] 60
+> go northwest
+Reservoir South
+
+--- Turn 134 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You would drown.
+
+--- Turn 135 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 60
+> go east
+Dam
+
+--- Turn 136 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Deep Canyon
+[score] 60
+> go south
+Deep Canyon
+
+--- Turn 137 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[score] 60
+> go northeast
+You can't go that way.
+
+--- Turn 138 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go southwest
+North-South Passage
+
+--- Turn 139 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Deep Canyon
+[score] 60
+> go northeast
+Deep Canyon
+
+--- Turn 140 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go southwest
+North-South Passage
+
+--- Turn 141 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Deep Canyon
+[score] 60
+> go northeast
+Deep Canyon
+
+--- Turn 142 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Loud Room
+[score] 60
+> go down
+Loud Room
+There is a bloody axe here.
+
+--- Turn 143 ---
+[reasoning]
+> take axe
+[/reasoning]
+
+[score] 60
+> take axe
+Taken.
+
+--- Turn 144 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Damp Cave
+[score] 60
+> go east
+Damp Cave
+
+--- Turn 145 ---
+[reasoning]
+> look in sack
+[/reasoning]
+
+[score] 60
+> look in sack
+The brown sack contains:
+  A lunch
+  A clove of garlic
+
+--- Turn 146 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> go east
+White Cliffs Beach
+
+--- Turn 147 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> look
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+--- Turn 148 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> go south
+White Cliffs Beach
+You are on a rocky, narrow strip of beach beside the Cliffs. A narrow path leads
+north along the shore.
+
+--- Turn 149 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[score] 60
+> go south
+You can't go that way.
+
+--- Turn 150 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> go north
+White Cliffs Beach
+
+--- Turn 151 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> look
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+--- Turn 152 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You can't go that way.
+
+--- Turn 153 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> look
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+--- Turn 154 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Damp Cave
+[score] 60
+> go west
+Damp Cave
+
+--- Turn 155 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Loud Room
+[score] 60
+> go west
+Loud Room
+
+--- Turn 156 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go west
+Round Room
+
+--- Turn 157 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go west
+East-West Passage
+
+--- Turn 158 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+The Troll Room
+
+--- Turn 159 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 160 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] Maze
+[score] 60
+> look
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 161 ---
+[reasoning]
+> drop leaflet
+[/reasoning]
+
+[score] 60
+> drop leaflet
+Dropped.
+
+--- Turn 162 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 163 ---
+[reasoning]
+> drop sack
+[/reasoning]
+
+[score] 60
+> drop sack
+Dropped.
+
+--- Turn 164 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 165 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 166 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 167 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 168 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 169 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[score] 60
+> go up
+You can't go that way.
+
+--- Turn 170 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 171 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 172 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
+  A clove of garlic
+
+--- Turn 173 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dead End
+[score] 60
+> go east
+Dead End
+You have come to a dead end in the maze.
+
+--- Turn 174 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
+  A clove of garlic
+
+--- Turn 175 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[score] 60
+> go up
+You can't go that way.
+
+--- Turn 176 ---
+[reasoning]
+> take sack
+[/reasoning]
+
+[score] 60
+> take sack
+Taken.
+
+--- Turn 177 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 178 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 179 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 180 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 181 ---
+[reasoning]
+> drop axe
+[/reasoning]
+
+[score] 60
+> drop axe
+Dropped.
+
+--- Turn 182 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 183 ---
+[reasoning]
+> drop lunch
+[/reasoning]
+
+[score] 60
+> drop lunch
+Dropped.
+
+--- Turn 184 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 185 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+A hot pepper sandwich is here.
+A small leaflet is on the ground.
+
+--- Turn 186 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 187 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You can't go that way.
+A seedy-looking individual with a large bag just wandered through the room. On
+the way through, he quietly abstracted some valuables from the room and from
+your possession, mumbling something about "Doing unto others before..."
+
+--- Turn 188 ---
+[reasoning]
+> inventory
+[/reasoning]
+
+[score] 60
+> inventory
+You are carrying:
+  A brown sack
+  The brown sack contains:
+    A clove of garlic
+  A brass lantern (providing light)
+  A glass bottle
+  The glass bottle contains:
+    A quantity of water
+
+--- Turn 189 ---
+[reasoning]
+> take lunch
+[/reasoning]
+
+[score] 60
+> take lunch
+You can't see any lunch here!
+
+--- Turn 190 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+A hot pepper sandwich is here.
+A small leaflet is on the ground.
+
+--- Turn 191 ---
+[reasoning]
+> take sandwich
+[/reasoning]
+
+[score] 60
+> take sandwich
+Taken.
+
+--- Turn 192 ---
+[reasoning]
+> put sandwich in sack
+[/reasoning]
+
+[score] 60
+> put sandwich in sack
+Done.
+
+--- Turn 193 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 194 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[score] 60
+> go up
+You can't go that way.
+
+--- Turn 195 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dead End
+[score] 60
+> go east
+Dead End
+You have come to a dead end in the maze.
+
+--- Turn 196 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 197 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dead End
+[score] 60
+> go east
+Dead End
+You have come to a dead end in the maze.
+
+--- Turn 198 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+You can't go that way.
+
+--- Turn 199 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 200 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 201 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 202 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 203 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 204 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 205 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go east
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 206 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 207 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 208 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 209 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go east
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 210 ---
+[reasoning]
+> drop axe
+[/reasoning]
+
+[score] 60
+> drop axe
+You don't have that!
+
+--- Turn 211 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[score] 60
+> go south
+You can't go that way.
+
+--- Turn 212 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+You can't go that way.
+
+--- Turn 213 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 214 ---
+[reasoning]
+> drop bottle
+[/reasoning]
+
+[score] 60
+> drop bottle
+Dropped.
+
+--- Turn 215 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go east
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 216 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[score] 60
+> go down
+You can't go that way.
+
+--- Turn 217 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 218 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[score] 60
+> go down
+You can't go that way.
+
+--- Turn 219 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 220 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 221 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 222 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 223 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 224 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 225 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 226 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 227 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[score] 60
+> go south
+You can't go that way.
+
+--- Turn 228 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dead End
+[score] 60
+> go east
+Dead End
+You have come to a dead end in the maze.
+
+--- Turn 229 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 230 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 231 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 232 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+--- Turn 233 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 234 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+--- Turn 235 ---
+[reasoning]
+> drop bottle
+[/reasoning]
+
+[score] 60
+> drop bottle
+You don't have the glass bottle.
+
+--- Turn 236 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+You can't go that way.
+
+--- Turn 237 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 238 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 239 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go east
+East-West Passage
+
+--- Turn 240 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go east
+Round Room
+
+--- Turn 241 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> go south
+Narrow Passage
+This is a long and narrow corridor where a long north-south passageway briefly
+narrows even further.
+
+--- Turn 242 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Mirror Room
+[score] 60
+> go south
+Mirror Room
+You are in a large square room with tall ceilings. On the south wall is an
+enormous mirror which fills the entire wall. There are exits on the other three
+sides of the room.
+
+--- Turn 243 ---
+[reasoning]
+> look in mirror
+[/reasoning]
+
+[score] 60
+> look in mirror
+There is an ugly person staring back at you.
+The lamp appears a bit dimmer.
+
+--- Turn 244 ---
+[thinking]
+The lamp is getting dimmer - I need to conserve light. Let me continue exploring. The mirror room is interesting - there's probably something to do with the mirror. Let me try going south through the mirror.
+[/thinking]
+
+[reasoning]
+> go west
+[/reasoning]
+
+[tool] add_note({'note': 'Mirror Room - enormous mirror fills south wall. Lamp getting dimmer - need to conserve light. Exits on other 3 sides.'})
+       => Note recorded. Total notes: 9
+[room] Winding Passage
+[score] 60
+> go west
+Winding Passage
+This is a winding passage. It seems that there are only exits on the east and
+north.
+
+--- Turn 245 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Mirror Room
+[score] 60
+> go north
+Mirror Room
+
+--- Turn 246 ---
+[reasoning]
+> turn on lantern
+[/reasoning]
+
+[score] 60
+> turn on lantern
+It is already on.
+
+--- Turn 247 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> go north
+Narrow Passage
+
+--- Turn 248 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go north
+Round Room
+
+--- Turn 249 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[score] 60
+> go northeast
+You can't go that way.
+
+--- Turn 250 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go north
+North-South Passage
+
+--- Turn 251 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go south
+Round Room
+
+--- Turn 252 ---
+[reasoning]
+> go southeast
+[/reasoning]
+
+[room] Engravings Cave
+[score] 60
+> go southeast
+Engravings Cave
+You have entered a low cave with passages leading northwest and east.
+There are old engravings on the walls here.
+
+--- Turn 253 ---
+[reasoning]
+> look at engravings
+[/reasoning]
+
+[score] 60
+> look at engravings
+The engravings were incised in the living rock of the cave wall by an unknown
+hand. They depict, in symbolic form, the beliefs of the ancient Zorkers.
+Skillfully interwoven with the bas reliefs are excerpts illustrating the major
+religious tenets of that time. Unfortunately, a later age seems to have
+considered them blasphemous and just as skillfully excised them.
+
+--- Turn 254 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dome Room
+[score] 60
+> go east
+Dome Room
+You are at the periphery of a large dome, which forms the ceiling of another
+room below. Protecting you from a precipitous drop is a wooden railing which
+circles the dome.
+
+--- Turn 255 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[score] 60
+> go down
+You cannot go down without fracturing many bones.
+
+--- Turn 256 ---
+[reasoning]
+> tie sack to railing
+[/reasoning]
+
+[score] 60
+> tie sack to railing
+You can't tie the brown sack to that.
+
+--- Turn 257 ---
+[reasoning]
+> drop sack down dome
+[/reasoning]
+
+[score] 60
+> drop sack down dome
+You can't do that.
+
+--- Turn 258 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Engravings Cave
+[score] 60
+> go west
+Engravings Cave
+There are old engravings on the walls here.
+
+--- Turn 259 ---
+[reasoning]
+> go northwest
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go northwest
+Round Room
+
+--- Turn 260 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Loud Room
+[score] 60
+> go east
+Loud Room
+
+--- Turn 261 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Damp Cave
+[score] 60
+> go east
+Damp Cave
+
+--- Turn 262 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Loud Room
+[score] 60
+> go west
+Loud Room
+
+--- Turn 263 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Damp Cave
+[score] 60
+> go east
+Damp Cave
+
+--- Turn 264 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Loud Room
+[score] 60
+> go west
+Loud Room
+
+--- Turn 265 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Damp Cave
+[score] 60
+> go east
+Damp Cave
+
+--- Turn 266 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> go east
+White Cliffs Beach
+
+--- Turn 267 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> go south
+White Cliffs Beach
+
+--- Turn 268 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] White Cliffs Beach
+[score] 60
+> go north
+White Cliffs Beach
+
+--- Turn 269 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Damp Cave
+[score] 60
+> go west
+Damp Cave
+
+--- Turn 270 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Loud Room
+[score] 60
+> go west
+Loud Room
+
+--- Turn 271 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Deep Canyon
+[score] 60
+> go up
+Deep Canyon
+
+--- Turn 272 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go southwest
+North-South Passage
+
+--- Turn 273 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go south
+Round Room
+
+--- Turn 274 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> look
+Round Room
+This is a circular stone room with passages in all directions. Several of them
+have unfortunately been blocked by cave-ins.
+
+--- Turn 275 ---
+[reasoning]
+> go northwest
+[/reasoning]
+
+[score] 60
+> go northwest
+You can't go that way.
+
+--- Turn 276 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[score] 60
+> go up
+You can't go that way.
+
+--- Turn 277 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go north
+North-South Passage
+
+--- Turn 278 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go south
+Round Room
+
+--- Turn 279 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go west
+East-West Passage
+
+--- Turn 280 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+The Troll Room
+
+--- Turn 281 ---
+[reasoning]
+> examine lantern
+[/reasoning]
+
+[score] 60
+> examine lantern
+The lamp is on.
+
+--- Turn 282 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 283 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 284 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 285 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 286 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go east
+East-West Passage
+
+--- Turn 287 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go east
+Round Room
+
+--- Turn 288 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go north
+North-South Passage
+
+--- Turn 289 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go south
+Round Room
+
+--- Turn 290 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> go south
+Narrow Passage
+
+--- Turn 291 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Mirror Room
+[score] 60
+> go south
+Mirror Room
+
+--- Turn 292 ---
+[reasoning]
+> turn off lantern
+[/reasoning]
+
+[score] 60
+> turn off lantern
+The brass lantern is now off.
+
+--- Turn 293 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+--- Turn 294 ---
+[reasoning]
+> turn on lantern
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> turn on lantern
+The brass lantern is now on.
+
+Narrow Passage
+This is a long and narrow corridor where a long north-south passageway briefly
+narrows even further.
+
+--- Turn 295 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go north
+Round Room
+Someone carrying a large bag is casually leaning against one of the walls here.
+He does not speak, but it is clear from his aspect that the bag will be taken
+only over his dead body.
+
+--- Turn 296 ---
+[reasoning]
+> kill thief with axe
+[/reasoning]
+
+[score] 60
+> kill thief with axe
+You don't have that!
+
+--- Turn 297 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] North-South Passage
+[score] 60
+> go north
+North-South Passage
+
+--- Turn 298 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go south
+Round Room
+
+--- Turn 299 ---
+[reasoning]
+> kill thief
+[/reasoning]
+
+[score] 60
+> kill thief
+What do you want to kill the thief with?
+
+--- Turn 300 ---
+[reasoning]
+> kill thief with sack
+[/reasoning]
+
+[score] 60
+> kill thief with sack
+You can't see any thief here!
+
+--- Turn 301 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go west
+East-West Passage
+
+--- Turn 302 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+The Troll Room
+
+--- Turn 303 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 304 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 305 ---
+[reasoning]
+> take axe
+[/reasoning]
+
+[score] 60
+> take axe
+Taken.
+
+--- Turn 306 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dead End
+[score] 60
+> go east
+Dead End
+You have come to a dead end in the maze.
+
+--- Turn 307 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 308 ---
+[reasoning]
+> drop axe
+[/reasoning]
+
+[score] 60
+> drop axe
+Dropped.
+
+--- Turn 309 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 310 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+--- Turn 311 ---
+[reasoning]
+> take axe
+[/reasoning]
+
+[score] 60
+> take axe
+Taken.
+
+--- Turn 312 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 313 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 314 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go east
+East-West Passage
+
+--- Turn 315 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go east
+Round Room
+
+--- Turn 316 ---
+[reasoning]
+> kill thief with axe
+[/reasoning]
+
+[score] 60
+> kill thief with axe
+You can't see any thief here!
+
+--- Turn 317 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> look
+Round Room
+This is a circular stone room with passages in all directions. Several of them
+have unfortunately been blocked by cave-ins.
+
+--- Turn 318 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> go south
+Narrow Passage
+
+--- Turn 319 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Mirror Room
+[score] 60
+> go south
+Mirror Room
+
+--- Turn 320 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Cave (near Atlantis)
+[score] 60
+> go east
+Cave
+This is a tiny cave with entrances west and north, and a dark, forbidding
+staircase leading down.
+
+--- Turn 321 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Entrance to Hades
+[score] 60
+> go down
+Entrance to Hades
+You are outside a large gateway, on which is inscribed
+
+  Abandon every hope all ye who enter here!
+
+The gate is open; through it you can see a desolation, with a pile of mangled
+bodies in one corner. Thousands of voices, lamenting some hideous fate, can be
+heard.
+The way through the gate is barred by evil spirits, who jeer at your attempts to
+pass.
+
+--- Turn 322 ---
+[reasoning]
+> show garlic to spirits
+[/reasoning]
+
+[score] 60
+> show garlic to spirits
+I don't know the word "show".
+
+--- Turn 323 ---
+[reasoning]
+> drop garlic
+[/reasoning]
+
+[score] 60
+> drop garlic
+Dropped.
+
+--- Turn 324 ---
+[reasoning]
+> throw garlic at spirits
+[/reasoning]
+
+[score] 60
+> throw garlic at spirits
+You don't have the clove of garlic.
+
+--- Turn 325 ---
+[reasoning]
+> take garlic
+[/reasoning]
+
+[score] 60
+> take garlic
+Taken.
+
+--- Turn 326 ---
+[reasoning]
+> throw garlic at spirits
+[/reasoning]
+
+[score] 60
+> throw garlic at spirits
+You seem unable to interact with these spirits.
+
+--- Turn 327 ---
+[reasoning]
+> drop garlic
+[/reasoning]
+
+[score] 60
+> drop garlic
+Dropped.
+
+--- Turn 328 ---
+[reasoning]
+> go gate
+[/reasoning]
+
+[score] 60
+> go gate
+You should supply a direction!
+
+--- Turn 329 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+You can't go that way.
+
+--- Turn 330 ---
+[reasoning]
+> take garlic
+[/reasoning]
+
+[score] 60
+> take garlic
+Taken.
+
+--- Turn 331 ---
+[reasoning]
+> throw garlic at gate
+[/reasoning]
+
+[score] 60
+> throw garlic at gate
+The gate is protected by an invisible force. It makes your teeth ache to touch
+it.
+
+--- Turn 332 ---
+[reasoning]
+> put garlic at gate
+[/reasoning]
+
+[score] 60
+> put garlic at gate
+That sentence isn't one I recognize.
+
+--- Turn 333 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You can't go that way.
+
+--- Turn 334 ---
+[reasoning]
+> throw garlic at spirits
+[/reasoning]
+
+[score] 60
+> throw garlic at spirits
+You seem unable to interact with these spirits.
+
+--- Turn 335 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Cave (near Atlantis)
+[score] 60
+> go up
+Cave
+
+--- Turn 336 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Winding Passage
+[score] 60
+> go west
+Winding Passage
+
+--- Turn 337 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Cave (near Atlantis)
+[score] 60
+> go east
+Cave
+
+--- Turn 338 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Entrance to Hades
+[score] 60
+> go down
+Entrance to Hades
+
+--- Turn 339 ---
+[reasoning]
+> wear garlic
+[/reasoning]
+
+[score] 60
+> wear garlic
+You can't wear the clove of garlic.
+
+--- Turn 340 ---
+[reasoning]
+> smell garlic
+[/reasoning]
+
+[score] 60
+> smell garlic
+It smells like a clove of garlic.
+
+--- Turn 341 ---
+[reasoning]
+> hold garlic
+[/reasoning]
+
+[score] 60
+> hold garlic
+You already have that!
+
+--- Turn 342 ---
+[reasoning]
+> go gate
+[/reasoning]
+
+[score] 60
+> go gate
+You should supply a direction!
+
+--- Turn 343 ---
+[reasoning]
+> drop garlic down
+[/reasoning]
+
+[score] 60
+> drop garlic down
+That sentence isn't one I recognize.
+
+--- Turn 344 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You can't go that way.
+
+--- Turn 345 ---
+[reasoning]
+> enter gate
+[/reasoning]
+
+[score] 60
+> enter gate
+Some invisible force prevents you from passing through the gate.
+
+--- Turn 346 ---
+[reasoning]
+> wave garlic
+[/reasoning]
+
+[score] 60
+> wave garlic
+Waving the clove of garlic doesn't seem to work.
+
+--- Turn 347 ---
+[reasoning]
+> eat garlic
+[/reasoning]
+
+[score] 60
+> eat garlic
+What the heck! You won't make friends this way, but nobody around here is too
+friendly anyhow. Gulp!
+
+--- Turn 348 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Cave (near Atlantis)
+[score] 60
+> go up
+Cave
+
+--- Turn 349 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Winding Passage
+[score] 60
+> go west
+Winding Passage
+
+--- Turn 350 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Mirror Room
+[score] 60
+> go north
+Mirror Room
+
+--- Turn 351 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> go north
+Narrow Passage
+The lamp is definitely dimmer now.
+
+--- Turn 352 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go north
+Round Room
+
+--- Turn 353 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go west
+East-West Passage
+
+--- Turn 354 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+The Troll Room
+
+--- Turn 355 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 356 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+The Troll Room
+
+--- Turn 357 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go east
+East-West Passage
+
+--- Turn 358 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go east
+Round Room
+
+--- Turn 359 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> go south
+Narrow Passage
+
+--- Turn 360 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Mirror Room
+[score] 60
+> go south
+Mirror Room
+
+--- Turn 361 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Winding Passage
+[score] 60
+> go west
+Winding Passage
+
+--- Turn 362 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Mirror Room
+[score] 60
+> go north
+Mirror Room
+
+--- Turn 363 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Narrow Passage
+[score] 60
+> go north
+Narrow Passage
+
+--- Turn 364 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go north
+Round Room
+
+--- Turn 365 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go west
+East-West Passage
+
+--- Turn 366 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go east
+Round Room
+
+--- Turn 367 ---
+[reasoning]
+> go southeast
+[/reasoning]
+
+[room] Engravings Cave
+[score] 60
+> go southeast
+Engravings Cave
+There are old engravings on the walls here.
+
+--- Turn 368 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dome Room
+[score] 60
+> go east
+Dome Room
+
+--- Turn 369 ---
+[reasoning]
+> examine railing
+[/reasoning]
+
+[score] 60
+> examine railing
+There's nothing special about the wooden railing.
+
+--- Turn 370 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Engravings Cave
+[score] 60
+> go west
+Engravings Cave
+There are old engravings on the walls here.
+
+--- Turn 371 ---
+[reasoning]
+I need to continue exploring. Let me return to the Round Room and look for more areas to explore.
+
+> go northwest
+[/reasoning]
+
+[room] Round Room
+[score] 60
+> go northwest
+Round Room
+
+--- Turn 372 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] East-West Passage
+[score] 60
+> go west
+East-West Passage
+
+--- Turn 373 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+The Troll Room
+
+--- Turn 374 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 375 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+--- Turn 376 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go east
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 377 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+You can't go that way.
+
+--- Turn 378 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 379 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 380 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 60
+> go east
+You can't go that way.
+
+--- Turn 381 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[score] 60
+> go south
+You can't go that way.
+
+--- Turn 382 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Maze
+[score] 60
+> go up
+Maze
+This is part of a maze of twisty little passages, all alike. A skeleton,
+probably the remains of a luckless adventurer, lies here.
+Beside the skeleton is a rusty knife.
+The deceased adventurer's useless lantern is here.
+There is a skeleton key here.
+An old leather bag, bulging with coins, is here.
+
+--- Turn 383 ---
+[reasoning]
+> take key
+[/reasoning]
+
+[score] 60
+> take key
+Taken.
+
+--- Turn 384 ---
+[thinking]
+I found a skeleton key in the maze! This could be useful for opening the grating or other locked things. Let me take the other items too.
+[/thinking]
+
+[reasoning]
+> take bag of coins
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'skeleton key'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key']
+[score] 70
+[treasure found] bag_of_coins
+> take bag of coins
+Taken.
+
+--- Turn 385 ---
+[thinking]
+I have the bag of coins now. Let me take the rusty knife as well since I lost my sword to the thief.
+
+[/thinking]
+
+[reasoning]
+> go down
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'leather bag of coins'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins']
+[score] 70
+> go down
+You can't go that way.
+
+--- Turn 386 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Maze
+[score] 70
+> go north
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 387 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 70
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+--- Turn 388 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Maze
+[score] 70
+> go east
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+--- Turn 389 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Maze
+[score] 70
+> go west
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+--- Turn 390 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 70
+> go west
+You can't go that way.
+
+--- Turn 391 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 70
+> go north
+You can't go that way.
+
+--- Turn 392 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[score] 70
+> go up
+You can't go that way.
+
+--- Turn 393 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Maze
+[score] 70
+> go south
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+--- Turn 394 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[score] 70
+> go east
+The Troll Room
+
+--- Turn 395 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] East-West Passage
+[score] 70
+> go east
+East-West Passage
+
+--- Turn 396 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Round Room
+[score] 70
+> go east
+Round Room
+
+--- Turn 397 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] North-South Passage
+[score] 70
+> go north
+North-South Passage
+
+--- Turn 398 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Deep Canyon
+[score] 70
+> go northeast
+Deep Canyon
+
+--- Turn 399 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Loud Room
+[score] 70
+> go down
+Loud Room
+
+--- Turn 400 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Deep Canyon
+[score] 70
+> go up
+Deep Canyon
+
+--- Turn 401 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] North-South Passage
+[score] 70
+> go southwest
+North-South Passage
+
+--- Turn 402 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Chasm
+[score] 70
+> go north
+Chasm
+
+--- Turn 403 ---
+[reasoning]
+> go northeast
+[/reasoning]
+
+[room] Reservoir South
+[score] 70
+> go northeast
+Reservoir South
+
+--- Turn 404 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go east
+Dam
+
+--- Turn 405 ---
+[reasoning]
+> turn bolt
+[/reasoning]
+
+[score] 70
+> turn bolt
+(with the skeleton key)
+The bolt won't turn using the skeleton key.
+
+--- Turn 406 ---
+[reasoning]
+> turn bolt with hands
+[/reasoning]
+
+[score] 70
+> turn bolt with hands
+The bolt won't turn using the pair of hands.
+
+--- Turn 407 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Dam Lobby
+[score] 70
+> go north
+Dam Lobby
+This room appears to have been the waiting room for groups touring the dam.
+There are open doorways here to the north and east marked "Private", and there
+is a path leading south over the top of the dam.
+Some guidebooks entitled "Flood Control Dam #3" are on the reception desk.
+There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
+
+--- Turn 408 ---
+[reasoning]
+> take matchbook
+[/reasoning]
+
+[score] 70
+> take matchbook
+Taken.
+
+--- Turn 409 ---
+[thinking]
+I found a matchbook! This could be useful. Let me also take the guidebooks.
+[/thinking]
+
+[reasoning]
+> go north
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'matchbook'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins', 'matchbook']
+[room] Maintenance Room
+[score] 70
+> go north
+Maintenance Room
+This is what appears to have been the maintenance room for Flood Control Dam #3.
+Apparently, this room has been ransacked recently, for most of the valuable
+equipment is gone. On the wall in front of you is a group of buttons colored
+blue, yellow, brown, and red. There are doorways to the west and south.
+There is a group of tool chests here.
+There is a wrench here.
+There is an object which looks like a tube of toothpaste here.
+There is a screwdriver here.
+
+--- Turn 410 ---
+[reasoning]
+> take wrench
+[/reasoning]
+
+[score] 70
+> take wrench
+Taken.
+
+--- Turn 411 ---
+[thinking]
+The wrench might be useful for turning the bolt at the dam.
+[/thinking]
+
+[reasoning]
+> take screwdriver
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'wrench'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins', 'matchbook', 'wrench']
+[score] 70
+> take screwdriver
+Taken.
+
+--- Turn 412 ---
+[thinking]
+I found useful tools. Let me also take the tube-like object and examine the buttons and tool chests.
+[/thinking]
+
+[reasoning]
+> go south
+[/reasoning]
+
+[tool] update_inventory({'action': 'add', 'item': 'screwdriver'})
+       => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins', 'matchbook', 'wrench', 'screwdriver']
+[room] Dam Lobby
+[score] 70
+> go south
+Dam Lobby
+Some guidebooks entitled "Flood Control Dam #3" are on the reception desk.
+
+--- Turn 413 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go south
+Dam
+
+--- Turn 414 ---
+[reasoning]
+> turn bolt with wrench
+[/reasoning]
+
+[score] 70
+> turn bolt with wrench
+The bolt won't turn with your best effort.
+
+--- Turn 415 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Dam Base
+[score] 70
+> go down
+Dam Base
+There is a folded pile of plastic here which has a small valve attached.
+
+--- Turn 416 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go up
+Dam
+
+--- Turn 417 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Reservoir South
+[score] 70
+> go west
+Reservoir South
+
+--- Turn 418 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 70
+> go north
+You would drown.
+
+--- Turn 419 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Stream View
+[score] 70
+> go west
+Stream View
+You are standing on a path beside a gently flowing stream. The path follows the
+stream, which flows from west to east.
+
+--- Turn 420 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Reservoir South
+[score] 70
+> go east
+Reservoir South
+
+--- Turn 421 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go east
+Dam
+The lamp is nearly out.
+
+--- Turn 422 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam Base
+[score] 70
+> go east
+Dam Base
+There is a folded pile of plastic here which has a small valve attached.
+
+--- Turn 423 ---
+[reasoning]
+> drop all
+[/reasoning]
+
+[score] 70
+> drop all
+screwdriver: Dropped.
+wrench: Dropped.
+matchbook: Dropped.
+leather bag of coins: Dropped.
+skeleton key: Dropped.
+bloody axe: Dropped.
+brown sack: Dropped.
+brass lantern: Dropped.
+
+--- Turn 424 ---
+[reasoning]
+> take plastic
+[/reasoning]
+
+[score] 70
+> take plastic
+Taken.
+
+--- Turn 425 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go up
+Dam
+
+--- Turn 426 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Dam Base
+[score] 70
+> go down
+Dam Base
+There is a brass lantern (battery-powered) here.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
+There is a bloody axe here.
+There is a skeleton key here.
+An old leather bag, bulging with coins, is here.
+There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
+There is a wrench here.
+There is a screwdriver here.
+
+--- Turn 427 ---
+[reasoning]
+> take skeleton key
+[/reasoning]
+
+[score] 70
+> take skeleton key
+Taken.
+
+--- Turn 428 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go up
+Dam
+
+--- Turn 429 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 70
+> go west
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+--- Turn 430 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go east
+Dam
+
+--- Turn 431 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Dam Base
+[score] 70
+> go down
+Dam Base
+There is a brass lantern (battery-powered) here.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
+There is a bloody axe here.
+An old leather bag, bulging with coins, is here.
+There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
+There is a wrench here.
+There is a screwdriver here.
+
+--- Turn 432 ---
+[reasoning]
+> take lantern
+[/reasoning]
+
+[score] 70
+> take lantern
+Taken.
+
+--- Turn 433 ---
+[reasoning]
+> turn on lantern
+[/reasoning]
+
+[score] 70
+> turn on lantern
+It is already on.
+
+--- Turn 434 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[room] Dam
+[score] 70
+> go up
+Dam
+There is an object which looks like a tube of toothpaste here.
+
+--- Turn 435 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Reservoir South
+[score] 70
+> go west
+Reservoir South
+
+--- Turn 436 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 70
+> go north
+You would drown.
+You'd better have more light than from the brass lantern.
+
+--- Turn 437 ---
+[reasoning]
+> go southwest
+[/reasoning]
+
+[room] Forest (1)
+[DIED]
+[score] 60
+> go southwest
+Oh, no! A lurking grue slithered into the room and devoured you!
+
+   ****  You have died  ****
+
+Now, let's take a look here... Well, you probably deserve another chance. I
+can't quite fix you up completely, but you can't have everything.
+
+Forest
+This is a forest, with trees in all directions. To the east, there appears to be
+sunlight.
+
+--- Turn 438 ---
+[reasoning]
+I died due to darkness. The lamp ran out. Let me try to recover quickly.
+
+> go east
+[/reasoning]
+
+[room] Forest Path
+[score] 60
+> go east
+Forest Path
+
+--- Turn 439 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[room] Clearing
+[score] 60
+> go north
+Clearing
+On the ground is a pile of leaves.
+
+--- Turn 440 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] Forest Path
+[score] 60
+> go south
+Forest Path
+
+--- Turn 441 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[room] North of House
+[score] 60
+> go south
+North of House
+There is a skeleton key here.
+
+--- Turn 442 ---
+[reasoning]
+> go south
+[/reasoning]
+
+[score] 60
+> go south
+The windows are all boarded.
+
+--- Turn 443 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Behind House
+[score] 60
+> go east
+Behind House
+
+--- Turn 444 ---
+[reasoning]
+> enter window
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> enter window
+Kitchen
+
+--- Turn 445 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Living Room
+[score] 60
+> go west
+Living Room
+There is a brass lantern (battery-powered) here.
+Your collection of treasures consists of:
+    A jewel-encrusted egg
+
+--- Turn 446 ---
+[reasoning]
+> take lantern
+[/reasoning]
+
+[score] 60
+> take lantern
+Taken.
+
+--- Turn 447 ---
+[reasoning]
+> open trap door
+[/reasoning]
+
+[score] 60
+> open trap door
+The door reluctantly opens to reveal a rickety staircase descending into
+darkness.
+
+--- Turn 448 ---
+[reasoning]
+> turn on lantern
+[/reasoning]
+
+[score] 60
+> turn on lantern
+A burned-out lamp won't light.
+
+--- Turn 449 ---
+[reasoning]
+I need to find fresh batteries for the lantern. Let me look around the house.
+
+> go east
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go east
+Kitchen
+
+--- Turn 450 ---
+[reasoning]
+> look in drawers
+[/reasoning]
+
+[score] 60
+> look in drawers
+I don't know the word "drawers".
+
+--- Turn 451 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[score] 60
+> go up
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+--- Turn 452 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go down
+Kitchen
+
+--- Turn 453 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Behind House
+[score] 60
+> go east
+Behind House
+
+--- Turn 454 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go west
+Kitchen
+
+--- Turn 455 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You can't go that way.
+
+--- Turn 456 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> look
+Kitchen
+You are in the kitchen of the white house. A table seems to have been used
+recently for the preparation of food. A passage leads to the west and a dark
+staircase can be seen leading upward. A dark chimney leads down and to the east
+is a small window which is open.
+
+--- Turn 457 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Living Room
+[score] 60
+> go west
+Living Room
+Your collection of treasures consists of:
+  A jewel-encrusted egg
+
+--- Turn 458 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go east
+Kitchen
+
+--- Turn 459 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Behind House
+[score] 60
+> go east
+Behind House
+
+--- Turn 460 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go west
+Kitchen
+
+--- Turn 461 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Living Room
+[score] 60
+> go west
+Living Room
+Your collection of treasures consists of:
+  A jewel-encrusted egg
+
+--- Turn 462 ---
+[reasoning]
+> move rug
+[/reasoning]
+
+[score] 60
+> move rug
+Having moved the carpet previously, you find it impossible to move it again.
+
+--- Turn 463 ---
+[reasoning]
+> look under sofa
+[/reasoning]
+
+[score] 60
+> look under sofa
+I don't know the word "sofa".
+
+--- Turn 464 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go east
+Kitchen
+
+--- Turn 465 ---
+[reasoning]
+> open cabinets
+[/reasoning]
+
+[score] 60
+> open cabinets
+I don't know the word "cabinets".
+
+--- Turn 466 ---
+[reasoning]
+> up
+[/reasoning]
+
+[score] 60
+> up
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+--- Turn 467 ---
+[reasoning]
+> go down
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go down
+Kitchen
+
+--- Turn 468 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Behind House
+[score] 60
+> go east
+Behind House
+
+--- Turn 469 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go west
+Kitchen
+
+--- Turn 470 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[room] Living Room
+[score] 60
+> go west
+Living Room
+Your collection of treasures consists of:
+  A jewel-encrusted egg
+
+--- Turn 471 ---
+[reasoning]
+> go west
+[/reasoning]
+
+[score] 60
+> go west
+The door is nailed shut.
+
+--- Turn 472 ---
+[reasoning]
+> unlock door with skeleton key
+[/reasoning]
+
+[score] 60
+> unlock door with skeleton key
+Which door do you mean, the wooden door or the trap door?
+
+--- Turn 473 ---
+[reasoning]
+> unlock wooden door with skeleton key
+[/reasoning]
+
+[score] 60
+> unlock wooden door with skeleton key
+You can't see any skeleton key here!
+
+--- Turn 474 ---
+[reasoning]
+> go east
+[/reasoning]
+
+[room] Kitchen
+[score] 60
+> go east
+Kitchen
+
+--- Turn 475 ---
+[reasoning]
+> take lamp
+[/reasoning]
+
+[score] 60
+> take lamp
+You already have that!
+
+--- Turn 476 ---
+[reasoning]
+> go up
+[/reasoning]
+
+[score] 60
+> go up
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+--- Turn 477 ---
+[reasoning]
+> go north
+[/reasoning]
+
+[score] 60
+> go north
+You can't go that way.
+
+--- Turn 478 ---
+[reasoning]
+You can't go that way.I died in the dark. The game mentioned the grue ate me. Let me look for a light source or batteries.
+
+> restart
+[/reasoning]
+
+[room] Do you wish to restart? (Y is affirmative): >
+[score] 60
+> restart
+Your score is 60 (total of 350 points), in 456 moves.
+This gives you the rank of Novice Adventurer.
+Do you wish to restart? (Y is affirmative): >
+
+--- Turn 479 ---
+[reasoning]
+Y
+[/reasoning]
+
+> 
+
+
+--- Turn 480 ---
+[reasoning]
+> Y
+[/reasoning]
+
+[score] 60
+> Y
+There was no verb in that sentence!
+
+--- Turn 481 ---
+[reasoning]
+> y
+[/reasoning]
+
+[score] 60
+> y
+There was no verb in that sentence!
+
+--- Turn 482 ---
+[reasoning]
+> yes
+[/reasoning]
+
+[score] 60
+> yes
+There was no verb in that sentence!
+
+--- Turn 483 ---
+[reasoning]
+> look
+[/reasoning]
+
+[score] 60
+> look
+It is pitch black. You are likely to be eaten by a grue.
+
+--- Turn 484 ---
+[reasoning]
+> north
+[/reasoning]
+
+[score] 60
+> north
+You can't go that way.
+
+--- Turn 485 ---
+[reasoning]
+> west
+[/reasoning]
+
+[room] Forest
+[DIED]
+[score] 50
+> west
+Oh, no! You have walked into the slavering fangs of a lurking grue!
+
+   ****  You have died  ****
+
+Now, let's take a look here... Well, you probably deserve another chance. I
+can't quite fix you up completely, but you can't have everything.
+
+Forest
+
+--- Turn 486 ---
+[reasoning]
+> restart
+[/reasoning]
+
+[room] Do you wish to restart? (Y is affirmative): >
+[score] 50
+> restart
+Your score is 50 (total of 350 points), in 459 moves.
+This gives you the rank of Amateur Adventurer.
+Do you wish to restart? (Y is affirmative): >
+
+--- Turn 487 ---
+[reasoning]
+> Y
+[/reasoning]
+
+[score] 50
+> Y
+There was no verb in that sentence!
+
+--- Turn 488 ---
+[reasoning]
+> y
+[/reasoning]
+
+[score] 50
+> y
+There was no verb in that sentence!
+
+--- Turn 489 ---
+[reasoning]
+> restart
+[/reasoning]
+
+[room] Do you wish to restart? (Y is affirmative): >
+[score] 50
+> restart
+Your score is 50 (total of 350 points), in 459 moves.
+This gives you the rank of Amateur Adventurer.
+Do you wish to restart? (Y is affirmative): >
+
+--- Turn 490 ---
+[reasoning]
+> y
+[/reasoning]
+
+[score] 50
+> y
+There was no verb in that sentence!
+
+--- Turn 491 ---
+[reasoning]
+restart
+[/reasoning]
+
+> 
+
+
+--- Turn 492 ---
+[reasoning]
+> y
+[/reasoning]
+
+[score] 50
+> y
+There was no verb in that sentence!
+
+--- Turn 493 ---
+[reasoning]
+> restart
+[/reasoning]
+
+[room] Do you wish to restart? (Y is affirmative): >
+[score] 50
+> restart
+Your score is 50 (total of 350 points), in 459 moves.
+This gives you the rank of Amateur Adventurer.
+Do you wish to restart? (Y is affirmative): >
+
+--- Turn 494 ---
+[reasoning]
+> y
+[/reasoning]
+
+[score] 50
+> y
+There was no verb in that sentence!
+
+--- Turn 495 ---
+[reasoning]
+> quit
+[/reasoning]
+
+[score] 50
+> quit
+Your score is 50 (total of 350 points), in 459 moves.
+This gives you the rank of Amateur Adventurer.
+Do you wish to leave the game? (Y is affirmative): >
+
+--- Turn 496 ---
+[reasoning]
+> y
+[/reasoning]
+
+[score] 50
+> y
+There was no verb in that sentence!
+
+--- Turn 497 ---
+[reasoning]
+> yes
+[/reasoning]
+
+[score] 50
+> yes
+There was no verb in that sentence!
+
+--- Turn 498 ---
+[reasoning]
+> look
+[/reasoning]
+
+[room] Forest (1)
+[score] 50
+> look
+Forest
+This is a forest, with trees in all directions. To the east, there appears to be
+sunlight.
+
+--- Turn 499 ---
+[reasoning]
+> east
+[/reasoning]
+
+[room] Forest Path
+[score] 50
+> east
+Forest Path
+
+--- Turn 500 ---
+[reasoning]
+> south
+[/reasoning]
+
+[room] North of House
+[score] 50
+> south
+North of House
+There is a skeleton key here.
+
+============================================================
+SESSION SUMMARY
+============================================================
+Player: accounts/fireworks/models/kimi-k2p5 (fireworks)
+Total turns: 500
+Deaths: 2
+  Turns: 437, 485
+Unique rooms visited: 37
+Rooms:
+  - Behind House (turns: 18, 443, 453, 459, 468)
+  - Cave (near Atlantis) (turns: 320, 335, 337, 348)
+  - Cellar (turns: 34, 38)
+  - Chasm (turns: 48, 50, 72, 76, 80, 111, 121, 402)
+  - Clearing (turns: 439)
+  - Clearing (north) (turns: 10)
+  - Dam (turns: 65, 68, 83, 86, 123, 130, 135, 404, 413, 416, 421, 425, 428, 430, 434)
+  - Dam Base (turns: 66, 125, 415, 422, 426, 431)
+  - Dam Lobby (turns: 407, 412)
+  - Damp Cave (turns: 57, 59, 103, 144, 154, 261, 263, 265, 269)
+  - Dead End (turns: 173, 195, 197, 228, 306)
+  - Deep Canyon (turns: 54, 62, 64, 69, 87, 91, 95, 109, 131, 136, 139, 141, 271, 398, 400)
+  - Do you wish to restart? (Y is affirmative): > (turns: 478, 486, 489, 493)
+  - Dome Room (turns: 254, 368)
+  - East-West Passage (turns: 44, 75, 157, 239, 279, 286, 301, 314, 353, 357, 365, 372, 395)
+  - Engravings Cave (turns: 252, 258, 367, 370)
+  - Entrance to Hades (turns: 321, 338)
+  - Forest (turns: 485)
+  - Forest (1) (turns: 437, 498)
+  - Forest Path (turns: 6, 9, 13, 438, 440, 499)
+  - Kitchen (turns: 21, 444, 449, 452, 454, 456, 458, 460, 464, 467, 469, 474)
+  - Living Room (turns: 26, 445, 457, 461, 470)
+  - Loud Room (turns: 55, 61, 90, 96, 97, 108, 142, 155, 260, 262, 264, 270, 399)
+  - Maintenance Room (turns: 409)
+  - Maze (turns: 159, 160, 162, 164, 166, 167, 168, 171, 172, 174, 177, 178, 179, 180, 182, 184, 185, 186, 190, 193, 196, 199, 200, 201, 203, 204, 205, 206, 207, 208, 209, 213, 215, 217, 219, 220, 221, 222, 224, 225, 226, 229, 230, 231, 232, 233, 234, 237, 282, 284, 303, 304, 307, 309, 310, 312, 355, 374, 375, 376, 378, 379, 382, 386, 387, 388, 389, 393)
+  - Mirror Room (turns: 242, 245, 291, 319, 350, 360, 362)
+  - Narrow Passage (turns: 241, 247, 290, 294, 318, 351, 359, 363)
+  - North of House (turns: 5, 14, 441, 500)
+  - North-South Passage (turns: 47, 53, 73, 88, 94, 110, 138, 140, 250, 272, 277, 288, 297, 397, 401)
+  - Reservoir South (turns: 49, 63, 71, 82, 84, 112, 122, 133, 403, 417, 420, 435)
+  - Round Room (turns: 45, 74, 89, 156, 240, 248, 251, 259, 273, 274, 278, 287, 289, 295, 298, 315, 317, 352, 358, 364, 366, 371, 396)
+  - South of House (turns: 17)
+  - Stream View (turns: 419)
+  - Up a Tree (turns: 7)
+  - West of House (turns: 4, 16)
+  - White Cliffs Beach (turns: 58, 146, 147, 148, 150, 151, 153, 266, 267, 268)
+  - Winding Passage (turns: 244, 336, 349, 361)
+
+Tokens: 4,569,532 input, 29,993 output, 4,599,525 total
+
+Treasures found (3): bag_of_coins, egg, platinum_bar
+Treasures deposited (0): none
+
+Room visit sequence:
+  T004: West of House
+  T005: North of House
+  T006: Forest Path
+  T007: Up a Tree
+  T009: Forest Path
+  T010: Clearing (north)
+  T013: Forest Path
+  T014: North of House
+  T016: West of House
+  T017: South of House
+  T018: Behind House
+  T021: Kitchen
+  T026: Living Room
+  T034: Cellar
+  T038: Cellar
+  T044: East-West Passage
+  T045: Round Room
+  T047: North-South Passage
+  T048: Chasm
+  T049: Reservoir South
+  T050: Chasm
+  T053: North-South Passage
+  T054: Deep Canyon
+  T055: Loud Room
+  T057: Damp Cave
+  T058: White Cliffs Beach
+  T059: Damp Cave
+  T061: Loud Room
+  T062: Deep Canyon
+  T063: Reservoir South
+  T064: Deep Canyon
+  T065: Dam
+  T066: Dam Base
+  T068: Dam
+  T069: Deep Canyon
+  T071: Reservoir South
+  T072: Chasm
+  T073: North-South Passage
+  T074: Round Room
+  T075: East-West Passage
+  T076: Chasm
+  T080: Chasm
+  T082: Reservoir South
+  T083: Dam
+  T084: Reservoir South
+  T086: Dam
+  T087: Deep Canyon
+  T088: North-South Passage
+  T089: Round Room
+  T090: Loud Room
+  T091: Deep Canyon
+  T094: North-South Passage
+  T095: Deep Canyon
+  T096: Loud Room
+  T097: Loud Room
+  T103: Damp Cave
+  T108: Loud Room
+  T109: Deep Canyon
+  T110: North-South Passage
+  T111: Chasm
+  T112: Reservoir South
+  T121: Chasm
+  T122: Reservoir South
+  T123: Dam
+  T125: Dam Base
+  T130: Dam
+  T131: Deep Canyon
+  T133: Reservoir South
+  T135: Dam
+  T136: Deep Canyon
+  T138: North-South Passage
+  T139: Deep Canyon
+  T140: North-South Passage
+  T141: Deep Canyon
+  T142: Loud Room
+  T144: Damp Cave
+  T146: White Cliffs Beach
+  T147: White Cliffs Beach
+  T148: White Cliffs Beach
+  T150: White Cliffs Beach
+  T151: White Cliffs Beach
+  T153: White Cliffs Beach
+  T154: Damp Cave
+  T155: Loud Room
+  T156: Round Room
+  T157: East-West Passage
+  T159: Maze
+  T160: Maze
+  T162: Maze
+  T164: Maze
+  T166: Maze
+  T167: Maze
+  T168: Maze
+  T171: Maze
+  T172: Maze
+  T173: Dead End
+  T174: Maze
+  T177: Maze
+  T178: Maze
+  T179: Maze
+  T180: Maze
+  T182: Maze
+  T184: Maze
+  T185: Maze
+  T186: Maze
+  T190: Maze
+  T193: Maze
+  T195: Dead End
+  T196: Maze
+  T197: Dead End
+  T199: Maze
+  T200: Maze
+  T201: Maze
+  T203: Maze
+  T204: Maze
+  T205: Maze
+  T206: Maze
+  T207: Maze
+  T208: Maze
+  T209: Maze
+  T213: Maze
+  T215: Maze
+  T217: Maze
+  T219: Maze
+  T220: Maze
+  T221: Maze
+  T222: Maze
+  T224: Maze
+  T225: Maze
+  T226: Maze
+  T228: Dead End
+  T229: Maze
+  T230: Maze
+  T231: Maze
+  T232: Maze
+  T233: Maze
+  T234: Maze
+  T237: Maze
+  T239: East-West Passage
+  T240: Round Room
+  T241: Narrow Passage
+  T242: Mirror Room
+  T244: Winding Passage
+  T245: Mirror Room
+  T247: Narrow Passage
+  T248: Round Room
+  T250: North-South Passage
+  T251: Round Room
+  T252: Engravings Cave
+  T254: Dome Room
+  T258: Engravings Cave
+  T259: Round Room
+  T260: Loud Room
+  T261: Damp Cave
+  T262: Loud Room
+  T263: Damp Cave
+  T264: Loud Room
+  T265: Damp Cave
+  T266: White Cliffs Beach
+  T267: White Cliffs Beach
+  T268: White Cliffs Beach
+  T269: Damp Cave
+  T270: Loud Room
+  T271: Deep Canyon
+  T272: North-South Passage
+  T273: Round Room
+  T274: Round Room
+  T277: North-South Passage
+  T278: Round Room
+  T279: East-West Passage
+  T282: Maze
+  T284: Maze
+  T286: East-West Passage
+  T287: Round Room
+  T288: North-South Passage
+  T289: Round Room
+  T290: Narrow Passage
+  T291: Mirror Room
+  T294: Narrow Passage
+  T295: Round Room
+  T297: North-South Passage
+  T298: Round Room
+  T301: East-West Passage
+  T303: Maze
+  T304: Maze
+  T306: Dead End
+  T307: Maze
+  T309: Maze
+  T310: Maze
+  T312: Maze
+  T314: East-West Passage
+  T315: Round Room
+  T317: Round Room
+  T318: Narrow Passage
+  T319: Mirror Room
+  T320: Cave (near Atlantis)
+  T321: Entrance to Hades
+  T335: Cave (near Atlantis)
+  T336: Winding Passage
+  T337: Cave (near Atlantis)
+  T338: Entrance to Hades
+  T348: Cave (near Atlantis)
+  T349: Winding Passage
+  T350: Mirror Room
+  T351: Narrow Passage
+  T352: Round Room
+  T353: East-West Passage
+  T355: Maze
+  T357: East-West Passage
+  T358: Round Room
+  T359: Narrow Passage
+  T360: Mirror Room
+  T361: Winding Passage
+  T362: Mirror Room
+  T363: Narrow Passage
+  T364: Round Room
+  T365: East-West Passage
+  T366: Round Room
+  T367: Engravings Cave
+  T368: Dome Room
+  T370: Engravings Cave
+  T371: Round Room
+  T372: East-West Passage
+  T374: Maze
+  T375: Maze
+  T376: Maze
+  T378: Maze
+  T379: Maze
+  T382: Maze
+  T386: Maze
+  T387: Maze
+  T388: Maze
+  T389: Maze
+  T393: Maze
+  T395: East-West Passage
+  T396: Round Room
+  T397: North-South Passage
+  T398: Deep Canyon
+  T399: Loud Room
+  T400: Deep Canyon
+  T401: North-South Passage
+  T402: Chasm
+  T403: Reservoir South
+  T404: Dam
+  T407: Dam Lobby
+  T409: Maintenance Room
+  T412: Dam Lobby
+  T413: Dam
+  T415: Dam Base
+  T416: Dam
+  T417: Reservoir South
+  T419: Stream View
+  T420: Reservoir South
+  T421: Dam
+  T422: Dam Base
+  T425: Dam
+  T426: Dam Base
+  T428: Dam
+  T430: Dam
+  T431: Dam Base
+  T434: Dam
+  T435: Reservoir South
+  T437: Forest (1)
+  T438: Forest Path
+  T439: Clearing
+  T440: Forest Path
+  T441: North of House
+  T443: Behind House
+  T444: Kitchen
+  T445: Living Room
+  T449: Kitchen
+  T452: Kitchen
+  T453: Behind House
+  T454: Kitchen
+  T456: Kitchen
+  T457: Living Room
+  T458: Kitchen
+  T459: Behind House
+  T460: Kitchen
+  T461: Living Room
+  T464: Kitchen
+  T467: Kitchen
+  T468: Behind House
+  T469: Kitchen
+  T470: Living Room
+  T474: Kitchen
+  T478: Do you wish to restart? (Y is affirmative): >
+  T485: Forest
+  T486: Do you wish to restart? (Y is affirmative): >
+  T489: Do you wish to restart? (Y is affirmative): >
+  T493: Do you wish to restart? (Y is affirmative): >
+  T498: Forest (1)
+  T499: Forest Path
+  T500: North of House

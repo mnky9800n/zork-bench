@@ -1,0 +1,26 @@
+Starting game: zork1
+Backend: fireworks | Model: accounts/fireworks/models/deepseek-v3p2
+Thinking: off | Map: explore
+Session log: benchmark/results/deepseek-v3p2/explore/session_20260417T055053Z.txt
+Using normal formatting.
+Loading /home/frotz/DATA/zork1-r88-s840726.z3.
+
+
+ZORK I: The Great Underground Empire
+Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved.
+ZORK is a registered trademark of Infocom, Inc.
+Revision 88 / Serial number 840726
+
+West of House
+You are standing in an open field west of a white house, with a boarded front
+door.
+There is a small mailbox here.
+
+  [waiting for model...]   [openai turn 1 attempt 1/3 failed: InternalServerError: no healthy upstream]
+  [retrying in 2s]
+  [waiting for model...]   [openai turn 1 attempt 2/3 failed: InternalServerError: no healthy upstream]
+  [retrying in 4s]
+  [waiting for model...] [Stopping: LLM API error (InternalServerError: no healthy upstream)]
+Session ended early: api_error (InternalServerError: no healthy upstream)
+Transcript: benchmark/results/deepseek-v3p2/explore/session_20260417T055053Z.txt
+Session data: benchmark/results/deepseek-v3p2/explore/session_20260417T055053Z.jsonl
