@@ -1,0 +1,17 @@
+Zork Harness Session - 20260417T055135Z
+Game: zork1 | Player: accounts/fireworks/models/cogito-671b-v2-p1 (fireworks)
+Map mode: full
+============================================================
+
+============================================================
+SESSION SUMMARY
+============================================================
+Player: accounts/fireworks/models/cogito-671b-v2-p1 (fireworks)
+Total turns: 0
+Deaths: 0
+Unique rooms visited: 0
+
+Terminated early: api_error
+  last error: NotFoundError: Error code: 404 - {'error': {'message': 'Model not found, inaccessible, and/or not deployed', 'param': 'model', 'code': 'NOT_FOUND', 'type': 'error'}, 'request_id': 'chatcmpl-dab1884871ae417fb501887f9d8e2f8d'}
+
+Room visit sequence:

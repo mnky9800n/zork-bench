@@ -1,7 +1,7 @@
 Starting game: zork1
 Backend: fireworks | Model: accounts/fireworks/models/kimi-k2p5
 Thinking: off | Map: none
-Session log: benchmark/results/kimi-k2.5/none/session_20260413T173343Z.txt
+Session log: benchmark/results/kimi-k2.5/none/session_20260417T030629Z.txt
 Using normal formatting.
 Loading /home/frotz/DATA/zork1-r88-s840726.z3.
 
@@ -16,19 +16,22 @@ You are standing in an open field west of a white house, with a boarded front
 door.
 There is a small mailbox here.
 
-  [waiting for model...] (98 chunks)
-[1] reasoning: I'll start exploring by checking the mailbox, which often contains useful items at the beginning of Zork. 
+  [waiting for model...] (111 chunks)
+[1] reasoning: I see I'm at the starting location of Zork I, west of the white house. There's a small mailbox here that's worth investigating. 
 [1] > open mailbox
 Opening the small mailbox reveals a leaflet.
 
-  [waiting for model...] (34 chunks)
+  [waiting for model...] (82 chunks)
+[2] tool: add_note({'note': 'Game starts at West of House. Mailbox contains a leaflet.'}) => Note recorded. Total notes: 1
+[2] tool: update_inventory({'action': 'add', 'item': 'leaflet'}) => ['leaflet']
+  [waiting for model...] (25 chunks)
+[2] thinking: The mailbox is open and there's a leaflet inside. Let me take the leaflet to read it - this is likely the introductory text that will give me some hints about the game or the house.
+
+I should take the... (221 chars)
 [2] > take leaflet
 Taken.
 
-  [waiting for model...] (49 chunks)
-[3] tool: update_inventory({'action': 'add', 'item': 'leaflet'}) => ['leaflet']
-  [waiting for model...] (10 chunks)
-[3] thinking: The leaflet is now in my inventory. I should read it to see what information it contains, as leaflets in Zork often have useful hints or lore.
+  [waiting for model...] (34 chunks)
 [3] > read leaflet
 "WELCOME TO ZORK!
 
@@ -36,78 +39,123 @@ ZORK is a game of adventure, danger, and low cunning. In it you will explore
 some of the most amazing territory ever seen by mortals. No computer should be
 without one!"
 
-  [waiting for model...] (50 chunks)
-[4] > go north
-[4] room: North of House
+  [waiting for model...] (36 chunks)
+[4] > look
+[4] room: West of House
+West of House
+You are standing in an open field west of a white house, with a boarded front
+door.
+There is a small mailbox here.
+
+  [waiting for model...] (69 chunks)
+[5] tool: add_note({'note': "House front door is boarded - can't enter through front door."}) => Note recorded. Total notes: 2
+  [waiting for model...] (39 chunks)
+[5] thinking: The mailbox is empty now since I took the leaflet. I need to explore. Let me check the other directions. I know there's a house to the east with a boarded front door. Let me try going south first to s... (216 chars)
+[5] > go north
+[5] room: North of House
 North of House
 You are facing the north side of a white house. There is no door here, and all
 the windows are boarded up. To the north a narrow path winds through the trees.
 
-  [waiting for model...] (44 chunks)
-[5] > go north
-[5] room: Forest Path
+  [waiting for model...] (33 chunks)
+[6] > go north
+[6] room: Forest Path
 Forest Path
 This is a path winding through a dimly lit forest. The path heads north-south
 here. One particularly large tree with some low branches stands at the edge of
 the path.
 
-  [waiting for model...] (51 chunks)
-[6] > go north
-[6] room: Clearing (north)
+  [waiting for model...] (34 chunks)
+[7] > climb tree
+[7] room: Up a Tree
+Up a Tree
+You are about 10 feet above the ground nestled among some large branches. The
+nearest branch above you is above your reach.
+Beside you on the branch is a small bird's nest.
+In the bird's nest is a large egg encrusted with precious jewels, apparently
+scavenged by a childless songbird. The egg is covered with fine gold inlay, and
+ornamented in lapis lazuli and mother-of-pearl. Unlike most eggs, this one is
+hinged and closed with a delicate looking clasp. The egg appears extremely
+fragile.
+
+  [waiting for model...] (24 chunks)
+[8] > take egg
+Taken.
+
+  [waiting for model...] (87 chunks)
+[9] tool: update_inventory({'action': 'add', 'item': 'jeweled egg'}) => ['leaflet', 'jeweled egg']
+[9] tool: add_note({'note': "Up a Tree - found jeweled egg in bird's nest. Egg is hinged with delicate clasp - can be opened."}) => Note recorded. Total notes: 3
+  [waiting for model...] (56 chunks)
+[9] thinking: The description says the egg is hinged and closed with a delicate clasp, which means it can probably be opened. But first, let me make a note of it and record this in my inventory.
+[9] > go down
+[9] room: Forest Path
+Forest Path
+
+  [waiting for model...] (43 chunks)
+[10] > go north
+[10] room: Clearing (north)
 Clearing
 You are in a clearing, with a forest surrounding you on all sides. A path leads
 south.
 On the ground is a pile of leaves.
 
-  [waiting for model...] (36 chunks)
-[7] > move leaves
+  [waiting for model...] (30 chunks)
+[11] > move leaves
 Done.
 In disturbing the pile of leaves, a grating is revealed.
 
-  [waiting for model...] (61 chunks)
-[8] tool: add_note({'note': 'Clearing north of Forest Path has a grating hidden under leaves. Need to figure out how to open it.'}) => Note recorded. Total notes: 1
-  [waiting for model...] (25 chunks)
-[8] thinking: Interesting! There's a grating under the leaves. I should investigate this. Let me check if I can open it or go down into it.
-[8] > examine grating
-The grating is closed.
-
-  [waiting for model...] (49 chunks)
-[9] > open grating
+  [waiting for model...] (53 chunks)
+[12] tool: add_note({'note': 'Clearing - grating hidden under pile of leaves. This is likely an entrance to underground.'}) => Note recorded. Total notes: 4
+  [waiting for model...] (65 chunks)
+[12] thinking: I found a grating under the leaves. This is likely a way to get underground. Let me investigate the grating.
+[12] > open grating
 The grating is locked.
 
-  [waiting for model...] (36 chunks)
-[10] > go south
-[10] room: Forest Path
+  [waiting for model...] (28 chunks)
+[13] > go south
+[13] room: Forest Path
 Forest Path
 
-  [waiting for model...] (37 chunks)
-[11] > go south
-[11] room: North of House
+  [waiting for model...] (61 chunks)
+[14] > go south
+[14] room: North of House
 North of House
 
-  [waiting for model...] (39 chunks)
-[12] > go south
+  [waiting for model...] (26 chunks)
+[15] > go south
 The windows are all boarded.
 
-  [waiting for model...] (52 chunks)
-[13] > go east
-[13] room: Behind House
+  [waiting for model...] (61 chunks)
+[16] > go west
+[16] room: West of House
+West of House
+There is a small mailbox here.
+
+  [waiting for model...] (110 chunks)
+[17] > go south
+[17] room: South of House
+South of House
+You are facing the south side of a white house. There is no door here, and all
+the windows are boarded.
+
+  [waiting for model...] (28 chunks)
+[18] > go east
+[18] room: Behind House
 Behind House
 You are behind the white house. A path leads into the forest to the east. In one
 corner of the house there is a small window which is slightly ajar.
 
-  [waiting for model...] (40 chunks)
-[14] > open window
+  [waiting for model...] (34 chunks)
+[19] > enter window
+The kitchen window is closed.
+
+  [waiting for model...] (29 chunks)
+[20] > open window
 With great effort, you open the window far enough to allow entry.
 
-  [waiting for model...] (22 chunks)
-[15] > go window
-Warning: @jin called with object 0 (PC = 8bea) (will ignore further occurrences)
-You should supply a direction!
-
-  [waiting for model...] (54 chunks)
-[16] > enter window
-[16] room: Kitchen
+  [waiting for model...] (19 chunks)
+[21] > enter window
+[21] room: Kitchen
 Kitchen
 You are in the kitchen of the white house. A table seems to have been used
 recently for the preparation of food. A passage leads to the west and a dark
@@ -118,38 +166,32 @@ A bottle is sitting on the table.
 The glass bottle contains:
   A quantity of water
 
-  [waiting for model...] (87 chunks)
-[17] > take sack
+  [waiting for model...] (68 chunks)
+[22] > take bottle
 Taken.
 
-  [waiting for model...] (21 chunks)
-[18] tool: update_inventory({'action': 'add', 'item': 'sack'}) => ['leaflet', 'sack']
-  [waiting for model...] (10 chunks)
-[18] thinking: > take bottle
-
-[18] > take bottle
+  [waiting for model...] (53 chunks)
+[23] tool: update_inventory({'action': 'add', 'item': 'glass bottle'}) => ['leaflet', 'jeweled egg', 'glass bottle']
+  [waiting for model...] (19 chunks)
+[23] thinking: The bottle contains water. In Zork, having a source of water can be useful, and bottles can be used to carry other liquids. Let me take the sack as well.
+[23] > take sack
 Taken.
 
   [waiting for model...] (39 chunks)
-[19] tool: update_inventory({'action': 'add', 'item': 'bottle with water'}) => ['leaflet', 'sack', 'bottle with water']
-  [waiting for model...] (145 chunks)
-[19] thinking: The inventory is not shown in the function result, so I'll use the function to update my tracking.
-[19] reasoning: Living Room You are in a living room. A trophy case gleams with brass fittings and crystal glass against one wall. There is a doorway to the east, a wooden door with strange gothic lettering to the we
-[19] > take lantern
-You can't see any lantern here!
+[24] tool: update_inventory({'action': 'add', 'item': 'brown sack (hot peppers)'}) => ['leaflet', 'jeweled egg', 'glass bottle', 'brown sack (hot peppers)']
+  [waiting for model...] (49 chunks)
+[24] thinking: The sack is now in my inventory. I should track it and then explore the house.
+[24] > go chimney
+Warning: @jin called with object 0 (PC = 8bea) (will ignore further occurrences)
+You should supply a direction!
 
-  [waiting for model...] (38 chunks)
-[20] > look
-[20] room: Kitchen
-Kitchen
-You are in the kitchen of the white house. A table seems to have been used
-recently for the preparation of food. A passage leads to the west and a dark
-staircase can be seen leading upward. A dark chimney leads down and to the east
-is a small window which is open.
+  [waiting for model...] (32 chunks)
+[25] > down
+Only Santa Claus climbs down chimneys.
 
-  [waiting for model...] (25 chunks)
-[21] > go west
-[21] room: Living Room
+  [waiting for model...] (24 chunks)
+[26] > go west
+[26] room: Living Room
 Living Room
 You are in the living room. There is a doorway to the east, a wooden door with
 strange gothic lettering to the west, which appears to be nailed shut, a trophy
@@ -157,41 +199,51 @@ case, and a large oriental rug in the center of the room.
 Above the trophy case hangs an elvish sword of great antiquity.
 A battery-powered brass lantern is on the trophy case.
 
-  [waiting for model...] (20 chunks)
-[22] > take lantern
+  [waiting for model...] (74 chunks)
+[27] > take lantern
 Taken.
 
-  [waiting for model...] (50 chunks)
-[23] tool: update_inventory({'action': 'add', 'item': 'lantern'}) => ['leaflet', 'sack', 'bottle with water', 'lantern']
-  [waiting for model...] (9 chunks)
-[23] thinking: The game described the lantern as "on the trophy case" while my memory said "on the shelf" - I should trust the actual game output over my memory.
-[23] > take sword
+  [waiting for model...] (63 chunks)
+[28] tool: update_inventory({'action': 'add', 'item': 'brass lantern'}) => ['leaflet', 'jeweled egg', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern']
+  [waiting for model...] (43 chunks)
+[28] thinking: The lantern is important - it will help me see in dark areas. I should take the sword too, and investigate the gothic lettering on the door. The trophy case is where I should put treasures to increase... (210 chars)
+[28] > take sword
 Taken.
 
-  [waiting for model...] (38 chunks)
-[24] tool: update_inventory({'action': 'add', 'item': 'sword'}) => ['leaflet', 'sack', 'bottle with water', 'lantern', 'sword']
-  [waiting for model...] (14 chunks)
-[24] thinking: The sword is likely a valuable treasure and useful for fighting enemies. I'll add it to my inventory tracking.
-[24] > open case
+  [waiting for model...] (47 chunks)
+[29] tool: update_inventory({'action': 'add', 'item': 'elvish sword'}) => ['leaflet', 'jeweled egg', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'elvish sword']
+  [waiting for model...] (43 chunks)
+[29] thinking: I now have the sword. This is a key item for fighting enemies in the game. Let me update my inventory and then explore more.
+[29] > open case
 Opened.
 
-  [waiting for model...] (81 chunks)
-[25] > move rug
+  [waiting for model...] (47 chunks)
+[30] > put egg in case
+Done.
+
+  [waiting for model...] (49 chunks)
+[31] tool: update_inventory({'action': 'remove', 'item': 'jeweled egg'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'elvish sword']
+  [waiting for model...] (34 chunks)
+[31] thinking: The jeweled egg is now safely in the trophy case. Let me explore more. I should go down the trapdoor that might be under the rug.
+[31] > move rug
 With a great effort, the rug is moved to one side of the room, revealing the
 dusty cover of a closed trap door.
 
-  [waiting for model...] (29 chunks)
-[26] > open trap door
+  [waiting for model...] (36 chunks)
+[32] tool: add_note({'note': 'Living Room - trap door under the rug leads underground.'}) => Note recorded. Total notes: 5
+  [waiting for model...] (24 chunks)
+[32] thinking: The trap door was under the rug. This is another entrance to the underground.
+[32] > open trap door
 The door reluctantly opens to reveal a rickety staircase descending into
 darkness.
 
-  [waiting for model...] (17 chunks)
-[27] > turn on lantern
+  [waiting for model...] (41 chunks)
+[33] > turn on lantern
 The brass lantern is now on.
 
-  [waiting for model...] (18 chunks)
-[28] > go down
-[28] room: Cellar
+  [waiting for model...] (20 chunks)
+[34] > down
+[34] room: Cellar
 The trap door crashes shut, and you hear someone barring it.
 
 Cellar
@@ -200,11 +252,13 @@ crawlway to the south. On the west is the bottom of a steep metal ramp which is
 unclimbable.
 Your sword is glowing with a faint blue glow.
 
-  [waiting for model...] (56 chunks)
-[29] tool: add_note({'note': 'Sword glowing blue in Cellar - danger nearby. Trap door barred behind me.'}) => Note recorded. Total notes: 2
-  [waiting for model...] (36 chunks)
-[29] thinking: The sword is glowing blue - this typically means there's an enemy or danger nearby in Zork. I should be careful. Let me explore north first.
-[29] > go north
+  [waiting for model...] (135 chunks)
+[35] tool: add_note({'note': 'Cellar - trap door barred behind me! Sword glowing blue = danger nearby. Exits: north, south, west (ramp unclimbable).'}) => Note recorded. Total notes: 6
+  [waiting for model...] (50 chunks)
+[35] thinking: The trap door was barred behind me - I'm trapped down here now. The sword is glowing blue, which means there's danger/enemies nearby. I need to explore carefully.
+
+I have a few options: north passagew... (410 chars)
+[35] > go north
 The Troll Room
 This is a small room with passages to the east and south and a forbidding hole
 leading west. Bloodstains and deep scratches (perhaps made by an axe) mar the
@@ -212,31 +266,100 @@ walls.
 A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the
 room.
 Your sword has begun to glow very brightly.
-The troll swings his axe, but it misses.
 
-  [waiting for model...] (57 chunks)
-[30] > kill troll with sword
-The troll is battered into unconsciousness.
+  [waiting for model...] (40 chunks)
+[36] > kill troll
+(with the sword)
+The troll is knocked out!
 
   [waiting for model...] (34 chunks)
-[31] > go east
-[31] room: East-West Passage
+[37] > kill troll
+(with the sword)
+The unarmed troll cannot defend himself: He dies.
+Almost as soon as the troll breathes his last breath, a cloud of sinister black
+fog envelops him, and when the fog lifts, the carcass has disappeared.
+Your sword is no longer glowing.
+
+  [waiting for model...] (42 chunks)
+[38] > go south
+[38] room: Cellar
+Cellar
+
+  [waiting for model...] (60 chunks)
+[39] > go north
+The Troll Room
+There is a bloody axe here.
+
+  [waiting for model...] (24 chunks)
+[40] > take axe
+Taken.
+Someone carrying a large bag is casually leaning against one of the walls here.
+He does not speak, but it is clear from his aspect that the bag will be taken
+only over his dead body.
+Your sword has begun to glow very brightly.
+
+  [waiting for model...] (61 chunks)
+[41] > kill thief
+What do you want to kill the thief with?
+
+  [waiting for model...] (40 chunks)
+[42] > kill thief with sword
+The thief is struck on the arm; blood begins to trickle down.
+The thief just left, still carrying his large bag. You may not have noticed that
+he robbed you blind first.
+
+  [waiting for model...] (23 chunks)
+[43] > inventory
+You are carrying:
+  A bloody axe
+  A brass lantern (providing light)
+  A brown sack
+  A glass bottle
+  The glass bottle contains:
+    A quantity of water
+  A leaflet
+
+  [waiting for model...] (171 chunks)
+[44] tool: update_inventory({'action': 'remove', 'item': 'elvish sword'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern']
+[44] tool: add_note({'note': 'Thief stole my elvish sword! Need to find him to get it back. Theif carries a large bag and is dangerous.'}) => Note recorded. Total notes: 7
+  [waiting for model...] (43 chunks)
+[44] thinking: The thief took my elvish sword! That's devastating. I need to find the thief and get my sword back, or find another weapon. Let me see what I still have:
+- bloody axe
+- brass lantern (on)
+- brown sack... (487 chars)
+[44] > go east
+[44] room: East-West Passage
 East-West Passage
 This is a narrow east-west passageway. There is a narrow stairway leading down
 at the north end of the room.
-Your sword is glowing with a faint blue glow.
 
-  [waiting for model...] (23 chunks)
-[32] > go down
-[32] room: Chasm
+  [waiting for model...] (44 chunks)
+[45] > go east
+[45] room: Round Room
+Round Room
+This is a circular stone room with passages in all directions. Several of them
+have unfortunately been blocked by cave-ins.
+
+  [waiting for model...] (41 chunks)
+[46] > go down
+You can't go that way.
+
+  [waiting for model...] (57 chunks)
+[47] > go north
+[47] room: North-South Passage
+North-South Passage
+This is a high north-south passage, which forks to the northeast.
+
+  [waiting for model...] (33 chunks)
+[48] > go north
+[48] room: Chasm
 Chasm
 A chasm runs southwest to northeast and the path follows it. You are on the
 south side of the chasm, where a crack opens into a passage.
-Your sword is no longer glowing.
 
-  [waiting for model...] (16 chunks)
-[33] > go northeast
-[33] room: Reservoir South
+  [waiting for model...] (35 chunks)
+[49] > go northeast
+[49] room: Reservoir South
 Reservoir South
 You are in a long room on the south shore of a large lake, far too deep and wide
 for crossing.
@@ -244,9 +367,94 @@ There is a path along the stream to the east or west, a steep pathway climbing
 southwest along the edge of a chasm, and a path leading into a canyon to the
 southeast.
 
+  [waiting for model...] (32 chunks)
+[50] > go southwest
+[50] room: Chasm
+Chasm
+
+  [waiting for model...] (43 chunks)
+[51] > go northwest
+You can't go that way.
+
+  [waiting for model...] (50 chunks)
+[52] > go crack
+You should supply a direction!
+
+  [waiting for model...] (74 chunks)
+[53] > go south
+[53] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (51 chunks)
+[54] > go northeast
+[54] room: Deep Canyon
+Deep Canyon
+You are on the south edge of a deep canyon. Passages lead off to the east,
+northwest and southwest. A stairway leads down. You can hear the sound of
+flowing water from below.
+
+  [waiting for model...] (36 chunks)
+[55] > go down
+[55] room: Loud Room
+Loud Room
+This is a large room with a ceiling which cannot be detected from the ground.
+There is a narrow passage from east to west and a stone stairway leading upward.
+The room is deafeningly loud with an undetermined rushing sound. The sound seems
+to reverberate from all of the walls, making it difficult even to think.
+On the ground is a large platinum bar.
+
+  [waiting for model...] (42 chunks)
+[56] > take platinum bar
+bar bar ...
+
+  [waiting for model...] (47 chunks)
+[57] > go east
+[57] room: Damp Cave
+Damp Cave
+This cave has exits to the west and east, and narrows to a crack toward the
+south. The earth is particularly damp here.
+
+  [waiting for model...] (57 chunks)
+[58] > go east
+[58] room: White Cliffs Beach
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+  [waiting for model...] (35 chunks)
+[59] > go west
+[59] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (60 chunks)
+[60] > go south
+It is too narrow for most insects.
+
+  [waiting for model...] (52 chunks)
+[61] > go west
+[61] room: Loud Room
+Loud Room
+On the ground is a large platinum bar.
+
   [waiting for model...] (54 chunks)
-[34] > go east
-[34] room: Dam
+[62] > go up
+[62] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (70 chunks)
+[63] > go northwest
+[63] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (50 chunks)
+[64] > go southeast
+[64] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (83 chunks)
+[65] > go east
+[65] room: Dam
 Dam
 You are standing on the top of the Flood Control Dam #3, which was quite a
 tourist attraction in times far distant. There are paths to the north, south,
@@ -256,13 +464,1838 @@ reservoir. Water is pouring over the top of the now abandoned dam.
 There is a control panel here, on which a large metal bolt is mounted. Directly
 above the bolt is a small green plastic bubble.
 
-  [waiting for model...] (50 chunks)
-[35] > turn bolt
-What do you want to turn the bolt with?
+  [waiting for model...] (86 chunks)
+[66] tool: add_note({'note': 'Dam #3 - sluice gates closed, water pouring over. Control panel with metal bolt and green plastic bubble. Paths north, south, west, and down.'}) => Note recorded. Total notes: 8
+  [waiting for model...] (208 chunks)
+[66] thinking: I found the dam. I need to explore this area. Let me check what's around here. The control panel with the bolt is interesting - likely need to do something with that later. Let me explore the exits.
+[66] > go down
+[66] room: Dam Base
+Dam Base
+You are at the base of Flood Control Dam #3, which looms above you and to the
+north. The river Frigid is flowing by here. Along the river are the White Cliffs
+which seem to form giant walls stretching from north to south along the shores
+of the river as it winds its way downstream.
+There is a folded pile of plastic here which has a small valve attached.
+
+  [waiting for model...] (27 chunks)
+[67] > take plastic
+Taken.
+
+  [waiting for model...] (51 chunks)
+[68] tool: update_inventory({'action': 'add', 'item': 'inflatable raft'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft']
+  [waiting for model...] (37 chunks)
+[68] thinking: The plastic is described as a "folded pile of plastic" with a small valve attached. This sounds like an inflatable raft. Let me pick it up.
+[68] > go north
+[68] room: Dam
+Dam
+
+  [waiting for model...] (76 chunks)
+[69] > go south
+[69] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (109 chunks)
+[70] > go northeast
+You can't go that way.
+
+  [waiting for model...] (49 chunks)
+[71] > go northwest
+[71] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (108 chunks)
+[72] > go southwest
+[72] room: Chasm
+Chasm
+
+  [waiting for model...] (31 chunks)
+[73] > go south
+[73] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (34 chunks)
+[74] > go south
+[74] room: Round Room
+Round Room
+
+  [waiting for model...] (35 chunks)
+[75] > go west
+[75] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (75 chunks)
+[76] > go north
+[76] room: Chasm
+Chasm
+
+  [waiting for model...] (24 chunks)
+[77] > go west
+You can't go that way.
+
+  [waiting for model...] (97 chunks)
+[78] > go north
+You can't go that way.
+
+  [waiting for model...] (46 chunks)
+[79] > go east
+You can't go that way.
+
+  [waiting for model...] (23 chunks)
+[80] > look
+[80] room: Chasm
+Chasm
+A chasm runs southwest to northeast and the path follows it. You are on the
+south side of the chasm, where a crack opens into a passage.
+
+  [waiting for model...] (34 chunks)
+[81] > enter crack
+You can't fit through the crack.
+
+  [waiting for model...] (27 chunks)
+[82] > go northeast
+[82] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (102 chunks)
+[83] > go east
+[83] room: Dam
+Dam
+
+  [waiting for model...] (21 chunks)
+[84] > go west
+[84] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (94 chunks)
+[85] > go north
+You would drown.
+
+  [waiting for model...] (127 chunks)
+[86] > go east
+[86] room: Dam
+Dam
+
+  [waiting for model...] (233 chunks)
+[87] > go south
+[87] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (120 chunks)
+[88] > go southwest
+[88] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (71 chunks)
+[89] > go south
+[89] room: Round Room
+Round Room
+
+  [waiting for model...] (26 chunks)
+[90] > go east
+[90] room: Loud Room
+Loud Room
+On the ground is a large platinum bar.
+
+  [waiting for model...] (78 chunks)
+[91] > go up
+[91] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (161 chunks)
+[92] > go west
+You can't go that way.
+
+  [waiting for model...] (124 chunks)
+[93] > go northeast
+You can't go that way.
+
+  [waiting for model...] (97 chunks)
+[94] > go southwest
+[94] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (42 chunks)
+[95] > go northeast
+[95] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (74 chunks)
+[96] > go down
+[96] room: Loud Room
+Loud Room
+On the ground is a large platinum bar.
+
+  [waiting for model...] (74 chunks)
+[97] > echo
+[97] room: Loud Room
+The acoustics of the room change subtly.
+
+Loud Room
+On the ground is a large platinum bar.
+
+  [waiting for model...] (29 chunks)
+[98] > take platinum bar
+Your load is too heavy.
+
+  [waiting for model...] (47 chunks)
+[99] > drop axe
+Dropped.
+
+  [waiting for model...] (69 chunks)
+[100] > take platinum bar
+Taken.
+
+  [waiting for model...] (51 chunks)
+[101] > drop sack
+Dropped.
+
+  [waiting for model...] (40 chunks)
+[102] > take sack
+Taken.
+
+  [waiting for model...] (28 chunks)
+[103] > go east
+[103] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (33 chunks)
+[104] > inflate raft
+What do you want to inflate the raft with?
+
+  [waiting for model...] (29 chunks)
+[105] > inflate raft with breath
+You can't see any raft here!
+
+  [waiting for model...] (23 chunks)
+[106] > drop raft
+You don't have that!
+
+  [waiting for model...] (20 chunks)
+[107] > inventory
+You are carrying:
+  A brown sack
+  A platinum bar
+  A pile of plastic
+  A brass lantern (providing light)
+  A glass bottle
+  The glass bottle contains:
+    A quantity of water
+  A leaflet
+
+  [waiting for model...] (46 chunks)
+[108] > go west
+[108] room: Loud Room
+Loud Room
+There is a bloody axe here.
+
+  [waiting for model...] (151 chunks)
+[109] > go up
+[109] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (52 chunks)
+[110] > go southwest
+[110] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (48 chunks)
+[111] > go north
+[111] room: Chasm
+Chasm
+
+  [waiting for model...] (98 chunks)
+[112] > go northeast
+[112] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (32 chunks)
+[113] > inflate pile of plastic
+What do you want to inflate the plastic with?
+
+  [waiting for model...] (42 chunks)
+[114] > inflate plastic with breath
+The boat must be on the ground to be inflated.
+
+  [waiting for model...] (24 chunks)
+[115] > drop plastic
+Dropped.
+
+  [waiting for model...] (22 chunks)
+[116] > inflate plastic with breath
+You don't have enough lung power to inflate it.
+
+  [waiting for model...] (60 chunks)
+[117] > take plastic
+Taken.
+
+  [waiting for model...] (97 chunks)
+[118] > look in sack
+The brown sack is closed.
+
+  [waiting for model...] (23 chunks)
+[119] > open sack
+Opening the brown sack reveals a lunch, and a clove of garlic.
+
+  [waiting for model...] (53 chunks)
+[120] tool: update_inventory({'action': 'add', 'item': 'lunch'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch']
+[120] tool: update_inventory({'action': 'add', 'item': 'clove of garlic'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic']
+  [waiting for model...] (62 chunks)
+[120] thinking: The sack contains lunch and a clove of garlic. Let me add these to my inventory tracking.
+[120] > go south
+You can't go that way.
+
+  [waiting for model...] (112 chunks)
+[121] > go southwest
+[121] room: Chasm
+Chasm
+
+  [waiting for model...] (23 chunks)
+[122] > go northeast
+[122] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (6 chunks)
+[123] > go east
+[123] room: Dam
+Dam
+
+  [waiting for model...] (37 chunks)
+[124] > examine garlic
+There's nothing special about the clove of garlic.
+
+  [waiting for model...] (130 chunks)
+[125] > go down
+[125] room: Dam Base
+Dam Base
+
+  [waiting for model...] (39 chunks)
+[126] > enter raft
+You can't see any raft here!
+
+  [waiting for model...] (39 chunks)
+[127] > drop pile of plastic
+Dropped.
+
+  [waiting for model...] (31 chunks)
+[128] > inflate plastic with breath
+You don't have enough lung power to inflate it.
+
+  [waiting for model...] (64 chunks)
+[129] > examine plastic
+There's nothing special about the pile of plastic.
+
+  [waiting for model...] (95 chunks)
+[130] > go up
+[130] room: Dam
+Dam
+
+  [waiting for model...] (68 chunks)
+[131] > go south
+[131] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (43 chunks)
+[132] > go north
+You can't go that way.
+
+  [waiting for model...] (29 chunks)
+[133] > go northwest
+[133] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (34 chunks)
+[134] > go north
+You would drown.
+
+  [waiting for model...] (97 chunks)
+[135] > go east
+[135] room: Dam
+Dam
+
+  [waiting for model...] (24 chunks)
+[136] > go south
+[136] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (89 chunks)
+[137] > go northeast
+You can't go that way.
+
+  [waiting for model...] (43 chunks)
+[138] > go southwest
+[138] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (110 chunks)
+[139] > go northeast
+[139] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (43 chunks)
+[140] > go southwest
+[140] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (24 chunks)
+[141] > go northeast
+[141] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (71 chunks)
+[142] > go down
+[142] room: Loud Room
+Loud Room
+There is a bloody axe here.
+
+  [waiting for model...] (21 chunks)
+[143] > take axe
+Taken.
+
+  [waiting for model...] (38 chunks)
+[144] > go east
+[144] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (22 chunks)
+[145] > look in sack
+The brown sack contains:
+  A lunch
+  A clove of garlic
+
+  [waiting for model...] (82 chunks)
+[146] > go east
+[146] room: White Cliffs Beach
+White Cliffs Beach
+
+  [waiting for model...] (20 chunks)
+[147] > look
+[147] room: White Cliffs Beach
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+  [waiting for model...] (82 chunks)
+[148] > go south
+[148] room: White Cliffs Beach
+White Cliffs Beach
+You are on a rocky, narrow strip of beach beside the Cliffs. A narrow path leads
+north along the shore.
+
+  [waiting for model...] (15 chunks)
+[149] > go south
+You can't go that way.
+
+  [waiting for model...] (74 chunks)
+[150] > go north
+[150] room: White Cliffs Beach
+White Cliffs Beach
+
+  [waiting for model...] (48 chunks)
+[151] > look
+[151] room: White Cliffs Beach
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+  [waiting for model...] (104 chunks)
+[152] > go north
+You can't go that way.
+
+  [waiting for model...] (83 chunks)
+[153] > look
+[153] room: White Cliffs Beach
+White Cliffs Beach
+You are on a narrow strip of beach which runs along the base of the White
+Cliffs. There is a narrow path heading south along the Cliffs and a tight
+passage leading west into the cliffs themselves.
+
+  [waiting for model...] (24 chunks)
+[154] > go west
+[154] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (31 chunks)
+[155] > go west
+[155] room: Loud Room
+Loud Room
+
+  [waiting for model...] (54 chunks)
+[156] > go west
+[156] room: Round Room
+Round Room
+
+  [waiting for model...] (77 chunks)
+[157] > go west
+[157] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (34 chunks)
+[158] > go west
+The Troll Room
+
+  [waiting for model...] (86 chunks)
+[159] > go west
+[159] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (31 chunks)
+[160] > look
+[160] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (62 chunks)
+[161] > drop leaflet
+Dropped.
+
+  [waiting for model...] (38 chunks)
+[162] > go west
+[162] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (47 chunks)
+[163] > drop sack
+Dropped.
+
+  [waiting for model...] (49 chunks)
+[164] > go north
+[164] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (46 chunks)
+[165] > go east
+The Troll Room
+
+  [waiting for model...] (36 chunks)
+[166] > go west
+[166] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (29 chunks)
+[167] > go north
+[167] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (30 chunks)
+[168] > go north
+[168] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (36 chunks)
+[169] > go up
+You can't go that way.
+
+  [waiting for model...] (24 chunks)
+[170] > go east
+The Troll Room
+
+  [waiting for model...] (34 chunks)
+[171] > go west
+[171] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (23 chunks)
+[172] > go west
+[172] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
+  A clove of garlic
+
+  [waiting for model...] (41 chunks)
+[173] > go east
+[173] room: Dead End
+Dead End
+You have come to a dead end in the maze.
+
+  [waiting for model...] (35 chunks)
+[174] > go south
+[174] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
+  A clove of garlic
+
+  [waiting for model...] (62 chunks)
+[175] > go up
+You can't go that way.
+
+  [waiting for model...] (33 chunks)
+[176] > take sack
+Taken.
+
+  [waiting for model...] (19 chunks)
+[177] > go west
+[177] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (57 chunks)
+[178] > go north
+[178] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (70 chunks)
+[179] > go west
+[179] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (43 chunks)
+[180] > go north
+[180] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (30 chunks)
+[181] > drop axe
+Dropped.
+
+  [waiting for model...] (39 chunks)
+[182] > go north
+[182] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (54 chunks)
+[183] > drop lunch
+Dropped.
+
+  [waiting for model...] (86 chunks)
+[184] > go south
+[184] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (65 chunks)
+[185] > go south
+[185] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A hot pepper sandwich is here.
+A small leaflet is on the ground.
+
+  [waiting for model...] (29 chunks)
+[186] > go south
+[186] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (92 chunks)
+[187] > go north
+You can't go that way.
+A seedy-looking individual with a large bag just wandered through the room. On
+the way through, he quietly abstracted some valuables from the room and from
+your possession, mumbling something about "Doing unto others before..."
+
+  [waiting for model...] (19 chunks)
+[188] > inventory
+You are carrying:
+  A brown sack
+  The brown sack contains:
+    A clove of garlic
+  A brass lantern (providing light)
+  A glass bottle
+  The glass bottle contains:
+    A quantity of water
+
+  [waiting for model...] (54 chunks)
+[189] > take lunch
+You can't see any lunch here!
+
+  [waiting for model...] (55 chunks)
+[190] > go south
+[190] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A hot pepper sandwich is here.
+A small leaflet is on the ground.
+
+  [waiting for model...] (24 chunks)
+[191] > take sandwich
+Taken.
+
+  [waiting for model...] (83 chunks)
+[192] > put sandwich in sack
+Done.
+
+  [waiting for model...] (43 chunks)
+[193] > go west
+[193] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (78 chunks)
+[194] > go up
+You can't go that way.
+
+  [waiting for model...] (53 chunks)
+[195] > go east
+[195] room: Dead End
+Dead End
+You have come to a dead end in the maze.
+
+  [waiting for model...] (75 chunks)
+[196] > go south
+[196] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (49 chunks)
+[197] > go east
+[197] room: Dead End
+Dead End
+You have come to a dead end in the maze.
+
+  [waiting for model...] (69 chunks)
+[198] > go west
+You can't go that way.
+
+  [waiting for model...] (27 chunks)
+[199] > go south
+[199] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (29 chunks)
+[200] > go north
+[200] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (48 chunks)
+[201] > go north
+[201] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (27 chunks)
+[202] > go east
+The Troll Room
+
+  [waiting for model...] (46 chunks)
+[203] > go west
+[203] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (77 chunks)
+[204] > go south
+[204] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (25 chunks)
+[205] > go east
+[205] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (23 chunks)
+[206] > go west
+[206] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (84 chunks)
+[207] > go south
+[207] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (67 chunks)
+[208] > go south
+[208] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (42 chunks)
+[209] > go east
+[209] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (27 chunks)
+[210] > drop axe
+You don't have that!
+
+  [waiting for model...] (76 chunks)
+[211] > go south
+You can't go that way.
+
+  [waiting for model...] (26 chunks)
+[212] > go east
+You can't go that way.
+
+  [waiting for model...] (64 chunks)
+[213] > go west
+[213] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (62 chunks)
+[214] > drop bottle
+Dropped.
+
+  [waiting for model...] (260 chunks)
+[215] > go east
+[215] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (60 chunks)
+[216] > go down
+You can't go that way.
+
+  [waiting for model...] (26 chunks)
+[217] > go north
+[217] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (68 chunks)
+[218] > go down
+You can't go that way.
+
+  [waiting for model...] (65 chunks)
+[219] > go west
+[219] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (40 chunks)
+[220] > go north
+[220] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (147 chunks)
+[221] > go north
+[221] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (39 chunks)
+[222] > go north
+[222] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (42 chunks)
+[223] > go east
+The Troll Room
+
+  [waiting for model...] (41 chunks)
+[224] > go west
+[224] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (49 chunks)
+[225] > go north
+[225] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (88 chunks)
+[226] > go west
+[226] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (54 chunks)
+[227] > go south
+You can't go that way.
+
+  [waiting for model...] (19 chunks)
+[228] > go east
+[228] room: Dead End
+Dead End
+You have come to a dead end in the maze.
+
+  [waiting for model...] (78 chunks)
+[229] > go south
+[229] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (34 chunks)
+[230] > go north
+[230] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (57 chunks)
+[231] > go north
+[231] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (97 chunks)
+[232] > go south
+[232] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+  [waiting for model...] (33 chunks)
+[233] > go south
+[233] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (12 chunks)
+[234] > go south
+[234] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+  [waiting for model...] (30 chunks)
+[235] > drop bottle
+You don't have the glass bottle.
+
+  [waiting for model...] (42 chunks)
+[236] > go west
+You can't go that way.
+
+  [waiting for model...] (47 chunks)
+[237] > go south
+[237] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (132 chunks)
+[238] > go east
+The Troll Room
+
+  [waiting for model...] (36 chunks)
+[239] > go east
+[239] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (137 chunks)
+[240] > go east
+[240] room: Round Room
+Round Room
+
+  [waiting for model...] (28 chunks)
+[241] > go south
+[241] room: Narrow Passage
+Narrow Passage
+This is a long and narrow corridor where a long north-south passageway briefly
+narrows even further.
+
+  [waiting for model...] (30 chunks)
+[242] > go south
+[242] room: Mirror Room
+Mirror Room
+You are in a large square room with tall ceilings. On the south wall is an
+enormous mirror which fills the entire wall. There are exits on the other three
+sides of the room.
+
+  [waiting for model...] (42 chunks)
+[243] > look in mirror
+There is an ugly person staring back at you.
+The lamp appears a bit dimmer.
+
+  [waiting for model...] (78 chunks)
+[244] tool: add_note({'note': 'Mirror Room - enormous mirror fills south wall. Lamp getting dimmer - need to conserve light. Exits on other 3 sides.'}) => Note recorded. Total notes: 9
+  [waiting for model...] (32 chunks)
+[244] thinking: The lamp is getting dimmer - I need to conserve light. Let me continue exploring. The mirror room is interesting - there's probably something to do with the mirror. Let me try going south through the ... (207 chars)
+[244] > go west
+[244] room: Winding Passage
+Winding Passage
+This is a winding passage. It seems that there are only exits on the east and
+north.
+
+  [waiting for model...] (37 chunks)
+[245] > go north
+[245] room: Mirror Room
+Mirror Room
+
+  [waiting for model...] (47 chunks)
+[246] > turn on lantern
+It is already on.
+
+  [waiting for model...] (26 chunks)
+[247] > go north
+[247] room: Narrow Passage
+Narrow Passage
+
+  [waiting for model...] (29 chunks)
+[248] > go north
+[248] room: Round Room
+Round Room
+
+  [waiting for model...] (436 chunks)
+[249] > go northeast
+You can't go that way.
+
+  [waiting for model...] (33 chunks)
+[250] > go north
+[250] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (28 chunks)
+[251] > go south
+[251] room: Round Room
+Round Room
+
+  [waiting for model...] (27 chunks)
+[252] > go southeast
+[252] room: Engravings Cave
+Engravings Cave
+You have entered a low cave with passages leading northwest and east.
+There are old engravings on the walls here.
+
+  [waiting for model...] (43 chunks)
+[253] > look at engravings
+The engravings were incised in the living rock of the cave wall by an unknown
+hand. They depict, in symbolic form, the beliefs of the ancient Zorkers.
+Skillfully interwoven with the bas reliefs are excerpts illustrating the major
+religious tenets of that time. Unfortunately, a later age seems to have
+considered them blasphemous and just as skillfully excised them.
+
+  [waiting for model...] (40 chunks)
+[254] > go east
+[254] room: Dome Room
+Dome Room
+You are at the periphery of a large dome, which forms the ceiling of another
+room below. Protecting you from a precipitous drop is a wooden railing which
+circles the dome.
+
+  [waiting for model...] (33 chunks)
+[255] > go down
+You cannot go down without fracturing many bones.
+
+  [waiting for model...] (140 chunks)
+[256] > tie sack to railing
+You can't tie the brown sack to that.
+
+  [waiting for model...] (44 chunks)
+[257] > drop sack down dome
+You can't do that.
+
+  [waiting for model...] (70 chunks)
+[258] > go west
+[258] room: Engravings Cave
+Engravings Cave
+There are old engravings on the walls here.
+
+  [waiting for model...] (111 chunks)
+[259] > go northwest
+[259] room: Round Room
+Round Room
+
+  [waiting for model...] (64 chunks)
+[260] > go east
+[260] room: Loud Room
+Loud Room
+
+  [waiting for model...] (87 chunks)
+[261] > go east
+[261] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (29 chunks)
+[262] > go west
+[262] room: Loud Room
+Loud Room
+
+  [waiting for model...] (36 chunks)
+[263] > go east
+[263] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (102 chunks)
+[264] > go west
+[264] room: Loud Room
+Loud Room
+
+  [waiting for model...] (52 chunks)
+[265] > go east
+[265] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (31 chunks)
+[266] > go east
+[266] room: White Cliffs Beach
+White Cliffs Beach
+
+  [waiting for model...] (34 chunks)
+[267] > go south
+[267] room: White Cliffs Beach
+White Cliffs Beach
+
+  [waiting for model...] (39 chunks)
+[268] > go north
+[268] room: White Cliffs Beach
+White Cliffs Beach
+
+  [waiting for model...] (28 chunks)
+[269] > go west
+[269] room: Damp Cave
+Damp Cave
+
+  [waiting for model...] (54 chunks)
+[270] > go west
+[270] room: Loud Room
+Loud Room
+
+  [waiting for model...] (57 chunks)
+[271] > go up
+[271] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (74 chunks)
+[272] > go southwest
+[272] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (83 chunks)
+[273] > go south
+[273] room: Round Room
+Round Room
+
+  [waiting for model...] (35 chunks)
+[274] > look
+[274] room: Round Room
+Round Room
+This is a circular stone room with passages in all directions. Several of them
+have unfortunately been blocked by cave-ins.
+
+  [waiting for model...] (94 chunks)
+[275] > go northwest
+You can't go that way.
+
+  [waiting for model...] (141 chunks)
+[276] > go up
+You can't go that way.
+
+  [waiting for model...] (39 chunks)
+[277] > go north
+[277] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (48 chunks)
+[278] > go south
+[278] room: Round Room
+Round Room
+
+  [waiting for model...] (74 chunks)
+[279] > go west
+[279] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (115 chunks)
+[280] > go west
+The Troll Room
+
+  [waiting for model...] (18 chunks)
+[281] > examine lantern
+The lamp is on.
+
+  [waiting for model...] (104 chunks)
+[282] > go west
+[282] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (46 chunks)
+[283] > go east
+The Troll Room
+
+  [waiting for model...] (65 chunks)
+[284] > go west
+[284] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (58 chunks)
+[285] > go east
+The Troll Room
+
+  [waiting for model...] (102 chunks)
+[286] > go east
+[286] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (76 chunks)
+[287] > go east
+[287] room: Round Room
+Round Room
+
+  [waiting for model...] (114 chunks)
+[288] > go north
+[288] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (23 chunks)
+[289] > go south
+[289] room: Round Room
+Round Room
+
+  [waiting for model...] (162 chunks)
+[290] > go south
+[290] room: Narrow Passage
+Narrow Passage
+
+  [waiting for model...] (25 chunks)
+[291] > go south
+[291] room: Mirror Room
+Mirror Room
+
+  [waiting for model...] (23 chunks)
+[292] > turn off lantern
+The brass lantern is now off.
+
+  [waiting for model...] (35 chunks)
+[293] > go north
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+  [waiting for model...] (42 chunks)
+[294] > turn on lantern
+[294] room: Narrow Passage
+The brass lantern is now on.
+
+Narrow Passage
+This is a long and narrow corridor where a long north-south passageway briefly
+narrows even further.
+
+  [waiting for model...] (137 chunks)
+[295] > go north
+[295] room: Round Room
+Round Room
+Someone carrying a large bag is casually leaning against one of the walls here.
+He does not speak, but it is clear from his aspect that the bag will be taken
+only over his dead body.
+
+  [waiting for model...] (47 chunks)
+[296] > kill thief with axe
+You don't have that!
+
+  [waiting for model...] (141 chunks)
+[297] > go north
+[297] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (49 chunks)
+[298] > go south
+[298] room: Round Room
+Round Room
+
+  [waiting for model...] (51 chunks)
+[299] > kill thief
+What do you want to kill the thief with?
+
+  [waiting for model...] (120 chunks)
+[300] > kill thief with sack
+You can't see any thief here!
+
+  [waiting for model...] (72 chunks)
+[301] > go west
+[301] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (37 chunks)
+[302] > go west
+The Troll Room
+
+  [waiting for model...] (69 chunks)
+[303] > go west
+[303] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (62 chunks)
+[304] > go west
+[304] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (35 chunks)
+[305] > take axe
+Taken.
+
+  [waiting for model...] (33 chunks)
+[306] > go east
+[306] room: Dead End
+Dead End
+You have come to a dead end in the maze.
+
+  [waiting for model...] (86 chunks)
+[307] > go south
+[307] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (64 chunks)
+[308] > drop axe
+Dropped.
+
+  [waiting for model...] (141 chunks)
+[309] > go west
+[309] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (38 chunks)
+[310] > go north
+[310] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a bloody axe here.
+
+  [waiting for model...] (18 chunks)
+[311] > take axe
+Taken.
+
+  [waiting for model...] (72 chunks)
+[312] > go north
+[312] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (254 chunks)
+[313] > go east
+The Troll Room
+
+  [waiting for model...] (58 chunks)
+[314] > go east
+[314] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (30 chunks)
+[315] > go east
+[315] room: Round Room
+Round Room
+
+  [waiting for model...] (36 chunks)
+[316] > kill thief with axe
+You can't see any thief here!
+
+  [waiting for model...] (17 chunks)
+[317] > look
+[317] room: Round Room
+Round Room
+This is a circular stone room with passages in all directions. Several of them
+have unfortunately been blocked by cave-ins.
 
   [waiting for model...] (91 chunks)
-[36] > go north
-[36] room: Dam Lobby
+[318] > go south
+[318] room: Narrow Passage
+Narrow Passage
+
+  [waiting for model...] (139 chunks)
+[319] > go south
+[319] room: Mirror Room
+Mirror Room
+
+  [waiting for model...] (27 chunks)
+[320] > go east
+[320] room: Cave (near Atlantis)
+Cave
+This is a tiny cave with entrances west and north, and a dark, forbidding
+staircase leading down.
+
+  [waiting for model...] (41 chunks)
+[321] > go down
+[321] room: Entrance to Hades
+Entrance to Hades
+You are outside a large gateway, on which is inscribed
+
+  Abandon every hope all ye who enter here!
+
+The gate is open; through it you can see a desolation, with a pile of mangled
+bodies in one corner. Thousands of voices, lamenting some hideous fate, can be
+heard.
+The way through the gate is barred by evil spirits, who jeer at your attempts to
+pass.
+
+  [waiting for model...] (69 chunks)
+[322] > show garlic to spirits
+I don't know the word "show".
+
+  [waiting for model...] (46 chunks)
+[323] > drop garlic
+Dropped.
+
+  [waiting for model...] (42 chunks)
+[324] > throw garlic at spirits
+You don't have the clove of garlic.
+
+  [waiting for model...] (66 chunks)
+[325] > take garlic
+Taken.
+
+  [waiting for model...] (35 chunks)
+[326] > throw garlic at spirits
+You seem unable to interact with these spirits.
+
+  [waiting for model...] (129 chunks)
+[327] > drop garlic
+Dropped.
+
+  [waiting for model...] (92 chunks)
+[328] > go gate
+You should supply a direction!
+
+  [waiting for model...] (52 chunks)
+[329] > go east
+You can't go that way.
+
+  [waiting for model...] (36 chunks)
+[330] > take garlic
+Taken.
+
+  [waiting for model...] (51 chunks)
+[331] > throw garlic at gate
+The gate is protected by an invisible force. It makes your teeth ache to touch
+it.
+
+  [waiting for model...] (37 chunks)
+[332] > put garlic at gate
+That sentence isn't one I recognize.
+
+  [waiting for model...] (58 chunks)
+[333] > go north
+You can't go that way.
+
+  [waiting for model...] (105 chunks)
+[334] > throw garlic at spirits
+You seem unable to interact with these spirits.
+
+  [waiting for model...] (87 chunks)
+[335] > go up
+[335] room: Cave (near Atlantis)
+Cave
+
+  [waiting for model...] (87 chunks)
+[336] > go west
+[336] room: Winding Passage
+Winding Passage
+
+  [waiting for model...] (85 chunks)
+[337] > go east
+[337] room: Cave (near Atlantis)
+Cave
+
+  [waiting for model...] (29 chunks)
+[338] > go down
+[338] room: Entrance to Hades
+Entrance to Hades
+
+  [waiting for model...] (37 chunks)
+[339] > wear garlic
+You can't wear the clove of garlic.
+
+  [waiting for model...] (104 chunks)
+[340] > smell garlic
+It smells like a clove of garlic.
+
+  [waiting for model...] (89 chunks)
+[341] > hold garlic
+You already have that!
+
+  [waiting for model...] (107 chunks)
+[342] > go gate
+You should supply a direction!
+
+  [waiting for model...] (79 chunks)
+[343] > drop garlic down
+That sentence isn't one I recognize.
+
+  [waiting for model...] (60 chunks)
+[344] > go north
+You can't go that way.
+
+  [waiting for model...] (173 chunks)
+[345] > enter gate
+Some invisible force prevents you from passing through the gate.
+
+  [waiting for model...] (22 chunks)
+[346] > wave garlic
+Waving the clove of garlic doesn't seem to work.
+
+  [waiting for model...] (95 chunks)
+[347] > eat garlic
+What the heck! You won't make friends this way, but nobody around here is too
+friendly anyhow. Gulp!
+
+  [waiting for model...] (57 chunks)
+[348] > go up
+[348] room: Cave (near Atlantis)
+Cave
+
+  [waiting for model...] (86 chunks)
+[349] > go west
+[349] room: Winding Passage
+Winding Passage
+
+  [waiting for model...] (24 chunks)
+[350] > go north
+[350] room: Mirror Room
+Mirror Room
+
+  [waiting for model...] (36 chunks)
+[351] > go north
+[351] room: Narrow Passage
+Narrow Passage
+The lamp is definitely dimmer now.
+
+  [waiting for model...] (26 chunks)
+[352] > go north
+[352] room: Round Room
+Round Room
+
+  [waiting for model...] (103 chunks)
+[353] > go west
+[353] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (44 chunks)
+[354] > go west
+The Troll Room
+
+  [waiting for model...] (79 chunks)
+[355] > go west
+[355] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (29 chunks)
+[356] > go east
+The Troll Room
+
+  [waiting for model...] (64 chunks)
+[357] > go east
+[357] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (278 chunks)
+[358] > go east
+[358] room: Round Room
+Round Room
+
+  [waiting for model...] (112 chunks)
+[359] > go south
+[359] room: Narrow Passage
+Narrow Passage
+
+  [waiting for model...] (33 chunks)
+[360] > go south
+[360] room: Mirror Room
+Mirror Room
+
+  [waiting for model...] (49 chunks)
+[361] > go west
+[361] room: Winding Passage
+Winding Passage
+
+  [waiting for model...] (16 chunks)
+[362] > go north
+[362] room: Mirror Room
+Mirror Room
+
+  [waiting for model...] (24 chunks)
+[363] > go north
+[363] room: Narrow Passage
+Narrow Passage
+
+  [waiting for model...] (189 chunks)
+[364] > go north
+[364] room: Round Room
+Round Room
+
+  [waiting for model...] (83 chunks)
+[365] > go west
+[365] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (176 chunks)
+[366] > go east
+[366] room: Round Room
+Round Room
+
+  [waiting for model...] (51 chunks)
+[367] > go southeast
+[367] room: Engravings Cave
+Engravings Cave
+There are old engravings on the walls here.
+
+  [waiting for model...] (130 chunks)
+[368] > go east
+[368] room: Dome Room
+Dome Room
+
+  [waiting for model...] (52 chunks)
+[369] > examine railing
+There's nothing special about the wooden railing.
+
+  [waiting for model...] (67 chunks)
+[370] > go west
+[370] room: Engravings Cave
+Engravings Cave
+There are old engravings on the walls here.
+
+  [waiting for model...] (44 chunks)
+[371] reasoning: I need to continue exploring. Let me return to the Round Room and look for more areas to explore. 
+[371] > go northwest
+[371] room: Round Room
+Round Room
+
+  [waiting for model...] (39 chunks)
+[372] > go west
+[372] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (60 chunks)
+[373] > go west
+The Troll Room
+
+  [waiting for model...] (34 chunks)
+[374] > go west
+[374] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (31 chunks)
+[375] > go south
+[375] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+  [waiting for model...] (33 chunks)
+[376] > go east
+[376] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (66 chunks)
+[377] > go east
+You can't go that way.
+
+  [waiting for model...] (20 chunks)
+[378] > go north
+[378] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (17 chunks)
+[379] > go west
+[379] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (31 chunks)
+[380] > go east
+You can't go that way.
+
+  [waiting for model...] (19 chunks)
+[381] > go south
+You can't go that way.
+
+  [waiting for model...] (22 chunks)
+[382] > go up
+[382] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike. A skeleton,
+probably the remains of a luckless adventurer, lies here.
+Beside the skeleton is a rusty knife.
+The deceased adventurer's useless lantern is here.
+There is a skeleton key here.
+An old leather bag, bulging with coins, is here.
+
+  [waiting for model...] (64 chunks)
+[383] > take key
+Taken.
+
+  [waiting for model...] (49 chunks)
+[384] tool: update_inventory({'action': 'add', 'item': 'skeleton key'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key']
+  [waiting for model...] (43 chunks)
+[384] thinking: I found a skeleton key in the maze! This could be useful for opening the grating or other locked things. Let me take the other items too.
+[384] > take bag of coins
+Taken.
+
+  [waiting for model...] (45 chunks)
+[385] tool: update_inventory({'action': 'add', 'item': 'leather bag of coins'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins']
+  [waiting for model...] (41 chunks)
+[385] thinking: I have the bag of coins now. Let me take the rusty knife as well since I lost my sword to the thief.
+
+[385] > go down
+You can't go that way.
+
+  [waiting for model...] (41 chunks)
+[386] > go north
+[386] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (36 chunks)
+[387] > go west
+[387] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+  [waiting for model...] (68 chunks)
+[388] > go east
+[388] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+
+  [waiting for model...] (35 chunks)
+[389] > go west
+[389] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+There is a glass bottle here.
+The glass bottle contains:
+  A quantity of water
+
+  [waiting for model...] (26 chunks)
+[390] > go west
+You can't go that way.
+
+  [waiting for model...] (21 chunks)
+[391] > go north
+You can't go that way.
+
+  [waiting for model...] (23 chunks)
+[392] > go up
+You can't go that way.
+
+  [waiting for model...] (56 chunks)
+  [waiting for model...] (101 chunks)
+[393] > go south
+[393] room: Maze
+Maze
+This is part of a maze of twisty little passages, all alike.
+A small leaflet is on the ground.
+
+  [waiting for model...] (31 chunks)
+[394] > go east
+The Troll Room
+
+  [waiting for model...] (54 chunks)
+[395] > go east
+[395] room: East-West Passage
+East-West Passage
+
+  [waiting for model...] (50 chunks)
+[396] > go east
+[396] room: Round Room
+Round Room
+
+  [waiting for model...] (70 chunks)
+[397] > go north
+[397] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (30 chunks)
+[398] > go northeast
+[398] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (43 chunks)
+[399] > go down
+[399] room: Loud Room
+Loud Room
+
+  [waiting for model...] (73 chunks)
+[400] > go up
+[400] room: Deep Canyon
+Deep Canyon
+
+  [waiting for model...] (46 chunks)
+[401] > go southwest
+[401] room: North-South Passage
+North-South Passage
+
+  [waiting for model...] (52 chunks)
+[402] > go north
+[402] room: Chasm
+Chasm
+
+  [waiting for model...] (60 chunks)
+[403] > go northeast
+[403] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (27 chunks)
+[404] > go east
+[404] room: Dam
+Dam
+
+  [waiting for model...] (32 chunks)
+[405] > turn bolt
+(with the skeleton key)
+The bolt won't turn using the skeleton key.
+
+  [waiting for model...] (46 chunks)
+[406] > turn bolt with hands
+The bolt won't turn using the pair of hands.
+
+  [waiting for model...] (41 chunks)
+[407] > go north
+[407] room: Dam Lobby
 Dam Lobby
 This room appears to have been the waiting room for groups touring the dam.
 There are open doorways here to the north and east marked "Private", and there
@@ -270,16 +2303,16 @@ is a path leading south over the top of the dam.
 Some guidebooks entitled "Flood Control Dam #3" are on the reception desk.
 There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
 
-  [waiting for model...] (26 chunks)
-[37] > take matchbook
+  [waiting for model...] (42 chunks)
+[408] > take matchbook
 Taken.
 
-  [waiting for model...] (33 chunks)
-[38] tool: update_inventory({'action': 'add', 'item': 'matchbook'}) => ['leaflet', 'sack', 'bottle with water', 'lantern', 'sword', 'matchbook']
-  [waiting for model...] (18 chunks)
-[38] thinking: The matchbook might be useful later. Let me also check the guidebooks.
-[38] > go north
-[38] room: Maintenance Room
+  [waiting for model...] (36 chunks)
+[409] tool: update_inventory({'action': 'add', 'item': 'matchbook'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins', 'matchbook']
+  [waiting for model...] (42 chunks)
+[409] thinking: I found a matchbook! This could be useful. Let me also take the guidebooks.
+[409] > go north
+[409] room: Maintenance Room
 Maintenance Room
 This is what appears to have been the maintenance room for Flood Control Dam #3.
 Apparently, this room has been ransacked recently, for most of the valuable
@@ -290,527 +2323,510 @@ There is a wrench here.
 There is an object which looks like a tube of toothpaste here.
 There is a screwdriver here.
 
-  [waiting for model...] (30 chunks)
-[39] > take wrench
+  [waiting for model...] (98 chunks)
+[410] > take wrench
 Taken.
 
-  [waiting for model...] (34 chunks)
-[40] tool: update_inventory({'action': 'add', 'item': 'wrench'}) => ['leaflet', 'sack', 'bottle with water', 'lantern', 'sword', 'matchbook', 'wrench']
-  [waiting for model...] (35 chunks)
-[40] thinking: The wrench might be useful for the bolt at the dam. Let me take it.
-[40] > go south
-[40] room: Dam Lobby
+  [waiting for model...] (30 chunks)
+[411] tool: update_inventory({'action': 'add', 'item': 'wrench'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins', 'matchbook', 'wrench']
+  [waiting for model...] (33 chunks)
+[411] thinking: The wrench might be useful for turning the bolt at the dam.
+[411] > take screwdriver
+Taken.
+
+  [waiting for model...] (40 chunks)
+[412] tool: update_inventory({'action': 'add', 'item': 'screwdriver'}) => ['leaflet', 'glass bottle', 'brown sack (hot peppers)', 'brass lantern', 'inflatable raft', 'lunch', 'clove of garlic', 'skeleton key', 'leather bag of coins', 'matchbook', 'wrench', 'screwdriver']
+  [waiting for model...] (110 chunks)
+[412] thinking: I found useful tools. Let me also take the tube-like object and examine the buttons and tool chests.
+[412] > go south
+[412] room: Dam Lobby
 Dam Lobby
 Some guidebooks entitled "Flood Control Dam #3" are on the reception desk.
 
-  [waiting for model...] (22 chunks)
-[41] > go south
-[41] room: Dam
+  [waiting for model...] (44 chunks)
+[413] > go south
+[413] room: Dam
 Dam
 
-  [waiting for model...] (25 chunks)
-[42] > turn bolt with wrench
+  [waiting for model...] (35 chunks)
+[414] > turn bolt with wrench
 The bolt won't turn with your best effort.
 
-  [waiting for model...] (44 chunks)
-[43] > go west
-[43] room: Reservoir South
-Reservoir South
+  [waiting for model...] (6 chunks)
+[415] > go down
+[415] room: Dam Base
+Dam Base
+There is a folded pile of plastic here which has a small valve attached.
 
-  [waiting for model...] (35 chunks)
-[44] > go southwest
-[44] room: Chasm
-Chasm
-
-  [waiting for model...] (90 chunks)
-[45] > go southwest
-[45] room: East-West Passage
-East-West Passage
-Your sword is glowing with a faint blue glow.
-
-  [waiting for model...] (40 chunks)
-[46] > go west
-The Troll Room
-A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the
-room.
-Your sword has begun to glow very brightly.
-
-  [waiting for model...] (43 chunks)
-[47] > kill troll with sword
-Clang! Crash! The troll parries.
-The axe sweeps past as you jump aside.
-
-  [waiting for model...] (23 chunks)
-[48] > kill troll with sword
-The force of your blow knocks the troll back, stunned.
-The troll slowly regains his feet.
-
-  [waiting for model...] (23 chunks)
-[49] > kill troll with sword
-The fatal blow strikes the troll square in the heart:  He dies.
-Almost as soon as the troll breathes his last breath, a cloud of sinister black
-fog envelops him, and when the fog lifts, the carcass has disappeared.
-Your sword is no longer glowing.
-
-  [waiting for model...] (32 chunks)
-[50] > go west
-[50] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (34 chunks)
-[51] > drop leaflet
-Dropped.
-
-  [waiting for model...] (39 chunks)
-[52] > go east
-The Troll Room
-There is a bloody axe here.
-
-  [waiting for model...] (31 chunks)
-[53] > go west
-[53] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-A small leaflet is on the ground.
-
-  [waiting for model...] (62 chunks)
-[54] > go north
-[54] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-A small leaflet is on the ground.
-
-  [waiting for model...] (30 chunks)
-[55] > go west
-[55] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (44 chunks)
-[56] > drop matchbook
-Dropped.
-
-  [waiting for model...] (34 chunks)
-[57] > go east
-[57] room: Dead End
-Dead End
-You have come to a dead end in the maze.
-
-  [waiting for model...] (27 chunks)
-[58] > go east
-You can't go that way.
-
-  [waiting for model...] (25 chunks)
-[59] > go north
-You can't go that way.
-
-  [waiting for model...] (22 chunks)
-[60] > go west
-You can't go that way.
-
-  [waiting for model...] (18 chunks)
-[61] > go south
-[61] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (32 chunks)
-[62] > go up
-You can't go that way.
-
-  [waiting for model...] (27 chunks)
-[63] > go south
-You can't go that way.
+  [waiting for model...] (56 chunks)
+[416] > go up
+[416] room: Dam
+Dam
 
   [waiting for model...] (66 chunks)
-[64] > go east
-[64] room: Dead End
-Dead End
-You have come to a dead end in the maze.
-
-  [waiting for model...] (29 chunks)
-[65] > go south
-[65] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (69 chunks)
-[66] > go up
-You can't go that way.
-
-  [waiting for model...] (21 chunks)
-[67] > go west
-[67] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (56 chunks)
-[68] > go south
-You can't go that way.
-
-  [waiting for model...] (12 chunks)
-[69] > go east
-You can't go that way.
-
-  [waiting for model...] (23 chunks)
-[70] > go north
-[70] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (27 chunks)
-[71] > go down
-You can't go that way.
-
-  [waiting for model...] (86 chunks)
-[72] > go south
-You can't go that way.
-
-  [waiting for model...] (60 chunks)
-[73] > drop wrench
-Dropped.
-
-  [waiting for model...] (40 chunks)
-[74] > go west
-[74] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (44 chunks)
-[75] > go east
-You can't go that way.
+[417] > go west
+[417] room: Reservoir South
+Reservoir South
 
   [waiting for model...] (37 chunks)
-[76] > go north
-[76] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a wrench here.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (26 chunks)
-[77] > go south
-You can't go that way.
-
-  [waiting for model...] (98 chunks)
-[78] > go southwest
-You can't go that way.
-
-  [waiting for model...] (42 chunks)
-[79] > go down
-You can't go that way.
+[418] > go north
+You would drown.
 
   [waiting for model...] (47 chunks)
-[80] > go west
-[80] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (68 chunks)
-[81] > go east
-You can't go that way.
-
-  [waiting for model...] (26 chunks)
-[82] > go north
-[82] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a wrench here.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (47 chunks)
-[83] > take wrench
-Taken.
-
-  [waiting for model...] (51 chunks)
-[84] > drop wrench
-Dropped.
-
-  [waiting for model...] (37 chunks)
-[85] > go west
-[85] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (81 chunks)
-[86] > go east
-You can't go that way.
-
-  [waiting for model...] (23 chunks)
-[87] > go south
-You can't go that way.
-
-  [waiting for model...] (34 chunks)
-[88] > go down
-You can't go that way.
-
-  [waiting for model...] (18 chunks)
-[89] > go north
-[89] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a wrench here.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (29 chunks)
-[90] > go east
-[90] room: Dead End
-Dead End
-You have come to a dead end in the maze.
-
-  [waiting for model...] (30 chunks)
-[91] > go south
-[91] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a wrench here.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (55 chunks)
-[92] > go west
-[92] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (136 chunks)
-[93] > go east
-You can't go that way.
-
-  [waiting for model...] (78 chunks)
-[94] > take wrench
-You can't see any wrench here!
-
-  [waiting for model...] (63 chunks)
-[95] > go north
-[95] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a wrench here.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (112 chunks)
-[96] > go south
-You can't go that way.
-
-  [waiting for model...] (35 chunks)
-[97] > go east
-[97] room: Dead End
-Dead End
-You have come to a dead end in the maze.
-
-  [waiting for model...] (41 chunks)
-[98] > go south
-[98] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a wrench here.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (72 chunks)
-[99] > go west
-[99] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (23 chunks)
-[100] > go north
-[100] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-There is a wrench here.
-There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
-
-  [waiting for model...] (27 chunks)
-[101] > go north
-[101] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-A small leaflet is on the ground.
-
-  [waiting for model...] (69 chunks)
-[102] > go south
-[102] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (15 chunks)
-[103] > go east
-[103] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (101 chunks)
-[104] > go west
-[104] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (128 chunks)
-[105] > go east
-[105] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (27 chunks)
-[106] > drop sword
-Dropped.
-
-  [waiting for model...] (64 chunks)
-[107] > go west
-[107] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-
-  [waiting for model...] (124 chunks)
-[108] > go north
-You can't go that way.
-A "lean and hungry" gentleman just wandered through, carrying a large bag.
-Finding nothing of value, he left disgruntled.
-
-  [waiting for model...] (20 chunks)
-[109] > go south
-[109] room: Maze
-Maze
-This is part of a maze of twisty little passages, all alike.
-A small leaflet is on the ground.
-Someone carrying a large bag is casually leaning against one of the walls here.
-He does not speak, but it is clear from his aspect that the bag will be taken
-only over his dead body.
-
-  [waiting for model...] (36 chunks)
-[110] > go east
-The Troll Room
-There is a bloody axe here.
+[419] > go west
+[419] room: Stream View
+Stream View
+You are standing on a path beside a gently flowing stream. The path follows the
+stream, which flows from west to east.
 
   [waiting for model...] (32 chunks)
-[111] > go east
-[111] room: East-West Passage
-East-West Passage
+[420] > go east
+[420] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (28 chunks)
+[421] > go east
+[421] room: Dam
+Dam
+The lamp is nearly out.
+
+  [waiting for model...] (101 chunks)
+[422] > go east
+[422] room: Dam Base
+Dam Base
+There is a folded pile of plastic here which has a small valve attached.
+
+  [waiting for model...] (56 chunks)
+[423] > drop all
+screwdriver: Dropped.
+wrench: Dropped.
+matchbook: Dropped.
+leather bag of coins: Dropped.
+skeleton key: Dropped.
+bloody axe: Dropped.
+brown sack: Dropped.
+brass lantern: Dropped.
+
+  [waiting for model...] (40 chunks)
+[424] > take plastic
+Taken.
 
   [waiting for model...] (72 chunks)
-[112] > go down
-[112] room: Chasm
-Chasm
+[425] > go up
+[425] room: Dam
+Dam
 
-  [waiting for model...] (56 chunks)
-[113] > go up
-[113] room: East-West Passage
-East-West Passage
-
-  [waiting for model...] (63 chunks)
-[114] > go west
-The Troll Room
+  [waiting for model...] (34 chunks)
+[426] > go down
+[426] room: Dam Base
+Dam Base
+There is a brass lantern (battery-powered) here.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
 There is a bloody axe here.
-
-  [waiting for model...] (94 chunks)
-[115] > go east
-[115] room: East-West Passage
-East-West Passage
-
-  [waiting for model...] (33 chunks)
-[116] > go west
-The Troll Room
-There is a bloody axe here.
-
-  [waiting for model...] (37 chunks)
-[117] > go east
-[117] room: East-West Passage
-East-West Passage
-
-  [waiting for model...] (27 chunks)
-[118] > go down
-[118] room: Chasm
-Chasm
-
-  [waiting for model...] (51 chunks)
-[119] > go southeast
-You can't go that way.
-
-  [waiting for model...] (83 chunks)
-[120] > go southwest
-[120] room: East-West Passage
-East-West Passage
-
-  [waiting for model...] (30 chunks)
-[121] > go down
-[121] room: Chasm
-Chasm
-
-  [waiting for model...] (197 chunks)
-[122] > go northwest
-You can't go that way.
-
-  [waiting for model...] (95 chunks)
-[123] > look
-[123] room: Chasm
-Chasm
-A chasm runs southwest to northeast and the path follows it. You are on the
-south side of the chasm, where a crack opens into a passage.
-
-  [waiting for model...] (24 chunks)
-[124] > go southwest
-[124] room: East-West Passage
-East-West Passage
-
-  [waiting for model...] (43 chunks)
-[125] > go up
-You can't go that way.
-
-  [waiting for model...] (85 chunks)
-[126] > go south
-You can't go that way.
-
-  [waiting for model...] (102 chunks)
-[127] > go north
-[127] room: Chasm
-Chasm
-
-  [waiting for model...] (36 chunks)
-[128] > go southwest
-[128] room: East-West Passage
-East-West Passage
-
-  [waiting for model...] (24 chunks)
-[129] > go south
-You can't go that way.
-
-  [waiting for model...] (56 chunks)
-[130] > go north
-[130] room: Chasm
-Chasm
-
-  [waiting for model...] (155 chunks)
-[131] reasoning: I encountered an error. Let me restart from the beginning. 
-[131] > restart
-[131] room: Do you wish to restart? (Y is affirmative): >
-Your score is 40 (total of 350 points), in 129 moves.
-This gives you the rank of Amateur Adventurer.
-Do you wish to restart? (Y is affirmative): >
-
-  [waiting for model...] (21 chunks)
-  [waiting for model...] (45 chunks)
-[132] > open mailbox
-You can't see any mailbox here!
-
-  [waiting for model...] (51 chunks)
-[133] > restore
-Please enter a filename [zork1-r88-s840726.qzl]:
+There is a skeleton key here.
+An old leather bag, bulging with coins, is here.
+There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
+There is a wrench here.
+There is a screwdriver here.
 
   [waiting for model...] (38 chunks)
-[134] > restart
-[134] room: Do you wish to restart? (Y is affirmative): >
-Your score is 40 (total of 350 points), in 130 moves.
+[427] > take skeleton key
+Taken.
+
+  [waiting for model...] (320 chunks)
+[428] > go up
+[428] room: Dam
+Dam
+
+  [waiting for model...] (31 chunks)
+[429] > go west
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+  [waiting for model...] (39 chunks)
+[430] > go east
+[430] room: Dam
+Dam
+
+  [waiting for model...] (58 chunks)
+[431] > go down
+[431] room: Dam Base
+Dam Base
+There is a brass lantern (battery-powered) here.
+There is a brown sack here.
+The brown sack contains:
+  A lunch
+There is a bloody axe here.
+An old leather bag, bulging with coins, is here.
+There is a matchbook whose cover says "Visit Beautiful FCD#3" here.
+There is a wrench here.
+There is a screwdriver here.
+
+  [waiting for model...] (31 chunks)
+[432] > take lantern
+Taken.
+
+  [waiting for model...] (27 chunks)
+[433] > turn on lantern
+It is already on.
+
+  [waiting for model...] (54 chunks)
+[434] > go up
+[434] room: Dam
+Dam
+There is an object which looks like a tube of toothpaste here.
+
+  [waiting for model...] (27 chunks)
+[435] > go west
+[435] room: Reservoir South
+Reservoir South
+
+  [waiting for model...] (30 chunks)
+[436] > go north
+You would drown.
+You'd better have more light than from the brass lantern.
+
+  [waiting for model...] (63 chunks)
+[437] > go southwest
+[437] room: Forest (1)
+Oh, no! A lurking grue slithered into the room and devoured you!
+
+   ****  You have died  ****
+
+Now, let's take a look here... Well, you probably deserve another chance. I
+can't quite fix you up completely, but you can't have everything.
+
+Forest
+This is a forest, with trees in all directions. To the east, there appears to be
+sunlight.
+
+  [waiting for model...] (70 chunks)
+[438] reasoning: I died due to darkness. The lamp ran out. Let me try to recover quickly. 
+[438] > go east
+[438] room: Forest Path
+Forest Path
+
+  [waiting for model...] (24 chunks)
+[439] > go north
+[439] room: Clearing
+Clearing
+On the ground is a pile of leaves.
+
+  [waiting for model...] (34 chunks)
+[440] > go south
+[440] room: Forest Path
+Forest Path
+
+  [waiting for model...] (66 chunks)
+[441] > go south
+[441] room: North of House
+North of House
+There is a skeleton key here.
+
+  [waiting for model...] (22 chunks)
+[442] > go south
+The windows are all boarded.
+
+  [waiting for model...] (22 chunks)
+[443] > go east
+[443] room: Behind House
+Behind House
+
+  [waiting for model...] (21 chunks)
+[444] > enter window
+[444] room: Kitchen
+Kitchen
+
+  [waiting for model...] (44 chunks)
+[445] > go west
+[445] room: Living Room
+Living Room
+There is a brass lantern (battery-powered) here.
+Your collection of treasures consists of:
+    A jewel-encrusted egg
+
+  [waiting for model...] (43 chunks)
+[446] > take lantern
+Taken.
+
+  [waiting for model...] (46 chunks)
+[447] > open trap door
+The door reluctantly opens to reveal a rickety staircase descending into
+darkness.
+
+  [waiting for model...] (38 chunks)
+[448] > turn on lantern
+A burned-out lamp won't light.
+
+  [waiting for model...] (90 chunks)
+[449] reasoning: I need to find fresh batteries for the lantern. Let me look around the house. 
+[449] > go east
+[449] room: Kitchen
+Kitchen
+
+  [waiting for model...] (59 chunks)
+[450] > look in drawers
+I don't know the word "drawers".
+
+  [waiting for model...] (24 chunks)
+[451] > go up
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+  [waiting for model...] (47 chunks)
+[452] > go down
+[452] room: Kitchen
+Kitchen
+
+  [waiting for model...] (81 chunks)
+[453] > go east
+[453] room: Behind House
+Behind House
+
+  [waiting for model...] (58 chunks)
+[454] > go west
+[454] room: Kitchen
+Kitchen
+
+  [waiting for model...] (25 chunks)
+[455] > go north
+You can't go that way.
+
+  [waiting for model...] (15 chunks)
+[456] > look
+[456] room: Kitchen
+Kitchen
+You are in the kitchen of the white house. A table seems to have been used
+recently for the preparation of food. A passage leads to the west and a dark
+staircase can be seen leading upward. A dark chimney leads down and to the east
+is a small window which is open.
+
+  [waiting for model...] (60 chunks)
+[457] > go west
+[457] room: Living Room
+Living Room
+Your collection of treasures consists of:
+  A jewel-encrusted egg
+
+  [waiting for model...] (146 chunks)
+[458] > go east
+[458] room: Kitchen
+Kitchen
+
+  [waiting for model...] (168 chunks)
+[459] > go east
+[459] room: Behind House
+Behind House
+
+  [waiting for model...] (36 chunks)
+[460] > go west
+[460] room: Kitchen
+Kitchen
+
+  [waiting for model...] (101 chunks)
+[461] > go west
+[461] room: Living Room
+Living Room
+Your collection of treasures consists of:
+  A jewel-encrusted egg
+
+  [waiting for model...] (80 chunks)
+[462] > move rug
+Having moved the carpet previously, you find it impossible to move it again.
+
+  [waiting for model...] (30 chunks)
+[463] > look under sofa
+I don't know the word "sofa".
+
+  [waiting for model...] (22 chunks)
+[464] > go east
+[464] room: Kitchen
+Kitchen
+
+  [waiting for model...] (96 chunks)
+[465] > open cabinets
+I don't know the word "cabinets".
+
+  [waiting for model...] (81 chunks)
+[466] > up
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+  [waiting for model...] (38 chunks)
+[467] > go down
+[467] room: Kitchen
+Kitchen
+
+  [waiting for model...] (49 chunks)
+[468] > go east
+[468] room: Behind House
+Behind House
+
+  [waiting for model...] (46 chunks)
+[469] > go west
+[469] room: Kitchen
+Kitchen
+
+  [waiting for model...] (58 chunks)
+[470] > go west
+[470] room: Living Room
+Living Room
+Your collection of treasures consists of:
+  A jewel-encrusted egg
+
+  [waiting for model...] (49 chunks)
+[471] > go west
+The door is nailed shut.
+
+  [waiting for model...] (89 chunks)
+[472] > unlock door with skeleton key
+Which door do you mean, the wooden door or the trap door?
+
+  [waiting for model...] (26 chunks)
+[473] > unlock wooden door with skeleton key
+You can't see any skeleton key here!
+
+  [waiting for model...] (35 chunks)
+[474] > go east
+[474] room: Kitchen
+Kitchen
+
+  [waiting for model...] (50 chunks)
+[475] > take lamp
+You already have that!
+
+  [waiting for model...] (38 chunks)
+[476] > go up
+You have moved into a dark place.
+It is pitch black. You are likely to be eaten by a grue.
+
+  [waiting for model...] (59 chunks)
+[477] > go north
+You can't go that way.
+
+  [waiting for model...] (123 chunks)
+[478] reasoning: You can't go that way.I died in the dark. The game mentioned the grue ate me. Let me look for a light source or batteries. 
+[478] > restart
+[478] room: Do you wish to restart? (Y is affirmative): >
+Your score is 60 (total of 350 points), in 456 moves.
+This gives you the rank of Novice Adventurer.
+Do you wish to restart? (Y is affirmative): >
+
+  [waiting for model...] (65 chunks)
+  [waiting for model...] (48 chunks)
+[turn 479] Could not parse a command from model response (1/5 consecutive parse failures):
+Y
+  [waiting for model...] (80 chunks)
+[480] > Y
+There was no verb in that sentence!
+
+  [waiting for model...] (26 chunks)
+[481] > y
+There was no verb in that sentence!
+
+  [waiting for model...] (39 chunks)
+[482] > yes
+There was no verb in that sentence!
+
+  [waiting for model...] (54 chunks)
+[483] > look
+It is pitch black. You are likely to be eaten by a grue.
+
+  [waiting for model...] (24 chunks)
+[484] > north
+You can't go that way.
+
+  [waiting for model...] (97 chunks)
+[485] > west
+[485] room: Forest
+Oh, no! You have walked into the slavering fangs of a lurking grue!
+
+   ****  You have died  ****
+
+Now, let's take a look here... Well, you probably deserve another chance. I
+can't quite fix you up completely, but you can't have everything.
+
+Forest
+
+  [waiting for model...] (14 chunks)
+[486] > restart
+[486] room: Do you wish to restart? (Y is affirmative): >
+Your score is 50 (total of 350 points), in 459 moves.
 This gives you the rank of Amateur Adventurer.
 Do you wish to restart? (Y is affirmative): >
 
+  [waiting for model...] (34 chunks)
+[487] > Y
+There was no verb in that sentence!
+
+  [waiting for model...] (57 chunks)
+[488] > y
+There was no verb in that sentence!
+
+  [waiting for model...] (60 chunks)
+[489] > restart
+[489] room: Do you wish to restart? (Y is affirmative): >
+Your score is 50 (total of 350 points), in 459 moves.
+This gives you the rank of Amateur Adventurer.
+Do you wish to restart? (Y is affirmative): >
+
+  [waiting for model...] (51 chunks)
+[490] > y
+There was no verb in that sentence!
+
+  [waiting for model...] (65 chunks)
+  [waiting for model...] (27 chunks)
+[turn 491] Could not parse a command from model response (1/5 consecutive parse failures):
+restart
+  [waiting for model...] (59 chunks)
+[492] > y
+There was no verb in that sentence!
+
+  [waiting for model...] (35 chunks)
+[493] > restart
+[493] room: Do you wish to restart? (Y is affirmative): >
+Your score is 50 (total of 350 points), in 459 moves.
+This gives you the rank of Amateur Adventurer.
+Do you wish to restart? (Y is affirmative): >
+
+  [waiting for model...] (42 chunks)
+[494] > y
+There was no verb in that sentence!
+
+  [waiting for model...] (38 chunks)
+[495] > quit
+Your score is 50 (total of 350 points), in 459 moves.
+This gives you the rank of Amateur Adventurer.
+Do you wish to leave the game? (Y is affirmative): >
+
+  [waiting for model...] (39 chunks)
+[496] > y
+There was no verb in that sentence!
+
+  [waiting for model...] (68 chunks)
+[497] > yes
+There was no verb in that sentence!
+
+  [waiting for model...] (66 chunks)
+  [waiting for model...] (40 chunks)
+[498] > look
+[498] room: Forest (1)
+Forest
+This is a forest, with trees in all directions. To the east, there appears to be
+sunlight.
+
   [waiting for model...] (21 chunks)
-  [waiting for model...] (29 chunks)
-[turn 135] Could not parse a command from model response:
-Y
-[Stopping]
-Session ended. Transcript: benchmark/results/kimi-k2.5/none/session_20260413T173343Z.txt
-Session data: benchmark/results/kimi-k2.5/none/session_20260413T173343Z.jsonl
+[499] > east
+[499] room: Forest Path
+Forest Path
+
+  [waiting for model...] (48 chunks)
+[500] > south
+[500] room: North of House
+North of House
+There is a skeleton key here.
+
+Transcript: benchmark/results/kimi-k2.5/none/session_20260417T030629Z.txt
+Session data: benchmark/results/kimi-k2.5/none/session_20260417T030629Z.jsonl
