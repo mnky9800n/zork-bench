@@ -822,7 +822,10 @@ def run_agent(
 
             if result["type"] == "tool_use":
                 for tc in result["tool_calls"]:
-                    tool_result = registry.execute(tc["name"], tc["input"])
+                    try:
+                        tool_result = registry.execute(tc["name"], tc["input"])
+                    except Exception as exc:
+                        tool_result = f"Error: {type(exc).__name__}: {exc}"
                     tool_calls_this_turn.append(
                         {"name": tc["name"], "input": tc["input"], "result": tool_result}
                     )
