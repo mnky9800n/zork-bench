@@ -1,6 +1,6 @@
 # zork-bench
 
-A harness for evaluating LLM reasoning by having them play 1970s text adventure games, starting with Zork I.
+A harness for evaluating LLM reasoning by having them play 1970s text adventure games, starting with Zork I. Read the [zork bench dev blog on lowimpactfruit.com](https://www.lowimpactfruit.com/p/zork-bench-an-llm-reasoning-eval).
 
 LLMs are bad at text adventures ([arxiv.org/abs/2602.15867](https://arxiv.org/abs/2602.15867)). Solving text adventures requires spatial reasoning, long-horizon planning, state tracking, and common-sense inference, the same capabilities the AI industry is spending billions trying to achieve. This project provides the infrastructure to measure and improve those capabilities.
 
