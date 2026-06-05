@@ -1,4 +1,4 @@
-"""LLM agent loop: plays Zork by driving a ZorkSession through an LLM API."""
+"""LLM agent loop: plays Zork by driving a RemGlkSession through an LLM API."""
 
 import argparse
 import json
@@ -9,7 +9,7 @@ import threading
 import time
 
 from zork_harness.logger import SessionLogger
-from zork_harness.session import GAMES, GameSessionError, ZorkSession
+from zork_harness.session import GAMES, GameSessionError, RemGlkSession
 from zork_harness.tools import ToolRegistry, get_anthropic_schemas, get_openai_schemas
 
 
@@ -747,7 +747,7 @@ def run_agent(
     print(f"Thinking: {'on' if thinking else 'off'} | Map: {map_mode}")
     print(f"Session log: {logger.txt_path}")
 
-    session = ZorkSession(game)
+    session = RemGlkSession(game)
     opening_text = session.start()
     print(opening_text)
     print()

@@ -1,9 +1,27 @@
-"""ZorkSession: spawns the game container via docker and communicates over stdin/stdout."""
+"""Game session: drives an interpreter inside Docker over the RemGlk JSON protocol.
 
-import re
+The interpreter is bocfel (a Z-machine VM) compiled against remglk (a Glk I/O layer
+that speaks structured JSON instead of drawing to a terminal). Each turn the harness
+sends a JSON input event on stdin and reads a JSON "update" object from stdout, rather
+than screen-scraping an ANSI terminal. This makes I/O robust (no prompt-guessing, no
+escape-code stripping) and the status line (room + score) arrives as structured data.
+
+RemGlk protocol used here (eblong.com/zarf/glk/remglk/docs.html):
+  - First message:  {"type":"init","gen":0,"metrics":{"width":80,"height":24}}
+  - Line input:     {"type":"line","gen":G,"window":W,"value":"go east"}
+  - Char input:     {"type":"char","gen":G,"window":W,"value":"return"}
+  - Update output:  {"type":"update","gen":N,"windows":[...],"content":[...],"input":[...]}
+      * content entries with "text"  are buffer windows (the main prose)
+      * content entries with "lines" are grid windows  (the status line)
+      * the "input" array says which window wants input next, and the gen to echo back
+"""
+
+import json
 import shutil
 import subprocess
-import pexpect
+from abc import ABC, abstractmethod
+
+from zork_harness.logger import SessionLogger
 
 
 class GameSessionError(Exception):
@@ -11,11 +29,12 @@ class GameSessionError(Exception):
 
     The agent loop catches this and terminates the session cleanly with a
     `termination_reason="game_session_error"` summary entry. The exception is
-    deliberately emulator-agnostic: ZorkSession (dfrotz) raises it on EOF or
-    persistent timeout, but any future Z-machine emulator implementation can
-    raise the same type from its own dead-process detection without the agent
+    deliberately interpreter-agnostic: RemGlkSession raises it on EOF or a dead
+    process, but any future interpreter implementation (e.g. a Rust Z-machine VM)
+    can raise the same type from its own dead-process detection without the agent
     loop needing to change.
     """
+
 
 GAMES: dict[str, str] = {
     "abyss": "abyss-r1-s890320.z6",
@@ -59,8 +78,6 @@ GAMES: dict[str, str] = {
     "zork2": "zork2-r48-s840904.z3",
     "zork3": "zork3-r17-s840727.z3",
 }
-
-_ANSI_ESCAPE = re.compile(r"\x1b\[[^a-zA-Z]*[a-zA-Z]")
 
 # Path to the Dockerfile is at the project root, two levels above this file:
 # src/zork_harness/session.py -> src/zork_harness -> src -> project root
@@ -112,85 +129,252 @@ def _ensure_docker_ready(image_name: str) -> None:
         print(f"Image '{image_name}' built successfully.")
 
 
-class ZorkSession:
-    """Manages a dfrotz process running inside a Docker container."""
+# ---------------------------------------------------------------------------
+# RemGlk update parsing (pure functions, unit-tested without Docker)
+# ---------------------------------------------------------------------------
+
+def _decode_json_object(read_char) -> dict:
+    """Read one complete JSON object from a stream, one character at a time.
+
+    `read_char` is a zero-arg callable returning a single character (or "" at EOF).
+    RemGlk emits one JSON object per update and then blocks waiting for input, so a
+    pipe never signals "message done". We accumulate characters and attempt
+    `raw_decode` until a complete object parses, which frames updates reliably even
+    when an object spans multiple reads. Raises EOFError if the stream ends before a
+    complete object is read.
+    """
+    decoder = json.JSONDecoder()
+    buf = ""
+    while True:
+        ch = read_char()
+        if ch == "":
+            raise EOFError("stream closed before a complete JSON object was read")
+        buf += ch
+        stripped = buf.lstrip()
+        if not stripped:
+            continue
+        try:
+            obj, _ = decoder.raw_decode(stripped)
+            return obj
+        except json.JSONDecodeError:
+            continue
+
+
+def _extract_buffer_text(update: dict) -> str:
+    """Concatenate the prose from all buffer windows in a RemGlk update.
+
+    Buffer content entries carry a "text" array of paragraphs; grid (status-line)
+    entries carry "lines" and are skipped here. The player's echoed command comes
+    back as a run styled "input" and is dropped, and the trailing ">" prompt
+    paragraph the game prints is stripped, so the result matches the prose the LLM
+    would have read from the old terminal transport.
+    """
+    lines: list[str] = []
+    for entry in update.get("content", []):
+        if "text" not in entry:
+            continue
+        for para in entry["text"]:
+            runs = para.get("content", [])
+            line = "".join(
+                run.get("text", "")
+                for run in runs
+                if run.get("style") != "input"
+            )
+            lines.append(line)
+
+    # Drop trailing prompt markers and blank lines.
+    while lines and lines[-1].strip() in (">", ""):
+        lines.pop()
+    # Drop leading blank lines (e.g. left by the filtered command echo).
+    while lines and lines[0].strip() == "":
+        lines.pop(0)
+
+    return "\n".join(lines).strip()
+
+
+def _extract_status_line(update: dict) -> str:
+    """Concatenate the text of all grid (status-line) windows in a RemGlk update.
+
+    For Z-machine games this is the bar showing the room name on the left and
+    "Score: N  Moves: M" on the right.
+    """
+    parts: list[str] = []
+    for entry in update.get("content", []):
+        if "lines" not in entry:
+            continue
+        for line in entry["lines"]:
+            runs = line.get("content", [])
+            text = "".join(run.get("text", "") for run in runs)
+            if text.strip():
+                parts.append(text.strip())
+    return "  ".join(parts)
+
+
+def _select_input_request(update: dict) -> dict | None:
+    """Return the input request to respond to next, preferring line over char."""
+    requests = update.get("input", [])
+    line_req = next((r for r in requests if r.get("type") == "line"), None)
+    return line_req or (requests[0] if requests else None)
+
+
+# ---------------------------------------------------------------------------
+# Session interface and RemGlk implementation
+# ---------------------------------------------------------------------------
+
+class GameSession(ABC):
+    """Interpreter-agnostic interface the agent loop drives.
+
+    Implementations wrap a specific interpreter/transport but expose the same four
+    methods, so a new VM can be dropped in without touching agent.py.
+    """
+
+    @abstractmethod
+    def start(self) -> str:
+        """Launch the game and return its opening text."""
+
+    @abstractmethod
+    def send_command(self, command: str) -> str:
+        """Send a command and return the resulting game prose."""
+
+    @abstractmethod
+    def get_score(self) -> int | None:
+        """Return the current score, or None if unknown."""
+
+    @abstractmethod
+    def close(self) -> None:
+        """Terminate the game process."""
+
+
+class RemGlkSession(GameSession):
+    """Drives a bocfel+remglk interpreter in Docker over the RemGlk JSON protocol."""
 
     DOCKER_IMAGE = "zork-harness-game"
+    # A char-input prompt (e.g. a death "press any key") is auto-advanced; this caps
+    # how many consecutive char prompts we walk through before giving up.
+    _MAX_CHAR_ADVANCE = 50
 
     def __init__(self, game_name: str = "zork1"):
         if game_name not in GAMES:
             raise ValueError(f"Unknown game '{game_name}'. Available: {sorted(GAMES)}")
         self.game_name = game_name
         self.game_file = GAMES[game_name]
-        self.process: pexpect.spawn | None = None
+        self.process: subprocess.Popen | None = None
+        self._pending_input: dict | None = None
+        self._status_line: str = ""
 
     def start(self) -> str:
-        """Spawn the Docker container and return the game's opening text."""
+        """Spawn the container, send the init handshake, and return the opening text."""
         _ensure_docker_ready(self.DOCKER_IMAGE)
         game_path = f"/home/frotz/DATA/{self.game_file}"
-        cmd = f"docker run --rm -i {self.DOCKER_IMAGE} {game_path}"
-        self.process = pexpect.spawn(
-            cmd,
+        self.process = subprocess.Popen(
+            ["docker", "run", "--rm", "-i", self.DOCKER_IMAGE, game_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
             encoding="utf-8",
-            timeout=15,
+            errors="replace",
+            bufsize=1,
         )
-        # Docker cold start can take a while, use a longer timeout
-        return self._read_until_prompt(timeout=30)
+        self._send({"type": "init", "gen": 0, "metrics": {"width": 80, "height": 24}})
+        update = self._read_update()
+        return self._consume_to_line_input(update)
 
     def send_command(self, command: str) -> str:
-        """Send a command to the game and return the response text.
+        """Send a command to the game and return the response prose.
 
-        Raises GameSessionError if the game process is dead or becomes dead
-        during the read.
+        Raises GameSessionError if the game process is dead or dies during the read.
         """
-        if self.process is None or not self.process.isalive():
+        if self.process is None or self.process.poll() is not None:
             raise GameSessionError("Game session is not running.")
+        if self._pending_input is None:
+            raise GameSessionError("Game is not awaiting input.")
 
-        self.process.sendline(command)
-        response = self._read_until_prompt()
-
-        # Strip the echoed command that dfrotz reflects back
-        lines = response.split("\n")
-        if lines and command.lower() in lines[0].lower():
-            response = "\n".join(lines[1:]).strip()
-
-        return response if response else "[No response from game]"
+        self._send_input("line", command)
+        update = self._read_update()
+        return self._consume_to_line_input(update)
 
     def get_score(self) -> int | None:
-        """Silently send the 'score' command and parse the current score."""
-        if self.process is None or not self.process.isalive():
+        """Read the score from the cached status line (no command is sent to the game)."""
+        if not self._status_line:
             return None
-        try:
-            raw = self.send_command("score")
-            m = re.search(r"your score is (\d+)", raw.lower())
-            if m:
-                return int(m.group(1))
-            m = re.search(r"score[:\s]+(\d+)", raw.lower())
-            if m:
-                return int(m.group(1))
-        except Exception:
-            pass
-        return None
+        return SessionLogger._parse_score(self._status_line)
 
     def close(self) -> None:
         """Terminate the game process."""
-        if self.process and self.process.isalive():
-            self.process.terminate(force=True)
+        if self.process and self.process.poll() is None:
+            try:
+                if self.process.stdin:
+                    self.process.stdin.close()
+            except OSError:
+                pass
+            self.process.terminate()
+            try:
+                self.process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
         self.process = None
 
-    def _read_until_prompt(self, timeout: int = 10) -> str:
-        """Read output until dfrotz is waiting for input (prompt ends with '>\\n').
+    # -- internals ----------------------------------------------------------
 
-        Raises GameSessionError if the game process has ended (pexpect EOF).
-        Times out gracefully on slow output (returns whatever was read) since
-        the model may still be able to recover from a partial response.
+    def _consume_to_line_input(self, update: dict) -> str:
+        """Accumulate prose from `update`, auto-advancing through char-input prompts.
+
+        Z-machine games occasionally request a keypress mid-response (a death "press
+        any key", a "[MORE]" pause). We feed a return for each such char prompt and
+        keep reading until the game asks for a line again, concatenating the prose so
+        the caller sees one coherent response.
         """
-        try:
-            self.process.expect(r"\n>", timeout=timeout)
-            output = self.process.before
-        except pexpect.TIMEOUT:
-            output = self.process.before or ""
-        except pexpect.EOF:
-            raise GameSessionError("Game process ended unexpectedly (EOF).") from None
+        prose = [_extract_buffer_text(update)]
+        self._capture_status(update)
+        self._pending_input = _select_input_request(update)
 
-        return _ANSI_ESCAPE.sub("", output).strip()
+        advances = 0
+        while (
+            self._pending_input is not None
+            and self._pending_input.get("type") == "char"
+            and advances < self._MAX_CHAR_ADVANCE
+        ):
+            self._send_input("char", "return")
+            update = self._read_update()
+            prose.append(_extract_buffer_text(update))
+            self._capture_status(update)
+            self._pending_input = _select_input_request(update)
+            advances += 1
+
+        text = "\n".join(part for part in prose if part).strip()
+        return text or "[No response from game]"
+
+    def _capture_status(self, update: dict) -> None:
+        """Cache the latest non-empty status line for get_score()."""
+        status = _extract_status_line(update)
+        if status:
+            self._status_line = status
+
+    def _send_input(self, event_type: str, value: str) -> None:
+        """Send a line or char input event to the window the game is awaiting."""
+        req = self._pending_input
+        if req is None:
+            raise GameSessionError("Game is not awaiting input.")
+        self._send({
+            "type": event_type,
+            "gen": req["gen"],
+            "window": req["id"],
+            "value": value,
+        })
+
+    def _send(self, obj: dict) -> None:
+        if self.process is None or self.process.stdin is None:
+            raise GameSessionError("Game session is not running.")
+        try:
+            self.process.stdin.write(json.dumps(obj) + "\n")
+            self.process.stdin.flush()
+        except (BrokenPipeError, OSError) as exc:
+            raise GameSessionError(f"Game process closed its input ({exc}).") from None
+
+    def _read_update(self) -> dict:
+        if self.process is None or self.process.stdout is None:
+            raise GameSessionError("Game session is not running.")
+        try:
+            return _decode_json_object(lambda: self.process.stdout.read(1))
+        except EOFError:
+            raise GameSessionError("Game process ended unexpectedly (EOF).") from None

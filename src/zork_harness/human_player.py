@@ -1,10 +1,10 @@
-"""Human play mode: drives a ZorkSession from keyboard input via the HumanMapViewer."""
+"""Human play mode: drives a RemGlkSession from keyboard input via the HumanMapViewer."""
 
 import shlex
 
 from zork_harness.agent import RoomTracker
 from zork_harness.logger import SessionLogger
-from zork_harness.session import ZorkSession
+from zork_harness.session import RemGlkSession
 from zork_harness.tools import ToolRegistry
 
 _HELP_TEXT = """\
@@ -176,7 +176,7 @@ def run_human_session(game: str, viewer, session_dir: str) -> None:
     ToolRegistry rather than sent to the game.
     """
     logger = SessionLogger(session_dir, game=game, model="human", backend="human")
-    session = ZorkSession(game)
+    session = RemGlkSession(game)
     room_tracker = RoomTracker()
     registry = ToolRegistry(map_mode="explore")
 
