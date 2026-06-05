@@ -24,7 +24,7 @@ The cost of spatial reasoning is visible here: `explore` and `full` modes (which
 
 ## How it works
 
-An LLM plays Zork through a game session running in Docker (dfrotz + Infocom game files). The harness manages the game I/O, provides tools the LLM can use (self-built map, inventory tracking, notes), and logs everything for analysis.
+An LLM plays Zork through a game session running in Docker (bocfel, a Z-machine interpreter, speaking the RemGlk JSON protocol + Infocom game files). The harness manages the game I/O, provides tools the LLM can use (self-built map, inventory tracking, notes), and logs everything for analysis.
 
 ```
 LLM (any backend: Fireworks, Anthropic, OpenAI)
@@ -36,7 +36,7 @@ LLM (any backend: Fireworks, Anthropic, OpenAI)
 Harness (zork_harness)
   |
   v
-Docker container (dfrotz + game files)
+Docker container (bocfel + remglk, JSON I/O + game files)
 ```
 
 ## Setup
@@ -44,7 +44,8 @@ Docker container (dfrotz + game files)
 Requires Docker and Python 3.12+.
 
 ```bash
-# Build the game container
+# Build the game container (bocfel + remglk). If you ran an earlier dfrotz-based
+# version, rebuild once to pick up the new JSON I/O.
 docker build -t zork-harness-game .
 
 # Install dependencies
@@ -219,14 +220,14 @@ The Docker image includes 40 Infocom titles. Pass the game key to `--game`:
 
 ```
 zork-bench/
-  Dockerfile                    # Game container (dfrotz + 40 Infocom games)
+  Dockerfile                    # Game container (bocfel + remglk + 40 Infocom games)
   pyproject.toml                # uv project config
   zork-1-map-ZUG-1982.jpeg      # Zork I map (used by the viewer)
   papers/                       # Reference papers
   sessions/                     # Session logs (gitignored)
   src/zork_harness/
     agent.py                    # LLM agent loop (multi-backend: Fireworks, Anthropic, OpenAI)
-    session.py                  # Game I/O via pexpect to Docker
+    session.py                  # Game I/O via RemGlk JSON to Docker (bocfel)
     tools.py                    # Backend-neutral tool definitions + self-built map, inventory, notes
     map_data.py                 # Static Zork I map (used by --map-mode full)
     map_coords.py               # Room pixel coordinates for the map viewer
