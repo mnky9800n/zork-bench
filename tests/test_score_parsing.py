@@ -1,10 +1,9 @@
-"""Tests for score-parsing regexes in SessionLogger and ZorkSession.
+"""Tests for the score-parsing regexes in SessionLogger._parse_score.
 
-Both share the same two patterns:
-  1. "your score is N"
-  2. "score: N" / "score N"
-
-These are exercised against the real shapes of dfrotz/Zork output.
+The same helper is reused by RemGlkSession.get_score to read the score off the
+RemGlk status line, so these two patterns back both call sites:
+  1. "your score is N"   (a 'score' command reply, parsed from logged prose)
+  2. "score: N" / "score N"   (the status-line bar, e.g. "... Score: 25  Moves: 47")
 """
 
 from zork_harness.logger import SessionLogger
