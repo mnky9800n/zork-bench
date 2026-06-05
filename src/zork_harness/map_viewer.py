@@ -1,6 +1,8 @@
 """Live map viewer: split-pane window with zoomed map (left) and game log (right)."""
 
+import os
 import queue
+import sys
 import threading
 import tkinter as tk
 from pathlib import Path
@@ -8,6 +10,30 @@ from pathlib import Path
 from PIL import Image, ImageTk
 
 from zork_harness.map_coords import get_room_coords
+
+
+def _ensure_tcl_tk_env() -> None:
+    """Point Tkinter at a bundled Tcl/Tk runtime if it isn't already configured.
+
+    python-build-standalone interpreters (what `uv` installs) ship Tcl/Tk under the
+    interpreter's lib/ directory but don't always tell _tkinter where to find it, so
+    `tk.Tk()` fails with "Cannot find a usable init.tcl". When TCL_LIBRARY/TK_LIBRARY
+    aren't already set, locate the bundled runtime and set them before any interpreter
+    is created. A no-op on environments where Tk is already discoverable.
+    """
+    if os.environ.get("TCL_LIBRARY") and os.environ.get("TK_LIBRARY"):
+        return
+    candidate_bases = {sys.base_prefix, sys.prefix, str(Path(sys.executable).resolve().parent.parent)}
+    for base in candidate_bases:
+        lib = Path(base) / "lib"
+        if not lib.is_dir():
+            continue
+        tcl_dir = next((p for p in sorted(lib.glob("tcl*")) if (p / "init.tcl").exists()), None)
+        tk_dir = next((p for p in sorted(lib.glob("tk*")) if (p / "tk.tcl").exists()), None)
+        if tcl_dir and tk_dir:
+            os.environ.setdefault("TCL_LIBRARY", str(tcl_dir))
+            os.environ.setdefault("TK_LIBRARY", str(tk_dir))
+            return
 
 MAP_IMAGE_PATH = Path(__file__).parent.parent.parent / "zork-1-map-ZUG-1982.jpeg"
 
@@ -152,6 +178,7 @@ class MapViewer:
 
     def run(self) -> None:
         """Start the tkinter main loop. Must be called from the main thread."""
+        _ensure_tcl_tk_env()
         self._root = tk.Tk()
         self._root.title("Zork Map - LLM Position Tracker")
         self._root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
