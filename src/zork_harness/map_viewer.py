@@ -55,6 +55,7 @@ class MapViewer:
         self._current_room: str | None = starting_room
         self._room_history: list[str] = [starting_room]
         self._turn_count = 0
+        self._score: int | None = None
         self._lock = threading.Lock()
         self._dirty = True
         self._input_tokens = 0
@@ -92,6 +93,15 @@ class MapViewer:
             self._cache_read = cache_read
             self._cache_create = cache_create
             self._dirty = True
+
+    def set_score(self, score: int | None) -> None:
+        """Called from the agent thread to update the current game score."""
+        if score is None:
+            return
+        with self._lock:
+            if score != self._score:
+                self._score = score
+                self._dirty = True
 
     def set_room(self, room_name: str) -> None:
         """Called from the agent thread to update the current room."""
@@ -443,11 +453,14 @@ class MapViewer:
         # Status bar
         with self._lock:
             turns = self._turn_count
+            score = self._score
         unique = len(set(history))
         status = f"Room: {room or '???'}"
         if room and not get_room_coords(room):
             status += " (not on map)"
         status += f"  |  Rooms: {unique}  |  Turn: {turns}"
+        if score is not None:
+            status += f"  |  Score: {score}"
         if self._pan_center:
             status += "  |  [drag to pan, double-click to snap back]"
         self._status_var.set(status)
