@@ -54,7 +54,7 @@ NAMES=(
     "gpt-5p4"
     "gemini-3p1-pro"
     "deepseek-r1"
-    "qwen3-max"
+    "qwen3-235b"
     "claude-sonnet-4-6"
 )
 BACKENDS=(
@@ -81,7 +81,7 @@ MODELS=(
     "openai/gpt-5.4"
     "google/gemini-3.1-pro-preview"
     "deepseek/deepseek-r1"
-    "qwen/qwen3-max"
+    "qwen/qwen3-235b-a22b-2507"
     "claude-sonnet-4-6"
 )
 # "1" passes --thinking (reasoning_effort=high + larger output cap). Reasoning
