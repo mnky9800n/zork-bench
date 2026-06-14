@@ -92,7 +92,7 @@ uv run zork-harness --max-turns 50 --frontend
 |------|-------------|
 | `--backend` | API backend: `fireworks` (default), `anthropic`, `openrouter`, `openai`, `human` (play yourself). |
 | `--game` | Which game to play (default: `zork1`). Supports 40 Infocom titles. |
-| `--model` | Model ID. Defaults: `glm-5p1` (Fireworks), `claude-sonnet-4-6` (Anthropic), `openai/gpt-5.4` (OpenRouter), `gpt-4o` (OpenAI). |
+| `--model` | Model ID. Defaults: `glm-5p1` (Fireworks), `claude-sonnet-4-6` (Anthropic), `gpt-4o` (OpenAI). |
 | `--map-mode` | Map knowledge level: `none`, `explore` (default), `full`. See below. |
 | `--max-turns` | Maximum turns before stopping (default: 200). |
 | `--thinking` | Enable extended thinking / reasoning. On Anthropic, adaptive extended thinking; on OpenRouter/OpenAI, sets `reasoning_effort=high` and a larger output cap (needed so reasoning models are not truncated). |
@@ -100,6 +100,7 @@ uv run zork-harness --max-turns 50 --frontend
 | `--frontend` | Open the live viewer window (split-pane map + game log). |
 | `--play` | Human play mode: play the game yourself with the map tracker. |
 | `--session-dir` | Directory for session logs (default: `sessions/`). |
+| `--base-url` | Override the API base URL. Use with `--backend openai` to point at a local server (e.g. `http://localhost:11434/v1` for Ollama). |
 
 ## Human play mode
 
