@@ -755,6 +755,16 @@ def run_agent(
                 api_key=api_key,
                 base_url="https://api.fireworks.ai/inference/v1",
             )
+        elif backend == "openrouter":
+            api_key = os.environ.get("OPENROUTER_API_KEY")
+            if not api_key:
+                print("Error: OPENROUTER_API_KEY environment variable is not set.")
+                print("Run: export OPENROUTER_API_KEY=your-key-here")
+                sys.exit(1)
+            client = OpenAI(
+                api_key=api_key,
+                base_url="https://openrouter.ai/api/v1",
+            )
         elif backend == "openai":
             client = OpenAI()
         else:
@@ -1075,9 +1085,9 @@ def main() -> None:
     )
     parser.add_argument(
         "--backend",
-        choices=["anthropic", "fireworks", "openai", "human"],
+        choices=["anthropic", "fireworks", "openrouter", "openai", "human"],
         default="fireworks",
-        help="API backend: fireworks (default), anthropic, openai, human (play yourself).",
+        help="API backend: fireworks (default), anthropic, openrouter, openai, human (play yourself).",
     )
     parser.add_argument(
         "--model",
@@ -1157,6 +1167,7 @@ def main() -> None:
         defaults = {
             "fireworks": "accounts/fireworks/models/glm-5p1",
             "anthropic": "claude-sonnet-4-6",
+            "openrouter": "openai/gpt-5.4",
             "openai": "gpt-4o",
             "human": "human",
         }

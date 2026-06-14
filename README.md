@@ -27,7 +27,7 @@ The cost of spatial reasoning is visible here: `explore` and `full` modes (which
 An LLM plays Zork through a game session running in Docker (bocfel, a Z-machine interpreter, speaking the RemGlk JSON protocol + Infocom game files). The harness manages the game I/O, provides tools the LLM can use (self-built map, inventory tracking, notes), and logs everything for analysis.
 
 ```
-LLM (any backend: Fireworks, Anthropic, OpenAI)
+LLM (any backend: Fireworks, Anthropic, OpenRouter, OpenAI)
   |
   |-- tool calls: record_room, find_path, update_inventory, add_note
   |-- game command: "go north", "take lamp", etc.
@@ -53,8 +53,9 @@ uv sync
 
 # Set your API key (at least one)
 export FIREWORKS_API_KEY=your-key-here
-export ANTHROPIC_API_KEY=your-key-here   # optional
-export OPENAI_API_KEY=your-key-here      # optional
+export ANTHROPIC_API_KEY=your-key-here     # optional
+export OPENROUTER_API_KEY=your-key-here    # optional (GPT, Gemini, Grok, Qwen, DeepSeek, etc.)
+export OPENAI_API_KEY=your-key-here        # optional
 ```
 
 ## Usage
@@ -68,6 +69,9 @@ uv run zork-harness --model accounts/fireworks/models/llama-v3p3-70b-instruct --
 
 # Anthropic with extended thinking
 uv run zork-harness --backend anthropic --model claude-opus-4-6 --thinking --frontend
+
+# OpenRouter (GPT, Gemini, Grok, Qwen, DeepSeek, ...); --thinking for reasoning models
+uv run zork-harness --backend openrouter --model google/gemini-3.1-pro-preview --thinking --frontend
 
 # OpenAI
 uv run zork-harness --backend openai --model gpt-4o --frontend
@@ -86,12 +90,12 @@ uv run zork-harness --max-turns 50 --frontend
 
 | Flag | Description |
 |------|-------------|
-| `--backend` | API backend: `fireworks` (default), `anthropic`, `openai`, `human` (play yourself). |
+| `--backend` | API backend: `fireworks` (default), `anthropic`, `openrouter`, `openai`, `human` (play yourself). |
 | `--game` | Which game to play (default: `zork1`). Supports 40 Infocom titles. |
-| `--model` | Model ID. Defaults: `llama4-maverick-instruct-basic` (Fireworks), `claude-sonnet-4-6` (Anthropic), `gpt-4o` (OpenAI). |
+| `--model` | Model ID. Defaults: `glm-5p1` (Fireworks), `claude-sonnet-4-6` (Anthropic), `openai/gpt-5.4` (OpenRouter), `gpt-4o` (OpenAI). |
 | `--map-mode` | Map knowledge level: `none`, `explore` (default), `full`. See below. |
 | `--max-turns` | Maximum turns before stopping (default: 200). |
-| `--thinking` | Enable adaptive extended thinking (Anthropic only). |
+| `--thinking` | Enable extended thinking / reasoning. On Anthropic, adaptive extended thinking; on OpenRouter/OpenAI, sets `reasoning_effort=high` and a larger output cap (needed so reasoning models are not truncated). |
 | `--budget-tokens N` | Fixed thinking budget in tokens (Anthropic only). Implies `--thinking`. |
 | `--frontend` | Open the live viewer window (split-pane map + game log). |
 | `--play` | Human play mode: play the game yourself with the map tracker. |
@@ -226,7 +230,7 @@ zork-bench/
   papers/                       # Reference papers
   sessions/                     # Session logs (gitignored)
   src/zork_harness/
-    agent.py                    # LLM agent loop (multi-backend: Fireworks, Anthropic, OpenAI)
+    agent.py                    # LLM agent loop (multi-backend: Fireworks, Anthropic, OpenRouter, OpenAI)
     session.py                  # Game I/O via RemGlk JSON to Docker (bocfel)
     tools.py                    # Backend-neutral tool definitions + self-built map, inventory, notes
     map_data.py                 # Static Zork I map (used by --map-mode full)
