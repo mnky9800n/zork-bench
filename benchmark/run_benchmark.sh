@@ -24,6 +24,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_ROOT"
 
+# Load API keys from .env if present, overriding any inherited shell values so
+# runs bill the keys the project owner intends (not a stray key from a profile).
+if [[ -f .env ]]; then
+    set -a
+    # shellcheck disable=SC1091
+    . ./.env
+    set +a
+    echo "  [ok] loaded API keys from .env"
+fi
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
